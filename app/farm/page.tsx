@@ -95,7 +95,7 @@ export default function Farm() {
   return (
     <>
       {/* Hero Section */}
-      <section className="relative h-[200px] md:h-[250px]">
+      <section className="relative h-[200px] md:h-[250px] bg-gray-200">
         <Image
           src="/images/farm/lavender-banner.jpg"
           alt="Lavender fields"
@@ -117,7 +117,7 @@ export default function Farm() {
             {farmSections.map((section) => (
               <div key={section.title} className="bg-white overflow-hidden flex flex-col sm:flex-row h-auto sm:h-[240px]">
                 {/* Image */}
-                <div className="relative w-full sm:w-[180px] h-[200px] sm:h-full flex-shrink-0">
+                <div className="relative w-full sm:w-[180px] h-[200px] sm:h-full flex-shrink-0 bg-gray-200">
                   <Image
                     src={section.image}
                     alt={section.title}

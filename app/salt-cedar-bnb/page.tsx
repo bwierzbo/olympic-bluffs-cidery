@@ -5,7 +5,7 @@ export default function SaltCedarBnB() {
   return (
     <>
       {/* Hero Section with Building */}
-      <section className="relative h-[400px] md:h-[500px]">
+      <section className="relative h-[400px] md:h-[500px] bg-gray-200">
         <Image
           src="/images/saltandcedar/building-fixed.jpeg"
           alt="Salt & Cedar Bed and Breakfast"
@@ -57,7 +57,7 @@ export default function SaltCedarBnB() {
       </section>
 
       {/* Bottom Image Section */}
-      <section className="relative h-[300px] md:h-[400px]">
+      <section className="relative h-[300px] md:h-[400px] bg-gray-200">
         <Image
           src="/images/saltandcedar/chairs.jpg"
           alt="Lavender fields view with chairs"
