@@ -10,6 +10,18 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Sage Green Color Palette - matching Wix design */
+  --color-sage-50: #f5f6f5;
+  --color-sage-100: #e8eae8;
+  --color-sage-200: #d1d5d1;
+  --color-sage-300: #b0b6af;
+  --color-sage-400: #8a9289;
+  --color-sage-500: #6b7566;
+  --color-sage-600: #565d52;
+  --color-sage-700: #474c44;
+  --color-sage-800: #3a3e38;
+  --color-sage-900: #2f322e;
 }
 
 @media (prefers-color-scheme: dark) {

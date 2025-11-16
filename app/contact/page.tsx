@@ -1,173 +1,79 @@
-import Hero from '@/components/Hero';
+import Image from 'next/image';
 
 export default function Contact() {
   return (
     <>
-      <Hero
-        title="Visit Us"
-        subtitle="Experience our ciders in our tasting room"
-        height="medium"
-      />
+      {/* Farm Hours Section */}
+      <section className="bg-white">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* Lavender Basket Image - Left */}
+          <div className="relative h-[400px] md:h-[500px]">
+            <Image
+              src="/images/hours-lavender-basket.jpg"
+              alt="Lavender basket"
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-            {/* Contact Information */}
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                Tasting Room
-              </h2>
-              <div className="space-y-6">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Location
-                  </h3>
-                  <p className="text-gray-600">
-                    123 Cider Lane<br />
-                    Port Townsend, WA 98368
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Hours
-                  </h3>
-                  <div className="text-gray-600 space-y-1">
-                    <p>Thursday - Sunday: 12:00 PM - 6:00 PM</p>
-                    <p>Monday - Wednesday: Closed</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    Contact
-                  </h3>
-                  <div className="text-gray-600 space-y-1">
-                    <p>Phone: (360) 555-0123</p>
-                    <p>Email: info@olympicbluffscidery.com</p>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                    What to Expect
-                  </h3>
-                  <ul className="list-disc list-inside text-gray-600 space-y-2">
-                    <li>Guided tastings of our current offerings</li>
-                    <li>Tours of our production facility (by appointment)</li>
-                    <li>Cider available for purchase by the bottle or case</li>
-                    <li>Outdoor seating with beautiful views</li>
-                    <li>Family and pet-friendly environment</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            {/* Map Placeholder */}
-            <div>
-              <div className="bg-gradient-to-br from-amber-100 to-amber-200 rounded-lg h-96 flex items-center justify-center mb-6">
-                <p className="text-gray-600 text-lg">Map Placeholder</p>
-              </div>
-              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
-                <h3 className="font-semibold text-gray-900 mb-2">
-                  Getting Here
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  We&apos;re located in downtown Port Townsend, easily accessible from
-                  Highway 20. Free parking is available on-site. From Seattle, take
-                  the Edmonds-Kingston ferry for a scenic 90-minute drive through the
-                  Olympic Peninsula.
-                </p>
-              </div>
+          {/* Farm Hours Text - Right */}
+          <div className="flex items-center justify-center p-8 md:p-16 bg-white">
+            <div className="max-w-md text-center">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 tracking-wide">
+                FARM HOURS
+              </h1>
+              <p className="text-gray-600 mb-4 leading-relaxed">
+                We are closed for the Winter Season.
+              </p>
+              <p className="text-gray-600 leading-relaxed">
+                Please call us <strong>(123) 456-7890</strong> for information outside regular hours.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-amber-50">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Send Us a Message
-            </h2>
-            <p className="text-gray-600">
-              Have questions or want to schedule a private event? We&apos;d love to hear
-              from you!
-            </p>
+      {/* Location Section */}
+      <section className="bg-white border-t border-gray-200">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* Location Text - Left */}
+          <div className="flex items-center justify-center p-8 md:p-16 bg-white order-2 md:order-1">
+            <div className="max-w-md">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8 tracking-wide">
+                LOCATION
+              </h2>
+
+              {/* Map Placeholder */}
+              <div className="bg-gray-200 rounded-lg h-48 flex items-center justify-center mb-6">
+                <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+
+              <div className="text-center text-gray-600 leading-relaxed">
+                <p className="mb-2">We are located at:</p>
+                <p className="font-semibold text-gray-900">
+                  1025 Finn Hall Road<br />
+                  Port Angeles, WA 98362
+                </p>
+                <p className="mt-4">
+                  <strong>(123) 456-7890</strong>
+                </p>
+              </div>
+            </div>
           </div>
 
-          <form className="bg-white rounded-lg shadow-md p-8">
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="first-name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="first-name"
-                  name="first-name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
-                />
-              </div>
-
-              <div>
-                <label
-                  htmlFor="last-name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="last-name"
-                  name="last-name"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
-                />
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
-              />
-            </div>
-
-            <div className="mt-6">
-              <label
-                htmlFor="message"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Message
-              </label>
-              <textarea
-                id="message"
-                name="message"
-                rows={4}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-amber-500 focus:border-amber-500"
-              />
-            </div>
-
-            <div className="mt-6">
-              <button
-                type="submit"
-                className="w-full bg-amber-700 text-white px-6 py-3 rounded-md font-semibold hover:bg-amber-800 transition-colors"
-              >
-                Send Message
-              </button>
-            </div>
-          </form>
+          {/* Farm/Lavender Building Image - Right */}
+          <div className="relative h-[400px] md:h-[500px] order-1 md:order-2">
+            <Image
+              src="/images/hours-farm-building.jpg"
+              alt="Olympic Bluffs Cidery and lavender farm"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
       </section>
     </>

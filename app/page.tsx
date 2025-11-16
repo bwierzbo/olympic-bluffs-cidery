@@ -1,123 +1,71 @@
-import Hero from '@/components/Hero';
-import Link from 'next/link';
+import Image from 'next/image';
+import SeasonalBanner from '@/components/SeasonalBanner';
+import MeetOwners from '@/components/MeetOwners';
 
 export default function Home() {
   return (
     <>
-      {/* Hero Section */}
-      <Hero
-        title="Olympic Bluffs Cidery"
-        subtitle="Crafting premium ciders with passion and tradition"
-        height="large"
-      />
-
-      {/* Welcome Section */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">
-              Welcome to Olympic Bluffs Cidery
-            </h2>
-            <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
-              Nestled in the beautiful Pacific Northwest, we craft exceptional hard ciders
-              using locally sourced apples and time-honored traditions. Each bottle tells
-              a story of our region&apos;s rich agricultural heritage.
+      {/* Hero Section with Background Image */}
+      <section className="relative h-[500px] md:h-[600px]">
+        <Image
+          src="/images/home-lavender-hero.jpg"
+          alt="Lavender farm"
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* White Overlay Box */}
+        <div className="absolute inset-0 flex items-center justify-center px-4">
+          <div className="bg-white p-8 md:p-12 max-w-2xl text-center shadow-xl">
+            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-wide">
+              WELCOME
+            </h1>
+            <p className="text-xl md:text-2xl text-gray-700 mb-2">
+              to the farm
+            </p>
+            <p className="text-sm md:text-base text-gray-600 leading-relaxed">
+              Graded between the Olympic Mountain Range and the Strait of Juan De Fuca, the Sequim Valley and Lavender
+              form the northwest area of the exiting 8 mountains.
             </p>
           </div>
         </div>
       </section>
 
-      {/* Featured Products */}
-      <section className="py-16 bg-amber-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Our Signature Ciders
-          </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            {[
-              {
-                name: 'Classic Dry',
-                description: 'Crisp and refreshing with a perfect balance of tartness and sweetness',
-              },
-              {
-                name: 'Honey Crisp',
-                description: 'Sweet and aromatic with notes of local honey and fresh apples',
-              },
-              {
-                name: 'Barrel Aged',
-                description: 'Complex and refined, aged in oak barrels for a unique depth of flavor',
-              },
-            ].map((cider) => (
-              <div
-                key={cider.name}
-                className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow"
-              >
-                <div className="h-48 bg-gradient-to-br from-amber-200 to-amber-400 rounded-md mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {cider.name}
-                </h3>
-                <p className="text-gray-600">{cider.description}</p>
-              </div>
-            ))}
-          </div>
-          <div className="text-center mt-12">
-            <Link
-              href="/products"
-              className="inline-block bg-amber-700 text-white px-8 py-3 rounded-md font-semibold hover:bg-amber-800 transition-colors"
-            >
-              View All Products
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Seasonal Banner - Toggle isVisible to show/hide */}
+      <SeasonalBanner isVisible={true} />
 
-      {/* Visit Us Section */}
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                Visit Our Tasting Room
-              </h2>
-              <p className="text-lg text-gray-600 mb-6">
-                Experience our ciders in our welcoming tasting room. Located in the heart
-                of Port Townsend, we offer tastings, tours, and a space to relax and enjoy
-                the flavors of the Pacific Northwest.
-              </p>
-              <div className="space-y-3 text-gray-700">
-                <p><strong>Hours:</strong></p>
-                <p>Thursday - Sunday: 12pm - 6pm</p>
-                <p>Monday - Wednesday: Closed</p>
-              </div>
-              <Link
-                href="/contact"
-                className="inline-block mt-6 bg-amber-700 text-white px-6 py-3 rounded-md font-semibold hover:bg-amber-800 transition-colors"
-              >
-                Get Directions
-              </Link>
-            </div>
-            <div className="bg-gradient-to-br from-amber-100 to-amber-300 rounded-lg h-96" />
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-amber-900 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">
-            Ready to Taste the Difference?
-          </h2>
-          <p className="text-xl mb-8 text-amber-100">
-            Join us for a tasting experience you won&apos;t forget
+      {/* Farm Closed Information Section */}
+      <section className="py-16 bg-sage-500">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <p className="text-white text-center leading-relaxed mb-12">
+            During the Winter season the farm will be closed getting ready for the new growing season.<br /><br />
+            You can still buy cider, lavender products and merchandise at Sal&apos;s in Raymound, Ilwaco.<br /><br />
+            So please follow us on our social media for your next visit or email us at{' '}
+            <a href="mailto:scottatobcf@gmail.com" className="underline hover:text-sage-100">
+              scottatobcf@gmail.com
+            </a> and{' '}
+            <a href="mailto:gingeratobcf@gmail.com" className="underline hover:text-sage-100">
+              gingeratobcf@gmail.com
+            </a>.
+            Come and join us! Products can be purchased online via Shipping Fresh apples to making ciders with our own apples fresh apple juice,
+            and bottling our first ciders both dry and hard we are guided by a love of crafting and building our business in beautiful Olympic
+            Peninsula-more about our products and services.
           </p>
-          <Link
-            href="/contact"
-            className="inline-block bg-white text-amber-900 px-8 py-3 rounded-md font-semibold hover:bg-amber-50 transition-colors"
-          >
-            Plan Your Visit
-          </Link>
+
+          {/* Farm Building Image */}
+          <div className="relative h-[300px] md:h-[500px] border-8 border-sage-400">
+            <Image
+              src="/images/home-cidery-building.jpeg"
+              alt="Olympic Bluffs Cidery building"
+              fill
+              className="object-cover"
+            />
+          </div>
         </div>
       </section>
+
+      {/* Meet Scott & Ginger Section */}
+      <MeetOwners />
     </>
   );
 }

@@ -1,97 +1,42 @@
-import Hero from '@/components/Hero';
+import Image from 'next/image';
 
 export default function About() {
   return (
     <>
-      <Hero
-        title="Our Story"
-        subtitle="Crafting exceptional ciders since 2010"
-        height="medium"
-      />
-
+      {/* Meet Scott & Ginger Section */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                A Passion for Cider
-              </h2>
-              <div className="space-y-4 text-gray-600">
-                <p>
-                  Olympic Bluffs Cidery was founded with a simple mission: to create
-                  exceptional hard ciders that showcase the incredible apples of the
-                  Pacific Northwest. What started as a small hobby quickly grew into
-                  a passion for crafting premium beverages.
-                </p>
-                <p>
-                  Located in Port Townsend, Washington, we&apos;re surrounded by some of the
-                  finest apple orchards in the country. We work closely with local farmers
-                  to source the best fruit, ensuring that every bottle captures the essence
-                  of our region.
-                </p>
-                <p>
-                  Our commitment to quality extends beyond ingredients. We use traditional
-                  fermentation methods combined with modern techniques to create ciders
-                  that are both classic and innovative.
-                </p>
-              </div>
-            </div>
-            <div className="bg-gradient-to-br from-amber-200 to-amber-400 rounded-lg h-96" />
-          </div>
-        </div>
-      </section>
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-12 tracking-wide text-center">
+            MEET SCOTT & GINGER
+          </h1>
 
-      <section className="py-16 bg-amber-50">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">
-            Our Values
-          </h2>
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16 bg-amber-700 rounded-full mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Quality First
-              </h3>
-              <p className="text-gray-600">
-                We never compromise on ingredients or process, ensuring every bottle
-                meets our high standards.
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Text Content - Left */}
+            <div className="space-y-6 text-gray-700 leading-relaxed">
+              <p>
+                In 2015, we visited the Olympic Peninsula for the first time during the annual lavender festival and immediately fell in love with the beauty of the land and the spirit of the community. In 2020, we made the peninsula our full-time home.
+              </p>
+              <p>
+                We are both US Air Force veterans and have been stationed all around the world. Each new assignment brought new experiences and new people. We learned quickly making new friends and building relationships in small communities.
+              </p>
+              <p>
+                With the goal of creating great cider and the desire to bring our community together, we decided to start a hard cidery and lavender farm. We have planted an orchard of 480 Semi-dwarf cider apple trees, 3,400 lavender plants, an apiary and an acre of ancient grains wheat and rye. In November 2024, we added Salt and Cedar Bed and Breakfast.
+              </p>
+              <p>
+                We&apos;re excited about being a part of the community and sharing this beautiful destination with you.
               </p>
             </div>
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16 bg-amber-700 rounded-full mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Local Partnership
-              </h3>
-              <p className="text-gray-600">
-                Supporting local farmers and orchards is at the heart of everything
-                we do.
-              </p>
-            </div>
-            <div className="text-center">
-              <div className="mx-auto h-16 w-16 bg-amber-700 rounded-full mb-4" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                Sustainability
-              </h3>
-              <p className="text-gray-600">
-                We&apos;re committed to sustainable practices that protect our beautiful
-                region for future generations.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-              Meet the Team
-            </h2>
-            <p className="text-lg text-gray-600">
-              Our small but dedicated team brings together decades of experience in
-              cider making, agriculture, and hospitality. We&apos;re passionate about
-              what we do and love sharing our craft with visitors.
-            </p>
+            {/* Image - Right */}
+            <div className="relative h-[400px] lg:h-[500px]">
+              <Image
+                src="/images/team/aboutus.jpeg"
+                alt="Scott and Ginger"
+                fill
+                className="object-cover rounded-lg"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </div>
           </div>
         </div>
       </section>
