@@ -7,7 +7,7 @@ export default function SaltCedarBnB() {
       {/* Hero Section with Building */}
       <section className="relative h-[400px] md:h-[500px] bg-gray-200">
         <Image
-          src="/images/saltandcedar/building-fixed.jpeg"
+          src="/images/saltandcedar/building.jpeg"
           alt="Salt & Cedar Bed and Breakfast"
           fill
           className="object-cover"
