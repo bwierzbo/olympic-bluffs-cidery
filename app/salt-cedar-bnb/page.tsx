@@ -1,5 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import buildingImage from '@/public/images/saltandcedar/building.jpeg';
+import chairsImage from '@/public/images/saltandcedar/chairs.jpg';
 
 export default function SaltCedarBnB() {
   return (
@@ -7,15 +9,14 @@ export default function SaltCedarBnB() {
       {/* Hero Section with Building */}
       <section className="relative h-[400px] md:h-[500px] bg-gray-200">
         <Image
-          src="/images/saltandcedar/building.jpeg"
+          src={buildingImage}
           alt="Salt & Cedar Bed and Breakfast"
           fill
           sizes="100vw"
-          className="object-cover"
+          className="object-cover z-0"
           priority
-          unoptimized
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
       </section>
 
       {/* Welcome Text Section */}
@@ -61,14 +62,13 @@ export default function SaltCedarBnB() {
       {/* Bottom Image Section */}
       <section className="relative h-[300px] md:h-[400px] bg-gray-200">
         <Image
-          src="/images/saltandcedar/chairs.jpg"
+          src={chairsImage}
           alt="Lavender fields view with chairs"
           fill
           sizes="100vw"
-          className="object-cover"
-          unoptimized
+          className="object-cover z-0"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20"></div>
+        <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
       </section>
     </>
   );
