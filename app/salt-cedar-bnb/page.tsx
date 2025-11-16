@@ -56,7 +56,7 @@ export default function SaltCedarBnB() {
       </section>
 
       {/* Bottom Image Section */}
-      <section className="relative h-[300px] md:h-[400px] bg-gray-200">
+      <section className="relative h-[500px] md:h-[600px] bg-gray-200">
         <img
           src="/images/saltandcedar/chairs.jpg"
           alt="Lavender fields view with chairs"
