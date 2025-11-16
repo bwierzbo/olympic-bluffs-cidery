@@ -8,15 +8,11 @@ export default function SaltCedarBnB() {
     <>
       {/* Hero Section with Building */}
       <section className="relative h-[400px] md:h-[500px] bg-gray-200">
-        <Image
-          src={buildingImage}
+        <img
+          src="/images/saltandcedar/building.jpeg"
           alt="Salt & Cedar Bed and Breakfast"
-          fill
-          sizes="100vw"
-          className="object-cover z-0"
-          priority
+          className="absolute inset-0 w-full h-full object-cover z-0"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
       </section>
 
       {/* Welcome Text Section */}
@@ -61,14 +57,11 @@ export default function SaltCedarBnB() {
 
       {/* Bottom Image Section */}
       <section className="relative h-[300px] md:h-[400px] bg-gray-200">
-        <Image
-          src={chairsImage}
+        <img
+          src="/images/saltandcedar/chairs.jpg"
           alt="Lavender fields view with chairs"
-          fill
-          sizes="100vw"
-          className="object-cover z-0"
+          className="absolute inset-0 w-full h-full object-cover z-0"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-20 z-10"></div>
       </section>
     </>
   );
