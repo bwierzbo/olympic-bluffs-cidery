@@ -32,7 +32,11 @@ export default function Header() {
             <Link
               key={link.name}
               href={link.href}
-              className="text-sm font-bold transition-colors tracking-wide px-4 py-px text-white border-t border-b border-white/60 hover:border-white"
+              className={`text-sm font-bold transition-colors tracking-wide px-4 py-px text-white border-t border-b ${
+                isActive(link.href)
+                  ? 'border-gray-400'
+                  : 'border-white/60 hover:border-white'
+              }`}
             >
               {link.name}
             </Link>
@@ -87,7 +91,11 @@ export default function Header() {
                 <Link
                   key={link.name}
                   href={link.href}
-                  className="block border-l-4 border-transparent py-2 pl-3 pr-4 text-sm font-medium text-white hover:border-sage-200 hover:bg-sage-700"
+                  className={`block border-l-4 py-2 pl-3 pr-4 text-sm font-medium text-white hover:bg-sage-700 ${
+                    isActive(link.href)
+                      ? 'border-gray-400 bg-sage-700'
+                      : 'border-transparent hover:border-sage-200'
+                  }`}
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}
