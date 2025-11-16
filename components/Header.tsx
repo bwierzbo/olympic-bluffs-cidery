@@ -11,7 +11,7 @@ export default function Header() {
 
   const navigation = [
     { name: 'HOME', href: '/' },
-    { name: 'SHOP', href: '/products' },
+    { name: 'SHOP', href: 'https://olympic-bluffs-lavender-farm.square.site/' },
     { name: 'HOURS & LOCATION', href: '/contact' },
     { name: 'ON THE FARM', href: '/farm' },
     { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
