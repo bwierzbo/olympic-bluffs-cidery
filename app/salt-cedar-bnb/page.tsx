@@ -10,8 +10,10 @@ export default function SaltCedarBnB() {
           src="/images/saltandcedar/building.jpeg"
           alt="Salt & Cedar Bed and Breakfast"
           fill
+          sizes="100vw"
           className="object-cover"
           priority
+          unoptimized
         />
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </section>
@@ -62,7 +64,9 @@ export default function SaltCedarBnB() {
           src="/images/saltandcedar/chairs.jpg"
           alt="Lavender fields view with chairs"
           fill
+          sizes="100vw"
           className="object-cover"
+          unoptimized
         />
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </section>

@@ -100,8 +100,10 @@ export default function Farm() {
           src="/images/farm/lavender-banner.jpg"
           alt="Lavender fields"
           fill
+          sizes="100vw"
           className="object-cover"
           priority
+          unoptimized
         />
         <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider px-4">
@@ -122,7 +124,9 @@ export default function Farm() {
                     src={section.image}
                     alt={section.title}
                     fill
+                    sizes="(max-width: 640px) 100vw, 180px"
                     className="object-cover"
+                    unoptimized
                   />
                 </div>
                 {/* Text */}
