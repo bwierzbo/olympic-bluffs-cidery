@@ -10,7 +10,7 @@ interface MeetOwnersProps {
 export default function MeetOwners({
   imagePath = '/images/home-owners.jpeg',
   title = 'MEET SCOTT & GINGER',
-  description = `With the goal of creating great cider and like always so loving our lavender farm. We have planted an orchard of almost 200 Semi Dwarf apples planted in 2015, 5,500 lavender plants, an apiary and an American Chestnut grove all on 25 acres just outside of Sequim and Cedar Bell and Breakfast on on JR Jays Farm.\n\nWe're excited about being a part of the communauty and sharing our passion.`
+  description = `With the goal of creating great cider and the desire to bring our community together, we decided to start a hard cidery and lavender farm. We have planted an orchard of almost 500 Semi-dwarf cider apple trees, 3,500 lavender plants, an apiary and an acre of ancient grains (wheat and rye). We recently added Salt and Cedar Bed and Breakfast to our 21-Acre Farm.\n\nWe're excited about being a part of the community and sharing this beautiful destination with you.`
 }: MeetOwnersProps) {
   return (
     <div className="bg-white py-16">

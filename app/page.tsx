@@ -38,18 +38,12 @@ export default function Home() {
       <section className="py-16 bg-sage-500">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <p className="text-white text-center leading-relaxed mb-12">
-            During the Winter season the farm will be closed getting ready for the new growing season.<br /><br />
-            You can still buy cider, lavender products and merchandise at Sal&apos;s in Raymound, Ilwaco.<br /><br />
-            So please follow us on our social media for your next visit or email us at{' '}
-            <a href="mailto:scottatobcf@gmail.com" className="underline hover:text-sage-100">
-              scottatobcf@gmail.com
-            </a> and{' '}
-            <a href="mailto:gingeratobcf@gmail.com" className="underline hover:text-sage-100">
-              gingeratobcf@gmail.com
-            </a>.
-            Come and join us! Products can be purchased online via Shipping Fresh apples to making ciders with our own apples fresh apple juice,
-            and bottling our first ciders both dry and hard we are guided by a love of crafting and building our business in beautiful Olympic
-            Peninsula-more about our products and services.
+            The Farm is closed for the season.<br />
+            Stay tuned for holiday pop up events coming soon!!<br /><br />
+            During the Winter season we will host selected events in downtown Port Angeles, WA at Basecamp Bistro.<br /><br />
+            At Olympic Bluffs Cidery, we craft small-batch ciders that showcase the unique character of our orchard-grown apples.
+            From pressing fresh apples to fermenting, aging, and bottling on-site, every step is guided by a commitment to quality and sustainability.
+            With each bottle, our goal to capture the essence of our farm and the flavors of the Olympic Peninsula.
           </p>
 
           {/* Farm Building Image */}

@@ -36,11 +36,11 @@ export default function Footer() {
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <Image
-            src="/images/logo-horizontal.png"
+            src="/images/logo-square.png"
             alt="Olympic Bluffs Cidery & Lavender Farm"
-            width={150}
-            height={60}
-            className="h-16 w-auto"
+            width={80}
+            height={80}
+            className="h-20 w-20"
           />
         </div>
 

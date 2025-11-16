@@ -27,36 +27,28 @@ export default function Header() {
     <header className="bg-sage-500 sticky top-0 z-50">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex lg:items-center lg:justify-center lg:py-3">
-          {navigation.map((link, index) => (
-            <div key={link.name} className="flex items-center">
-              <Link
-                href={link.href}
-                className={`text-sm font-medium transition-colors tracking-wide px-4 py-2 ${
-                  isActive(link.href)
-                    ? 'text-white border-b-2 border-white'
-                    : 'text-white/80 hover:text-white'
-                }`}
-              >
-                {link.name}
-              </Link>
-              {index < navigation.length - 1 && (
-                <div className="h-4 w-px bg-sage-300"></div>
-              )}
-            </div>
+        <div className="hidden lg:flex lg:items-center lg:justify-center lg:py-3 lg:gap-1">
+          {navigation.map((link) => (
+            <Link
+              key={link.name}
+              href={link.href}
+              className="text-sm font-bold transition-colors tracking-wide px-4 py-px text-white border-t border-b border-white/60 hover:border-white"
+            >
+              {link.name}
+            </Link>
           ))}
         </div>
 
         {/* Logo Section */}
-        <div className="flex w-full items-center justify-between py-4 lg:justify-center lg:border-t lg:border-sage-400 lg:py-6">
+        <div className="flex w-full items-center justify-between py-4 lg:justify-center lg:py-6">
           <div className="flex items-center">
             <Link href="/" className="flex items-center">
               <Image
                 src="/images/logo-horizontal.png"
                 alt="Olympic Bluffs Cidery & Lavender Farm"
-                width={300}
-                height={80}
-                className="h-12 w-auto lg:h-16"
+                width={400}
+                height={100}
+                className="h-16 w-auto lg:h-24"
                 priority
               />
             </Link>

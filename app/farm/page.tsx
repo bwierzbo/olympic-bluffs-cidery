@@ -1,47 +1,46 @@
 import Image from 'next/image';
-/* eslint-disable @next/next/no-img-element */
 
 export default function Farm() {
   const farmSections = [
     {
       title: 'LAVENDER BOUTIQUE',
       image: '/images/farm/lavender-boutique.jpeg',
-      description: 'Our farm has produced fresh, hand-tied bundles of dried lavender fresh lavender buds harvested from the fields just steps away from our farm. We have hand crafted lavender sachets, lavender dryer bags, lavender bundles, and other lavender products.',
+      description: 'Step inside our Lavender Shop, where the soothing scent of lavender welcomes you into a treasure trove of handcrafted products. From pure essential oils and bath luxuries to culinary delights and artisan gifts, each item reflects our commitment to quality, sustainability, and natural beauty.',
     },
     {
       title: 'ANCIENT GRAINS',
       image: '/images/farm/ancient-grains.jpeg',
-      description: 'Ancient grains have been grown for thousands of years and remained relatively unchanged, meaning they haven\'t been bred or changed to improve yield or disease resistance. Examples include quinoa, millet, farro, barley, wild rice. We love to share what we\'ve learned about these ancient grains and their uses with our visitors and at our local farmers market.',
+      description: 'Partnering with the WSU Breadlab, a leader in grain research and innovation, our goal is to cultivate grain crops that support a resilient and diverse food system. We mill grains from our field into flour and actively engage with the community in the conversation about where food comes from and how it\'s grown. Our goal is to help shape a future where nutrition and sustainability go hand in hand.',
     },
     {
       title: 'THE FIELDS',
       image: '/images/farm/lavender-fields.jpeg',
-      description: 'Our fields come to life, touch and float among blooms, smell the sweet lavender scent, view the Olympic mountains, look for the bees in our lavender and find the peaceful sight for all of harvests and special events making the days of summer and all the fall summer.',
+      description: 'Our fields come to life from mid-June through August, when the lavender burst into bloom painting the landscape in shades of purple, pink and white. Whether you\'re here to take in the beauty, enjoy the aromas, or experience the farm\'s bounty, our fields offer a truly unforgettable setting.',
     },
     {
       title: 'THE BLUFFS',
       image: '/images/farm/bluffs.jpeg',
-      description: 'On high bluffs we\'re overlooking blue majestic waters, you can see a great view from our fields, enjoy the peaceful afternoon and our produce from golden blueberry bushes to our bright white yarrow and our planted trees has been a true field committed to the farm.',
+      description: 'The high bluffs offer breathtaking 360-degree views of the Strait of Juan de Fuca, the Olympic Mountains, and our farm. This stunning vantage point changes with the seasons, from golden summer sunsets over the water to misty mountain mornings in the fall. It\'s the perfect place to soak in the beauty of the Olympic Peninsula and feel connected to the land around you.',
     },
     {
       title: 'THE ORCHARD',
       image: '/images/farm/orchard.jpeg',
-      description: 'Our orchard is home to 200 semi-dwarf apple trees, planted in 2015. We love fresh apples, cider, and watching the orchard grow each year. We enjoy sharing and using the apples to make the best lavender apple pie and apple sauce during our harvest events and at our lavender and farm-yard sales.',
+      description: 'Our orchard is home to 480 semi-dwarf cider apple trees, carefully cultivated to produce the rich, complex flavors that define our ciders. As the orchard matures, it continues to shape the character of our ciders, reflecting the unique terroir of our farm and the maritime climate of the Olympic Peninsula.',
     },
     {
       title: 'THE CIDERY',
       image: '/images/farm/keg.jpeg',
-      description: 'At Olympic Bluffs Cidery, we craft small-batch, artisan hard ciders using apples from our orchard and other local orchards. We pride ourselves on keeping it simple and fresh. Our ciders are gluten free with nothing added. Our tasting room offers a rustic and relaxed setting and live music on the weekends. Proceeds from our sales help support the Olympic Peninsula.',
+      description: 'At Olympic Bluffs Cidery, we craft small-batch ciders that showcase the unique character of our orchard-grown apples. From pressing fresh apples to fermenting, aging, and bottling on-site, every step is guided by a commitment to quality and sustainability. With each bottle, our goal to capture the essence of our farm and the flavors of the Olympic Peninsula.',
     },
     {
       title: 'THE APIARY',
-      image: '/images/farm/lavender-fields.jpeg',
-      description: 'Our apiary is an essential part of our farm ecosystem. We have the Health of our bees and their pollination services are key to the success of our crops. We love bees watching them visiting our lavender, grains, apples and other flowering plants, sharing about their vital role and learning from local beekeepers.',
+      image: '/images/farm/apiary.jpg',
+      description: 'Our apiary is an essential part of our farm, supporting the health of our orchard and lavender fields through natural pollination. Home to thriving colonies of Italian honeybees, known for their gentle nature and strong honey production, our hives play a vital role in maintaining the biodiversity of our land. Nestled near our century-old apple tree, the apiary is a sight to see as you drive in, with bees busily at work among the blossoms.',
     },
     {
       title: 'SALT AND CEDAR BED & BREAKFAST',
       image: '/images/farm/salt-cedar-bnb.jpeg',
-      description: 'The Salt Cedar and Bed & Breakfast sits high on the bluffs overlooking the Strait of Juan de Fuca and the lavender fields. Guests are greeted by a contemporary and stylish yet warm and inviting atmosphere. In the quiet corner of our property and views of the farm create a uniquely special Washington State getaway. To learn more about booking a stay visit www.saltandcedarnb.com',
+      description: 'Salt and Cedar B&B sits atop the high bluffs overlooking the Strait of Juan de Fuca, offering breathtaking water and mountain views. Whether you\'re here for a peaceful retreat or an adventure-filled getaway, Salt & Cedar provides a welcoming and serene escape. For more details, visit us at saltandcedarbedandbreakfast.com',
     },
   ];
 
@@ -97,10 +96,12 @@ export default function Farm() {
     <>
       {/* Hero Section */}
       <section className="relative h-[200px] md:h-[250px]">
-        <img
-          src="/images/farm/lavender-banner.jpeg"
+        <Image
+          src="/images/farm/lavender-banner.jpg"
           alt="Lavender fields"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-black bg-opacity-30 flex items-center justify-center">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider px-4">
@@ -112,28 +113,26 @@ export default function Farm() {
       {/* Farm Sections Grid */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {farmSections.map((section) => (
-              <div key={section.title} className="bg-white border border-gray-200 overflow-hidden h-[300px] sm:h-[280px]">
-                <div className="grid grid-cols-1 sm:grid-cols-2 h-full">
-                  {/* Image */}
-                  <div className="relative h-48 sm:h-full">
-                    <Image
-                      src={section.image}
-                      alt={section.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
-                  {/* Text */}
-                  <div className="bg-gray-800 text-white p-6 flex flex-col justify-start overflow-y-auto">
-                    <h3 className="text-lg font-bold mb-3 tracking-wide">
-                      {section.title}
-                    </h3>
-                    <p className="text-sm leading-relaxed text-gray-200">
-                      {section.description}
-                    </p>
-                  </div>
+              <div key={section.title} className="bg-white overflow-hidden flex flex-col sm:flex-row h-auto sm:h-[240px]">
+                {/* Image */}
+                <div className="relative w-full sm:w-[180px] h-[200px] sm:h-full flex-shrink-0">
+                  <Image
+                    src={section.image}
+                    alt={section.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                {/* Text */}
+                <div className="bg-gray-800 text-white p-6 flex flex-col justify-start flex-grow">
+                  <h3 className="text-base font-bold mb-3 tracking-wider uppercase">
+                    {section.title}
+                  </h3>
+                  <p className="text-xs leading-relaxed text-gray-200">
+                    {section.description}
+                  </p>
                 </div>
               </div>
             ))}

@@ -1,14 +1,17 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function SaltCedarBnB() {
   return (
     <>
       {/* Hero Section with Building */}
       <section className="relative h-[400px] md:h-[500px]">
-        <img
-          src="/images/saltandcedar/building.jpeg"
+        <Image
+          src="/images/saltandcedar/building-fixed.jpeg"
           alt="Salt & Cedar Bed and Breakfast"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
+          priority
         />
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </section>
@@ -17,7 +20,7 @@ export default function SaltCedarBnB() {
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
           <p className="text-gray-700 leading-relaxed mb-8">
-            Overlooking acres and acres of lavender fields, The Salt & Cedar Bed and Breakfast sits high on the bluffs overlooking the Strait of Juan de Fuca. Guests are greeted by a contemporary and stylish, yet warm and inviting atmosphere. In the quiet corner of our property, and views of the farm, creates a uniquely special Washington State Getaway. With only eight rooms, our intimate boutique inn provides you a personalized experience to remember. Come, stay awhile and enjoy.
+            Nestled on the scenic high bluffs just east of Port Angeles, Washington, our Bed & Breakfast boasts breathtaking 360-degree views of the majestic Olympic Mountain Range and the Strait of Juan de Fuca. Guests are treated to unparalleled vistas of the Dungeness Spit and Victoria, BC, all from the comfort of our idyllic location. Situated adjacent to the Olympic Bluffs Cidery & Lavender Farm, our guests have the opportunity to explore the orchards and lavender fields at their leisure.
           </p>
           <a
             href="https://www.saltandcedarnb.com"
@@ -25,7 +28,7 @@ export default function SaltCedarBnB() {
             rel="noopener noreferrer"
             className="inline-block bg-sage-500 text-white px-8 py-3 rounded-md hover:bg-sage-600 transition-colors text-sm font-medium tracking-wide"
           >
-            LEARN MORE
+            MORE INFO
           </a>
         </div>
       </section>
@@ -37,10 +40,10 @@ export default function SaltCedarBnB() {
             A PACIFIC NORTHWEST EXPERIENCE
           </h2>
           <h3 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6">
-            Engagements & Wedding Events
+            Elopements & Wedding Events
           </h3>
           <p className="text-gray-700 leading-relaxed mb-8">
-            Looking for a PRIVATE intimate and elegant setting close to Port Angeles and the Sequim Valley for your engagement, wedding or special event? We can offer a beautiful setting with views and exclusive use of the property. Our property includes a beautiful great room, a commercial kitchen, 8 guest rooms and outdoor spaces overlooking fields and mountains. With only 8 bedrooms, we can accommodate smaller groups and offer a more personalized and intimate experience for your guests. Contact us to discuss your special day.
+            In collaboration with Goat & Radish Catering and Jean Lenke Music, as well as a comprehensive network of skilled local wedding service providers, we are dedicated to making your special occasion unforgettable. Our complimentary wedding planning consultation and customizable wedding packages are designed to ensure your dream day is realized. A Salt & Cedar Wedding Experience Package is awaiting for you! Contact us for a tour and consultation.
           </p>
           <a
             href="https://www.saltandcedarnb.com"
@@ -48,17 +51,18 @@ export default function SaltCedarBnB() {
             rel="noopener noreferrer"
             className="inline-block bg-sage-500 text-white px-8 py-3 rounded-md hover:bg-sage-600 transition-colors text-sm font-medium tracking-wide"
           >
-            LEARN MORE
+            CONTACT US
           </a>
         </div>
       </section>
 
       {/* Bottom Image Section */}
       <section className="relative h-[300px] md:h-[400px]">
-        <img
+        <Image
           src="/images/saltandcedar/chairs.jpg"
           alt="Lavender fields view with chairs"
-          className="absolute inset-0 w-full h-full object-cover"
+          fill
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-black bg-opacity-20"></div>
       </section>
