@@ -22,7 +22,7 @@ export default function SaltCedarBnB() {
             Nestled on the scenic high bluffs just east of Port Angeles, Washington, our Bed & Breakfast boasts breathtaking 360-degree views of the majestic Olympic Mountain Range and the Strait of Juan de Fuca. Guests are treated to unparalleled vistas of the Dungeness Spit and Victoria, BC, all from the comfort of our idyllic location. Situated adjacent to the Olympic Bluffs Cidery & Lavender Farm, our guests have the opportunity to explore the orchards and lavender fields at their leisure.
           </p>
           <a
-            href="https://www.saltandcedarnb.com"
+            href="https://www.saltandcedarbedandbreakfast.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-sage-500 text-white px-8 py-3 rounded-md hover:bg-sage-600 transition-colors text-sm font-medium tracking-wide"
@@ -45,7 +45,7 @@ export default function SaltCedarBnB() {
             In collaboration with Goat & Radish Catering and Jean Lenke Music, as well as a comprehensive network of skilled local wedding service providers, we are dedicated to making your special occasion unforgettable. Our complimentary wedding planning consultation and customizable wedding packages are designed to ensure your dream day is realized. A Salt & Cedar Wedding Experience Package is awaiting for you! Contact us for a tour and consultation.
           </p>
           <a
-            href="https://www.saltandcedarnb.com"
+            href="https://www.saltandcedarbedandbreakfast.com/"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-block bg-sage-500 text-white px-8 py-3 rounded-md hover:bg-sage-600 transition-colors text-sm font-medium tracking-wide"
