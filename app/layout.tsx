@@ -3,6 +3,7 @@ import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { CartProvider } from "@/components/shop/CartProvider";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -11,8 +12,8 @@ const openSans = Open_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Olympic Bluffs Cidery - Premium Craft Ciders",
-  description: "Crafting premium ciders with passion and tradition in Port Townsend, Washington",
+  title: "Olympic Bluffs Cidery & Lavender Farm",
+  description: "Craft ciders, lavender products, and farm experiences on the Olympic Peninsula, Washington",
   icons: {
     icon: '/fav.png',
   },
@@ -28,9 +29,11 @@ export default function RootLayout({
       <body
         className={`${openSans.variable} antialiased font-sans`}
       >
-        <Header />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
+        <CartProvider>
+          <Header />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   );

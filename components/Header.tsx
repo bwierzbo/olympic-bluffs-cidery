@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import CartIcon from './shop/CartIcon';
+import Cart from './shop/Cart';
 
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -11,7 +13,7 @@ export default function Header() {
 
   const navigation = [
     { name: 'HOME', href: '/' },
-    { name: 'SHOP', href: 'https://olympic-bluffs-lavender-farm.square.site/' },
+    { name: 'SHOP', href: '/products' },
     { name: 'HOURS & LOCATION', href: '/contact' },
     { name: 'ON THE FARM', href: '/farm' },
     { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
@@ -58,28 +60,34 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="lg:hidden">
-            <button
-              type="button"
-              className="rounded-md p-2 text-white"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <span className="sr-only">Open menu</span>
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
+          {/* Cart and Mobile menu buttons */}
+          <div className="flex items-center gap-2">
+            {/* Cart Icon - visible on all screen sizes */}
+            <CartIcon />
+
+            {/* Mobile menu button */}
+            <div className="lg:hidden">
+              <button
+                type="button"
+                className="rounded-md p-2 text-white"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                />
-              </svg>
-            </button>
+                <span className="sr-only">Open menu</span>
+                <svg
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -105,6 +113,9 @@ export default function Header() {
           </div>
         )}
       </nav>
+
+      {/* Shopping Cart Sidebar */}
+      <Cart />
     </header>
   );
 }
