@@ -70,6 +70,18 @@ export async function POST(request: NextRequest) {
   } catch (error: any) {
     console.error('Payment processing error:', error);
 
+    // Check if this is a declined payment (has payment object with FAILED status)
+    if (error.body && error.body.payment && error.body.payment.status === 'FAILED') {
+      // Payment was declined but processed - return as failed
+      return NextResponse.json(
+        {
+          success: false,
+          error: error.errors?.[0]?.detail || 'Card declined. Please try a different payment method.',
+        },
+        { status: 400 }
+      );
+    }
+
     // Extract error message from Square API error
     let errorMessage = 'Payment failed. Please try again.';
     if (error.errors && error.errors.length > 0) {
