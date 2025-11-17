@@ -34,13 +34,14 @@ export default function CheckoutPage() {
   const [payments, setPayments] = useState<any>(null);
   const cardInstanceRef = useRef<any>(null);
   const isInitializingRef = useRef(false);
+  const isProcessingPayment = useRef(false);
 
   const shippingCost = fulfillmentMethod === 'shipping' ? 1000 : 0; // $10 shipping
   const total = totalAmount + shippingCost;
 
-  // Redirect if cart is empty
+  // Redirect if cart is empty (but not during payment processing)
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !isProcessingPayment.current) {
       router.push('/products');
     }
   }, [items, router]);
@@ -173,6 +174,7 @@ export default function CheckoutPage() {
 
     setIsLoading(true);
     setError('');
+    isProcessingPayment.current = true;
 
     try {
       // Tokenize card details
@@ -222,15 +224,19 @@ export default function CheckoutPage() {
           // Clear cart and redirect to success page
           clearCart();
           router.push(`/products/success?orderId=${data.orderId}`);
+          // Keep isProcessingPayment.current = true to prevent redirect back to /products
         } else {
           setError(data.error || 'Payment failed. Please try again.');
+          isProcessingPayment.current = false;
         }
       } else {
         setError('Failed to process card. Please check your card details.');
+        isProcessingPayment.current = false;
       }
     } catch (err) {
       console.error('Payment error:', err);
       setError('An error occurred. Please try again.');
+      isProcessingPayment.current = false;
     } finally {
       setIsLoading(false);
     }
