@@ -47,6 +47,11 @@ export default function CheckoutPage() {
 
   // Initialize Square Web Payments SDK
   useEffect(() => {
+    // Don't initialize if cart is empty
+    if (items.length === 0) {
+      return;
+    }
+
     // Prevent duplicate initialization
     if (isInitializingRef.current) {
       return;
