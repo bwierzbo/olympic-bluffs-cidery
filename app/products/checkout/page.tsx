@@ -85,6 +85,12 @@ export default function CheckoutPage() {
           return;
         }
 
+        // Check if card is already initialized
+        if (cardInstanceRef.current) {
+          console.log('Card already initialized, skipping...');
+          return;
+        }
+
         const paymentsInstance = window.Square.payments(
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!,
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
@@ -93,15 +99,6 @@ export default function CheckoutPage() {
 
         // Clear the container before attaching
         container.innerHTML = '';
-
-        // Destroy existing card instance if any
-        if (cardInstanceRef.current) {
-          try {
-            await cardInstanceRef.current.destroy();
-          } catch (e) {
-            console.log('Error destroying previous card instance:', e);
-          }
-        }
 
         const cardInstance = await paymentsInstance.card();
         await cardInstance.attach('#card-container');
