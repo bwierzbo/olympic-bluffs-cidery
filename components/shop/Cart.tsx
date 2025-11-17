@@ -25,7 +25,8 @@ export default function Cart() {
     <>
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
+        className="fixed inset-0 z-40"
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
         onClick={closeCart}
       />
 
