@@ -29,20 +29,26 @@ export default function Header() {
     <header className="bg-sage-500 sticky top-0 z-50">
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Top">
         {/* Desktop Navigation */}
-        <div className="hidden lg:flex lg:items-center lg:justify-center lg:py-3 lg:gap-1">
-          {navigation.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className={`text-sm font-bold transition-colors tracking-wide px-4 py-px text-white border-t border-b ${
-                isActive(link.href)
-                  ? 'border-gray-400'
-                  : 'border-white/60 hover:border-white'
-              }`}
-            >
-              {link.name}
-            </Link>
-          ))}
+        <div className="hidden lg:flex lg:items-center lg:justify-between lg:py-3">
+          <div className="flex items-center gap-1 flex-1 justify-center">
+            {navigation.map((link) => (
+              <Link
+                key={link.name}
+                href={link.href}
+                className={`text-sm font-bold transition-colors tracking-wide px-4 py-px text-white border-t border-b ${
+                  isActive(link.href)
+                    ? 'border-gray-400'
+                    : 'border-white/60 hover:border-white'
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+          {/* Cart Icon - Desktop only, far right */}
+          <div className="ml-4">
+            <CartIcon />
+          </div>
         </div>
 
         {/* Logo Section */}
@@ -60,34 +66,32 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Cart and Mobile menu buttons */}
-          <div className="flex items-center gap-2">
-            {/* Cart Icon - visible on all screen sizes */}
+          {/* Mobile menu and cart buttons */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {/* Cart Icon - Mobile only */}
             <CartIcon />
 
             {/* Mobile menu button */}
-            <div className="lg:hidden">
-              <button
-                type="button"
-                className="rounded-md p-2 text-white"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            <button
+              type="button"
+              className="rounded-md p-2 text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              <span className="sr-only">Open menu</span>
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
               >
-                <span className="sr-only">Open menu</span>
-                <svg
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-                  />
-                </svg>
-              </button>
-            </div>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </button>
           </div>
         </div>
 
