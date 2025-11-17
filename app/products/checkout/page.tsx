@@ -12,6 +12,9 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Generate a unique mount key to force remount on each checkout visit
+  const [mountKey] = useState(() => Date.now());
+
   // Customer Info
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -35,6 +38,7 @@ export default function CheckoutPage() {
   const cardInstanceRef = useRef<any>(null);
   const isInitializingRef = useRef(false);
   const isProcessingPayment = useRef(false);
+  const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const shippingCost = fulfillmentMethod === 'shipping' ? 1000 : 0; // $10 shipping
   const total = totalAmount + shippingCost;
@@ -75,13 +79,9 @@ export default function CheckoutPage() {
         // Check if the card container element exists
         const container = document.getElementById('card-container');
         if (!container) {
-          console.error('Card container not found, retrying...');
+          console.warn('Card container not found');
           isInitializingRef.current = false;
-          // Retry after a short delay to ensure DOM is ready
-          setTimeout(() => {
-            isInitializingRef.current = false;
-            initSquare();
-          }, 100);
+          setError('Payment form not ready. Please refresh the page.');
           return;
         }
 
@@ -130,16 +130,22 @@ export default function CheckoutPage() {
       document.body.appendChild(scriptElement);
     } else {
       // Script exists but may not be loaded yet, wait for it
-      const checkSquareLoaded = setInterval(() => {
+      checkIntervalRef.current = setInterval(() => {
         if (window.Square) {
-          clearInterval(checkSquareLoaded);
+          if (checkIntervalRef.current) {
+            clearInterval(checkIntervalRef.current);
+            checkIntervalRef.current = null;
+          }
           initSquare();
         }
       }, 100);
 
       // Timeout after 10 seconds
       setTimeout(() => {
-        clearInterval(checkSquareLoaded);
+        if (checkIntervalRef.current) {
+          clearInterval(checkIntervalRef.current);
+          checkIntervalRef.current = null;
+        }
         if (!window.Square) {
           setError('Failed to load payment system. Please refresh the page.');
           isInitializingRef.current = false;
@@ -157,6 +163,13 @@ export default function CheckoutPage() {
         }
         cardInstanceRef.current = null;
       }
+
+      // Cleanup interval
+      if (checkIntervalRef.current) {
+        clearInterval(checkIntervalRef.current);
+        checkIntervalRef.current = null;
+      }
+
       isInitializingRef.current = false;
     };
   }, []);
@@ -244,7 +257,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="bg-gray-50 min-h-screen py-12">
+    <div key={mountKey} className="bg-gray-50 min-h-screen py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Link
