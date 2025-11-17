@@ -72,11 +72,23 @@ export async function POST(request: NextRequest) {
 
     // Check if this is a declined payment (has payment object with FAILED status)
     if (error.body && error.body.payment && error.body.payment.status === 'FAILED') {
-      // Payment was declined but processed - return as failed
+      // Payment was declined but processed - return as failed with user-friendly message
+      const errorCode = error.errors?.[0]?.code;
+      let userMessage = 'Your card was declined. Please try a different payment method.';
+
+      // Customize message based on error code
+      if (errorCode === 'INSUFFICIENT_FUNDS') {
+        userMessage = 'Insufficient funds. Please try a different card.';
+      } else if (errorCode === 'CVV_FAILURE') {
+        userMessage = 'Invalid CVV. Please check your card details.';
+      } else if (errorCode === 'INVALID_EXPIRATION') {
+        userMessage = 'Invalid expiration date. Please check your card details.';
+      }
+
       return NextResponse.json(
         {
           success: false,
-          error: error.errors?.[0]?.detail || 'Card declined. Please try a different payment method.',
+          error: userMessage,
         },
         { status: 400 }
       );
