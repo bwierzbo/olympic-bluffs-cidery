@@ -1,14 +1,5 @@
 import { SquareClient, SquareEnvironment } from 'square';
 
-// BigInt serialization fix for Square SDK
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-if (typeof (BigInt.prototype as any).toJSON === 'undefined') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (BigInt.prototype as any).toJSON = function () {
-    return this.toString();
-  };
-}
-
 // Initialize Square client for server-side operations
 export const squareClient = new SquareClient({
   token: process.env.SQUARE_ACCESS_TOKEN || '',
