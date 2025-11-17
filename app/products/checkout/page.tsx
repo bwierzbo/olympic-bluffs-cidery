@@ -66,6 +66,19 @@ export default function CheckoutPage() {
       isInitializingRef.current = true;
 
       try {
+        // Check if the card container element exists
+        const container = document.getElementById('card-container');
+        if (!container) {
+          console.error('Card container not found, retrying...');
+          isInitializingRef.current = false;
+          // Retry after a short delay to ensure DOM is ready
+          setTimeout(() => {
+            isInitializingRef.current = false;
+            initSquare();
+          }, 100);
+          return;
+        }
+
         const paymentsInstance = window.Square.payments(
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!,
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
@@ -73,10 +86,7 @@ export default function CheckoutPage() {
         setPayments(paymentsInstance);
 
         // Clear the container before attaching
-        const container = document.getElementById('card-container');
-        if (container) {
-          container.innerHTML = '';
-        }
+        container.innerHTML = '';
 
         // Destroy existing card instance if any
         if (cardInstanceRef.current) {
