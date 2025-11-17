@@ -1,0 +1,112 @@
+[
+  {
+    "id": "liquid-sunshine-shimmer",
+    "name": "Liquid Sunshine Sun Got a Shimmer - Roller Ball",
+    "type": "Skincare",
+    "description": "Soothing lavender roller ball perfect for on-the-go relaxation. Shimmer formula adds a subtle glow.",
+    "price": 1200,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Skincare"
+  },
+  {
+    "id": "lavender-sachet",
+    "name": "Lavender Sachet",
+    "type": "Home Goods",
+    "description": "Filled with dried lavender from our fields. Perfect for drawers, closets, or under your pillow for restful sleep.",
+    "price": 800,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Home & Fragrance"
+  },
+  {
+    "id": "lavender-candle",
+    "name": "Lavender Candle",
+    "type": "Home Goods",
+    "description": "Hand-poured candle infused with pure lavender essential oil. Creates a calming ambiance in any room.",
+    "price": 1800,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Home & Fragrance"
+  },
+  {
+    "id": "tea-towel-lavender",
+    "name": "Lavender Tea Towel",
+    "type": "Home Goods",
+    "description": "100% cotton tea towel featuring Olympic Bluffs lavender design. Functional and decorative.",
+    "price": 1500,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Home & Kitchen"
+  },
+  {
+    "id": "lavender-herb-blend",
+    "name": "Lavender Herb Blend",
+    "type": "Culinary",
+    "description": "Culinary lavender blend perfect for baking, cooking, and beverages. Grown and dried on our farm.",
+    "price": 1000,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Culinary"
+  },
+  {
+    "id": "local-honey",
+    "name": "Olympic Bluffs Honey",
+    "type": "Culinary",
+    "description": "Raw, unfiltered honey from our apiary. Our bees pollinate the lavender fields and orchard.",
+    "price": 1400,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Culinary"
+  },
+  {
+    "id": "cashew-delight",
+    "name": "Cashew Delight",
+    "type": "Skincare",
+    "description": "Luxurious cashew and lavender body butter. Deeply moisturizing and naturally scented.",
+    "price": 1600,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Skincare"
+  },
+  {
+    "id": "dry-skin-repair",
+    "name": "Dry Skin Repair",
+    "type": "Skincare",
+    "description": "Intensive repair balm for dry, cracked skin. Made with lavender oil and nourishing botanicals.",
+    "price": 1500,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Skincare"
+  },
+  {
+    "id": "lavender-magnets",
+    "name": "Lavender Farm Magnets",
+    "type": "Souvenirs",
+    "description": "Collectible magnets featuring Olympic Bluffs lavender farm imagery.",
+    "price": 600,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Gifts & Souvenirs"
+  },
+  {
+    "id": "lavender-stickers",
+    "name": "Lavender Sticker Set",
+    "type": "Souvenirs",
+    "description": "Set of weather-resistant stickers with lavender and farm designs.",
+    "price": 500,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Gifts & Souvenirs"
+  },
+  {
+    "id": "essential-oil-lavender",
+    "name": "Pure Lavender Essential Oil",
+    "type": "Essential Oils",
+    "description": "100% pure lavender essential oil distilled from our farm-grown lavender. 10ml bottle.",
+    "price": 2000,
+    "image": "/images/products/placeholder-lavender.svg",
+    "inStock": true,
+    "category": "Essential Oils"
+  }
+]

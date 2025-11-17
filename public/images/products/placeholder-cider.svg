@@ -1,0 +1,30 @@
+<svg width="400" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="600" fill="#8B9E7E"/>
+
+  <!-- Bottle shape -->
+  <g>
+    <!-- Neck -->
+    <rect x="160" y="80" width="80" height="120" fill="#4A5D3F" rx="5"/>
+    <!-- Body -->
+    <ellipse cx="200" cy="200" rx="90" ry="20" fill="#4A5D3F"/>
+    <rect x="110" y="200" width="180" height="280" fill="#4A5D3F"/>
+    <ellipse cx="200" cy="480" rx="90" ry="20" fill="#3A4D2F"/>
+
+    <!-- Cap -->
+    <rect x="155" y="60" width="90" height="25" fill="#2F3E25" rx="3"/>
+
+    <!-- Label -->
+    <rect x="130" y="280" width="140" height="100" fill="#F5F5DC" rx="5"/>
+    <text x="200" y="320" font-family="Arial, sans-serif" font-size="16" font-weight="bold" text-anchor="middle" fill="#4A5D3F">Olympic Bluffs</text>
+    <text x="200" y="345" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#4A5D3F">Cidery</text>
+
+    <!--Apple icon -->
+    <circle cx="200" cy="358" r="8" fill="#B84A3F"/>
+    <line x1="200" y1="350" x2="200" y2="355" stroke="#4A5D3F" stroke-width="1.5"/>
+  </g>
+
+  <!-- Product Image Text -->
+  <text x="200" y="550" font-family="Arial, sans-serif" font-size="14" text-anchor="middle" fill="#F5F5DC">Product Image</text>
+  <text x="200" y="570" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#F5F5DC">Coming Soon</text>
+</svg>
