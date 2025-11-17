@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create payment with Square
-    const { result, statusCode } = await squareClient.paymentsApi.createPayment({
+    const result = await squareClient.payments.create({
       sourceId,
       idempotencyKey: randomUUID(),
       amountMoney: {
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       }),
     });
 
-    if (statusCode === 200 && result.payment) {
+    if (result.payment) {
       // Payment successful
       const orderId = result.payment.id || randomUUID();
 
@@ -62,7 +62,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Payment was not successful',
+          error: result.errors?.[0]?.detail || 'Payment was not successful',
         },
         { status: 400 }
       );

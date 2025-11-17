@@ -2,8 +2,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 
 export default function Footer() {
-  const currentYear = new Date().getFullYear();
-
   return (
     <footer className="bg-sage-600 text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -34,7 +32,7 @@ export default function Footer() {
         </div>
 
         {/* Logo */}
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-center mb-6">
           <Image
             src="/images/logo-square.png"
             alt="Olympic Bluffs Cidery & Lavender Farm"
@@ -44,10 +42,30 @@ export default function Footer() {
           />
         </div>
 
+        {/* Navigation Links */}
+        <nav className="flex justify-center gap-8 mb-6">
+          <Link href="/" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+            Home
+          </Link>
+          <Link href="/products" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+            Shop
+          </Link>
+          <Link href="/about" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+            More
+          </Link>
+        </nav>
+
+        {/* Address */}
+        <div className="text-center mb-4">
+          <p className="text-white text-sm">
+            1025 Finn Hall Road, Port Angeles, WA 98362
+          </p>
+        </div>
+
         {/* Copyright */}
         <div className="text-center">
-          <p className="text-xs text-sage-200">
-            {currentYear} | Sun Bluff Brews. Wix. Digital. wix editor
+          <p className="text-xs text-sage-300">
+            Olympic Bluffs Cidery @2020
           </p>
         </div>
       </div>

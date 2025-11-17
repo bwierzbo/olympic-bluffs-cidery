@@ -1,19 +1,21 @@
-import { Client, Environment } from 'square';
+import { SquareClient, SquareEnvironment } from 'square';
 
 // BigInt serialization fix for Square SDK
-if (typeof BigInt.prototype.toJSON === 'undefined') {
-  BigInt.prototype.toJSON = function () {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+if (typeof (BigInt.prototype as any).toJSON === 'undefined') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (BigInt.prototype as any).toJSON = function () {
     return this.toString();
   };
 }
 
 // Initialize Square client for server-side operations
-export const squareClient = new Client({
-  accessToken: process.env.SQUARE_ACCESS_TOKEN || '',
+export const squareClient = new SquareClient({
+  token: process.env.SQUARE_ACCESS_TOKEN || '',
   environment:
     process.env.SQUARE_ENVIRONMENT === 'production'
-      ? Environment.Production
-      : Environment.Sandbox,
+      ? SquareEnvironment.Production
+      : SquareEnvironment.Sandbox,
 });
 
 // Square configuration for client-side

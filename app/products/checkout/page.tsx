@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/components/shop/CartProvider';
 import OrderSummary from '@/components/shop/OrderSummary';
@@ -28,12 +28,12 @@ export default function CheckoutPage() {
   const [state, setState] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
-  // Age verification
-  const [ageVerified, setAgeVerified] = useState(false);
 
   // Square Payment
   const [card, setCard] = useState<any>(null);
   const [payments, setPayments] = useState<any>(null);
+  const cardInstanceRef = useRef<any>(null);
+  const isInitializingRef = useRef(false);
 
   const shippingCost = fulfillmentMethod === 'shipping' ? 1000 : 0; // $10 shipping
   const total = totalAmount + shippingCost;
@@ -47,12 +47,23 @@ export default function CheckoutPage() {
 
   // Initialize Square Web Payments SDK
   useEffect(() => {
+    // Prevent duplicate initialization
+    if (isInitializingRef.current) {
+      return;
+    }
+
     const initSquare = async () => {
       if (!window.Square) {
         console.error('Square.js failed to load');
         setError('Payment system failed to load. Please refresh the page.');
         return;
       }
+
+      // Prevent duplicate initialization
+      if (isInitializingRef.current) {
+        return;
+      }
+      isInitializingRef.current = true;
 
       try {
         const paymentsInstance = window.Square.payments(
@@ -61,39 +72,86 @@ export default function CheckoutPage() {
         );
         setPayments(paymentsInstance);
 
+        // Clear the container before attaching
+        const container = document.getElementById('card-container');
+        if (container) {
+          container.innerHTML = '';
+        }
+
+        // Destroy existing card instance if any
+        if (cardInstanceRef.current) {
+          try {
+            await cardInstanceRef.current.destroy();
+          } catch (e) {
+            console.log('Error destroying previous card instance:', e);
+          }
+        }
+
         const cardInstance = await paymentsInstance.card();
         await cardInstance.attach('#card-container');
+        cardInstanceRef.current = cardInstance;
         setCard(cardInstance);
       } catch (e) {
         console.error('Failed to initialize Square payments:', e);
         setError('Failed to load payment form. Please refresh the page.');
+        isInitializingRef.current = false;
       }
     };
 
     // Load Square.js script
-    const script = document.createElement('script');
-    script.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
-    script.async = true;
-    script.onload = () => initSquare();
-    script.onerror = () => {
-      setError('Failed to load payment system. Please check your internet connection.');
-    };
-    document.body.appendChild(script);
+    const existingScript = document.querySelector('script[src*="square.js"]');
+
+    if (window.Square) {
+      // Square is already loaded
+      initSquare();
+    } else if (!existingScript) {
+      // Script doesn't exist, create it
+      const scriptElement = document.createElement('script');
+      scriptElement.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
+      scriptElement.async = true;
+      scriptElement.onload = () => initSquare();
+      scriptElement.onerror = () => {
+        setError('Failed to load payment system. Please check your internet connection.');
+        isInitializingRef.current = false;
+      };
+      document.body.appendChild(scriptElement);
+    } else {
+      // Script exists but may not be loaded yet, wait for it
+      const checkSquareLoaded = setInterval(() => {
+        if (window.Square) {
+          clearInterval(checkSquareLoaded);
+          initSquare();
+        }
+      }, 100);
+
+      // Timeout after 10 seconds
+      setTimeout(() => {
+        clearInterval(checkSquareLoaded);
+        if (!window.Square) {
+          setError('Failed to load payment system. Please refresh the page.');
+          isInitializingRef.current = false;
+        }
+      }, 10000);
+    }
 
     return () => {
-      document.body.removeChild(script);
+      // Cleanup card instance
+      if (cardInstanceRef.current) {
+        try {
+          cardInstanceRef.current.destroy();
+        } catch (e) {
+          console.log('Error during cleanup:', e);
+        }
+        cardInstanceRef.current = null;
+      }
+      isInitializingRef.current = false;
     };
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!ageVerified) {
-      setError('Please verify that you are 21 years or older.');
-      return;
-    }
-
-    if (!card) {
+    if (!cardInstanceRef.current) {
       setError('Payment form not ready. Please try again.');
       return;
     }
@@ -103,7 +161,7 @@ export default function CheckoutPage() {
 
     try {
       // Tokenize card details
-      const result = await card.tokenize();
+      const result = await cardInstanceRef.current.tokenize();
 
       if (result.status === 'OK') {
         // Send payment to server
@@ -384,21 +442,7 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Payment Information
                 </h2>
-                <div id="card-container" className="mb-4"></div>
-
-                {/* Age Verification */}
-                <label className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-md">
-                  <input
-                    type="checkbox"
-                    required
-                    checked={ageVerified}
-                    onChange={(e) => setAgeVerified(e.target.checked)}
-                    className="mt-1"
-                  />
-                  <span className="text-sm text-gray-700">
-                    I certify that I am 21 years of age or older. *
-                  </span>
-                </label>
+                <div id="card-container"></div>
               </div>
             </div>
 
