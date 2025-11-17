@@ -1,13 +1,32 @@
+'use client';
+
+import { useState, useMemo } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
 import products from '@/data/products.json';
 import { Product } from '@/lib/types';
 
 export default function ProductsPage() {
+  const [searchTerm, setSearchTerm] = useState('');
   const typedProducts = products as Product[];
 
-  // Group products by category
+  // Filter products based on search term
+  const filteredProducts = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return typedProducts;
+    }
+
+    const searchLower = searchTerm.toLowerCase();
+    return typedProducts.filter(
+      (product) =>
+        product.name.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower) ||
+        product.category?.toLowerCase().includes(searchLower)
+    );
+  }, [searchTerm, typedProducts]);
+
+  // Group filtered products by category
   const categories = Array.from(
-    new Set(typedProducts.map((p) => p.category).filter(Boolean))
+    new Set(filteredProducts.map((p) => p.category).filter(Boolean))
   );
 
   return (
@@ -29,20 +48,119 @@ export default function ProductsPage() {
       {/* Products Grid */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* All Products */}
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">
-              All Products
-            </h2>
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {typedProducts.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
+          {/* Search Bar */}
+          <div className="mb-8">
+            <div className="relative max-w-md">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg
+                  className="h-5 w-5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="2"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                  />
+                </svg>
+              </div>
+              <input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search products..."
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-sage-500 focus:border-sage-500"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              )}
             </div>
+            {searchTerm && (
+              <p className="mt-2 text-sm text-gray-600">
+                {filteredProducts.length} product{filteredProducts.length !== 1 ? 's' : ''} found
+              </p>
+            )}
           </div>
 
+          {/* No Results Message */}
+          {filteredProducts.length === 0 && (
+            <div className="text-center py-12">
+              <svg
+                className="mx-auto h-12 w-12 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+              <h3 className="mt-2 text-lg font-medium text-gray-900">No products found</h3>
+              <p className="mt-1 text-sm text-gray-500">
+                Try adjusting your search to find what you&apos;re looking for.
+              </p>
+              <button
+                onClick={() => setSearchTerm('')}
+                className="mt-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-sage-500 hover:bg-sage-600"
+              >
+                Clear search
+              </button>
+            </div>
+          )}
+
+          {/* All Products */}
+          {filteredProducts.length > 0 && !searchTerm && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                All Products
+              </h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Search Results */}
+          {filteredProducts.length > 0 && searchTerm && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                Search Results
+              </h2>
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* Products by Category */}
-          {categories.length > 0 && (
+          {categories.length > 0 && !searchTerm && (
             <div className="mt-16">
               <h2 className="text-2xl font-bold text-gray-900 mb-8">
                 Shop by Category
