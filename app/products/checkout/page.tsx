@@ -229,6 +229,7 @@ export default function CheckoutPage() {
         });
 
         const data = await response.json();
+        console.log('Payment response:', data);
 
         if (data.success) {
           // Clear cart and redirect to success page
@@ -236,17 +237,22 @@ export default function CheckoutPage() {
           router.push(`/products/success?orderId=${data.orderId}`);
           // Keep isProcessingPayment.current = true to prevent redirect back to /products
         } else {
+          console.log('Setting error:', data.error);
           setError(data.error || 'Payment failed. Please try again.');
           isProcessingPayment.current = false;
+          // Scroll to top to show error message
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       } else {
         setError('Failed to process card. Please check your card details.');
         isProcessingPayment.current = false;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     } catch (err) {
       console.error('Payment error:', err);
       setError('An error occurred. Please try again.');
       isProcessingPayment.current = false;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setIsLoading(false);
     }
