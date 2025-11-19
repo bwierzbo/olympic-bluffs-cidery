@@ -1,28 +1,52 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
-import products from '@/data/products.json';
 import { Product } from '@/lib/types';
 
 export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const typedProducts = products as Product[];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch products from Square on mount
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const response = await fetch('/api/products');
+        const data = await response.json();
+
+        if (data.success) {
+          setProducts(data.products);
+        } else {
+          setError(data.error || 'Failed to load products');
+        }
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchProducts();
+  }, []);
 
   // Filter products based on search term
   const filteredProducts = useMemo(() => {
     if (!searchTerm.trim()) {
-      return typedProducts;
+      return products;
     }
 
     const searchLower = searchTerm.toLowerCase();
-    return typedProducts.filter(
+    return products.filter(
       (product) =>
         product.name.toLowerCase().includes(searchLower) ||
         product.description.toLowerCase().includes(searchLower) ||
         product.category?.toLowerCase().includes(searchLower)
     );
-  }, [searchTerm, typedProducts]);
+  }, [searchTerm, products]);
 
   // Group filtered products by category
   const categories = Array.from(
@@ -48,8 +72,26 @@ export default function ProductsPage() {
       {/* Products Grid */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {/* Search Bar */}
-          <div className="mb-8">
+          {/* Loading State */}
+          {isLoading && (
+            <div className="text-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-sage-600 border-r-transparent"></div>
+              <p className="mt-4 text-gray-600">Loading products...</p>
+            </div>
+          )}
+
+          {/* Error State */}
+          {error && !isLoading && (
+            <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-md mb-6">
+              {error}
+            </div>
+          )}
+
+          {/* Products Content */}
+          {!isLoading && !error && (
+            <>
+              {/* Search Bar */}
+              <div className="mb-8">
             <div className="relative max-w-md">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
@@ -166,7 +208,7 @@ export default function ProductsPage() {
                 Shop by Category
               </h2>
               {categories.map((category) => {
-                const categoryProducts = typedProducts.filter(
+                const categoryProducts = filteredProducts.filter(
                   (p) => p.category === category
                 );
                 return (
@@ -183,6 +225,8 @@ export default function ProductsPage() {
                 );
               })}
             </div>
+          )}
+            </>
           )}
         </div>
       </section>
