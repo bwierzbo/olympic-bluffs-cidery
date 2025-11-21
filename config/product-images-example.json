@@ -1,0 +1,22 @@
+{
+  "comment": "Example configuration showing how to map product and variation images",
+  "instructions": "Images are stored in public/images/shop/ and mapped here using exact names from Square",
+  "imageDirectory": "shop",
+
+  "images": {
+    "Lavender Essential Oil": "lavender-essential-super.png",
+    "Bath Salts": "bath-salts-default.png"
+  },
+
+  "variationImages": {
+    "comment": "Map specific product variations to their own images",
+    "instructions": "Format: 'Product Name|Variation Name': 'image-file.png'",
+    "mappings": {
+      "Lavender Essential Oil|Small (10ml)": "lavender-oil-small.png",
+      "Lavender Essential Oil|Large (30ml)": "lavender-oil-large.png",
+      "Bath Salts|Lavender": "bath-salts-lavender.png",
+      "Bath Salts|Rose": "bath-salts-rose.png",
+      "Bath Salts|Eucalyptus": "bath-salts-eucalyptus.png"
+    }
+  }
+}

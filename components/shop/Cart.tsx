@@ -85,84 +85,101 @@ export default function Cart() {
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((item) => (
-                <div
-                  key={item.product.id}
-                  className="flex gap-4 p-4 border rounded-lg"
-                >
-                  {/* Product Image */}
-                  <div className="relative h-20 w-20 flex-shrink-0 bg-gray-100 rounded">
-                    <Image
-                      src={item.product.image || '/images/products/placeholder-lavender.svg'}
-                      alt={item.product.name}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
+              {items.map((item) => {
+                // Use variation price if available, otherwise product price
+                const itemPrice = item.selectedVariation?.price || item.product.price;
+                // Use variation image if available, otherwise product image
+                const itemImage = item.selectedVariation?.image || item.product.image || '/images/products/placeholder-lavender.svg';
+                // Create unique key combining product ID and variation ID
+                const cartItemKey = `${item.product.id}-${item.selectedVariation?.id || 'default'}`;
 
-                  {/* Product Info */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-gray-900 text-sm truncate">
-                      {item.product.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {formatPrice(item.product.price)}
-                    </p>
-
-                    {/* Quantity Controls */}
-                    <div className="flex items-center gap-2 mt-2">
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.product.id,
-                            item.quantity - 1
-                          )
-                        }
-                        className="h-8 w-8 flex items-center justify-center border rounded hover:bg-gray-100 transition-colors"
-                        aria-label="Decrease quantity"
-                      >
-                        −
-                      </button>
-                      <span className="w-12 text-center font-medium">
-                        {item.quantity}
-                      </span>
-                      <button
-                        onClick={() =>
-                          updateQuantity(
-                            item.product.id,
-                            item.quantity + 1
-                          )
-                        }
-                        className="h-8 w-8 flex items-center justify-center border rounded hover:bg-gray-100 transition-colors"
-                        aria-label="Increase quantity"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Remove Button */}
-                  <button
-                    onClick={() => removeFromCart(item.product.id)}
-                    className="self-start p-1 hover:bg-gray-100 rounded transition-colors"
-                    aria-label="Remove item"
+                return (
+                  <div
+                    key={cartItemKey}
+                    className="flex gap-4 p-4 border rounded-lg"
                   >
-                    <svg
-                      className="h-5 w-5 text-gray-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="2"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6 18L18 6M6 6l12 12"
+                    {/* Product Image */}
+                    <div className="relative h-20 w-20 flex-shrink-0 bg-gray-100 rounded">
+                      <Image
+                        src={itemImage}
+                        alt={item.selectedVariation ? `${item.product.name} - ${item.selectedVariation.name}` : item.product.name}
+                        fill
+                        className="object-cover rounded"
                       />
-                    </svg>
-                  </button>
-                </div>
-              ))}
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 text-sm truncate">
+                        {item.product.name}
+                      </h3>
+                      {/* Show variation name if selected */}
+                      {item.selectedVariation && (
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {item.selectedVariation.name}
+                        </p>
+                      )}
+                      <p className="text-sm text-gray-600 mt-1">
+                        {formatPrice(itemPrice)}
+                      </p>
+
+                      {/* Quantity Controls */}
+                      <div className="flex items-center gap-2 mt-2">
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.product.id,
+                              item.quantity - 1,
+                              item.selectedVariation?.id
+                            )
+                          }
+                          className="h-8 w-8 flex items-center justify-center border rounded hover:bg-gray-100 transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </button>
+                        <span className="w-12 text-center font-medium">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() =>
+                            updateQuantity(
+                              item.product.id,
+                              item.quantity + 1,
+                              item.selectedVariation?.id
+                            )
+                          }
+                          className="h-8 w-8 flex items-center justify-center border rounded hover:bg-gray-100 transition-colors"
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Remove Button */}
+                    <button
+                      onClick={() => removeFromCart(item.product.id, item.selectedVariation?.id)}
+                      className="self-start p-1 hover:bg-gray-100 rounded transition-colors"
+                      aria-label="Remove item"
+                    >
+                      <svg
+                        className="h-5 w-5 text-gray-500"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>

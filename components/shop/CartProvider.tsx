@@ -1,13 +1,13 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, CartItem } from '@/lib/types';
+import { Product, CartItem, ProductVariation } from '@/lib/types';
 
 interface CartContextType {
   items: CartItem[];
-  addToCart: (product: Product, quantity?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQuantity: (productId: string, quantity: number) => void;
+  addToCart: (product: Product, quantity?: number, variation?: ProductVariation) => void;
+  removeFromCart: (productId: string, variationId?: string) => void;
+  updateQuantity: (productId: string, quantity: number, variationId?: string) => void;
   clearCart: () => void;
   totalItems: number;
   totalAmount: number;
@@ -39,42 +39,55 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem('olympicBluffsCart', JSON.stringify(items));
   }, [items]);
 
-  const addToCart = (product: Product, quantity: number = 1) => {
+  const addToCart = (product: Product, quantity: number = 1, variation?: ProductVariation) => {
     setItems((currentItems) => {
+      // Find existing item by product ID and variation ID (if applicable)
       const existingItem = currentItems.find(
-        (item) => item.product.id === product.id
+        (item) =>
+          item.product.id === product.id &&
+          item.selectedVariation?.id === variation?.id
       );
 
       if (existingItem) {
-        // Update quantity if item exists
+        // Update quantity if exact match exists (same product + same variation)
         return currentItems.map((item) =>
-          item.product.id === product.id
+          item.product.id === product.id &&
+          item.selectedVariation?.id === variation?.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
       } else {
-        // Add new item
-        return [...currentItems, { product, quantity }];
+        // Add new item with selected variation
+        return [...currentItems, { product, quantity, selectedVariation: variation }];
       }
     });
     setIsOpen(true); // Open cart when item is added
   };
 
-  const removeFromCart = (productId: string) => {
+  const removeFromCart = (productId: string, variationId?: string) => {
     setItems((currentItems) =>
-      currentItems.filter((item) => item.product.id !== productId)
+      currentItems.filter(
+        (item) =>
+          !(
+            item.product.id === productId &&
+            item.selectedVariation?.id === variationId
+          )
+      )
     );
   };
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number, variationId?: string) => {
     if (quantity <= 0) {
-      removeFromCart(productId);
+      removeFromCart(productId, variationId);
       return;
     }
 
     setItems((currentItems) =>
       currentItems.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
+        item.product.id === productId &&
+        item.selectedVariation?.id === variationId
+          ? { ...item, quantity }
+          : item
       )
     );
   };
@@ -85,8 +98,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  // Calculate total using variation price if available, otherwise use product price
   const totalAmount = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => {
+      const itemPrice = item.selectedVariation?.price || item.product.price;
+      return sum + itemPrice * item.quantity;
+    },
     0
   );
 

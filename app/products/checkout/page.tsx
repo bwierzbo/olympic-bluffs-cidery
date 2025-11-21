@@ -21,6 +21,11 @@ export default function CheckoutPage() {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
 
+  // Check if cart contains cider products (shipping not available for cider)
+  const hasCiderInCart = items.some(item =>
+    item.product.category?.toLowerCase().includes('cider')
+  );
+
   // Fulfillment
   const [fulfillmentMethod, setFulfillmentMethod] = useState<'pickup' | 'shipping'>('pickup');
 
@@ -31,6 +36,12 @@ export default function CheckoutPage() {
   const [state, setState] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
+  // Force pickup method if cart contains cider
+  useEffect(() => {
+    if (hasCiderInCart && fulfillmentMethod === 'shipping') {
+      setFulfillmentMethod('pickup');
+    }
+  }, [hasCiderInCart, fulfillmentMethod]);
 
   // Square Payment
   const [card, setCard] = useState<any>(null);
@@ -120,7 +131,7 @@ export default function CheckoutPage() {
     } else if (!existingScript) {
       // Script doesn't exist, create it
       const scriptElement = document.createElement('script');
-      scriptElement.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
+      scriptElement.src = 'https://web.squarecdn.com/v1/square.js';
       scriptElement.async = true;
       scriptElement.onload = () => initSquare();
       scriptElement.onerror = () => {
@@ -267,7 +278,7 @@ export default function CheckoutPage() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Link
-            href="/products"
+            href="/shop/lavender"
             className="text-sage-600 hover:text-sage-700 font-medium flex items-center gap-2"
           >
             <svg
@@ -361,6 +372,36 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
                   Fulfillment Method
                 </h2>
+
+                {/* Cider pickup notice */}
+                {hasCiderInCart && (
+                  <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
+                    <div className="flex items-start gap-3">
+                      <svg
+                        className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth="2"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+                        />
+                      </svg>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-amber-900">
+                          Your cart contains cider products
+                        </p>
+                        <p className="text-sm text-amber-700 mt-1">
+                          Cider is currently available for pickup only at Olympic Bluffs Cidery & Lavender Farm. Shipping for cider products coming soon!
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-3">
                   <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                     <input
@@ -382,22 +423,31 @@ export default function CheckoutPage() {
                     <div className="font-semibold text-sage-600">FREE</div>
                   </label>
 
-                  <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
+                  <label className={`flex items-start gap-3 p-4 border-2 rounded-md transition-colors ${
+                    hasCiderInCart
+                      ? 'opacity-50 cursor-not-allowed bg-gray-50'
+                      : 'cursor-pointer hover:bg-gray-50'
+                  }`}>
                     <input
                       type="radio"
                       name="fulfillment"
                       value="shipping"
                       checked={fulfillmentMethod === 'shipping'}
                       onChange={() => setFulfillmentMethod('shipping')}
+                      disabled={hasCiderInCart}
                       className="mt-1"
                     />
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">Shipping</div>
                       <div className="text-sm text-gray-600">
-                        Have your order shipped to your address
+                        {hasCiderInCart
+                          ? 'Not available for cider products - pickup only'
+                          : 'Have your order shipped to your address'}
                       </div>
                     </div>
-                    <div className="font-semibold text-gray-900">$10.00</div>
+                    <div className={`font-semibold ${hasCiderInCart ? 'text-amber-600' : 'text-gray-900'}`}>
+                      {hasCiderInCart ? 'Coming Soon' : '$10.00'}
+                    </div>
                   </label>
                 </div>
               </div>

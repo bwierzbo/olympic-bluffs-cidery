@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
+import CategoryNav from '@/components/shop/CategoryNav';
 import { Product } from '@/lib/types';
 
 export default function ProductsPage() {
@@ -9,12 +10,13 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  // Fetch products from Square on mount
+  // Fetch lavender products from Square on mount
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const response = await fetch('/api/products');
+        const response = await fetch('/api/products/lavender');
         const data = await response.json();
 
         if (data.success) {
@@ -33,22 +35,37 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  // Filter products based on search term
+  // Get all unique categories
+  const allCategories = useMemo(() => {
+    return Array.from(
+      new Set(products.map((p) => p.category).filter(Boolean))
+    ).sort();
+  }, [products]);
+
+  // Filter products based on search term and category
   const filteredProducts = useMemo(() => {
-    if (!searchTerm.trim()) {
-      return products;
+    let filtered = products;
+
+    // Filter by category
+    if (activeCategory) {
+      filtered = filtered.filter((product) => product.category === activeCategory);
     }
 
-    const searchLower = searchTerm.toLowerCase();
-    return products.filter(
-      (product) =>
-        product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower) ||
-        product.category?.toLowerCase().includes(searchLower)
-    );
-  }, [searchTerm, products]);
+    // Filter by search term
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(
+        (product) =>
+          product.name.toLowerCase().includes(searchLower) ||
+          product.description.toLowerCase().includes(searchLower) ||
+          product.category?.toLowerCase().includes(searchLower)
+      );
+    }
 
-  // Group filtered products by category
+    return filtered;
+  }, [searchTerm, products, activeCategory]);
+
+  // Group filtered products by category for display
   const categories = Array.from(
     new Set(filteredProducts.map((p) => p.category).filter(Boolean))
   );
@@ -56,10 +73,10 @@ export default function ProductsPage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-gradient-to-b from-sage-500 to-sage-600 py-16">
+      <section className="bg-sage-500 py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Shop Our Products
+            Shop Lavender Products
           </h1>
           <p className="text-xl text-white/90 max-w-3xl mx-auto">
             Handcrafted lavender products from our farm on the Olympic Peninsula.
@@ -87,11 +104,22 @@ export default function ProductsPage() {
             </div>
           )}
 
-          {/* Products Content */}
+          {/* Products Content with Sidebar */}
           {!isLoading && !error && (
-            <>
-              {/* Search Bar */}
-              <div className="mb-8">
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* Sidebar Navigation */}
+              <aside className="lg:w-64 flex-shrink-0">
+                <CategoryNav
+                  categories={allCategories}
+                  activeCategory={activeCategory}
+                  onCategoryClick={setActiveCategory}
+                />
+              </aside>
+
+              {/* Main Content */}
+              <div className="flex-1">
+                {/* Search Bar */}
+                <div className="mb-8">
             <div className="relative max-w-md">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg
@@ -179,7 +207,7 @@ export default function ProductsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 All Products
               </h2>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -193,7 +221,7 @@ export default function ProductsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Search Results
               </h2>
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
                 {filteredProducts.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
@@ -202,7 +230,7 @@ export default function ProductsPage() {
           )}
 
           {/* Products by Category */}
-          {categories.length > 0 && !searchTerm && (
+          {categories.length > 0 && !searchTerm && !activeCategory && (
             <div className="mt-16">
               <h2 className="text-2xl font-bold text-gray-900 mb-8">
                 Shop by Category
@@ -216,7 +244,7 @@ export default function ProductsPage() {
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">
                       {category}
                     </h3>
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
                       {categoryProducts.map((product) => (
                         <ProductCard key={product.id} product={product} />
                       ))}
@@ -226,7 +254,8 @@ export default function ProductsPage() {
               })}
             </div>
           )}
-            </>
+              </div>
+            </div>
           )}
         </div>
       </section>

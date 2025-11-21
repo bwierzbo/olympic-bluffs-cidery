@@ -47,8 +47,11 @@ export default function Footer() {
           <Link href="/" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             Home
           </Link>
-          <Link href="/products" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
-            Shop
+          <Link href="/shop/lavender" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+            Shop Lavender
+          </Link>
+          <Link href="/shop/cidery" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+            Shop Cider
           </Link>
           <Link href="/about" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             More

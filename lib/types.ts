@@ -1,20 +1,33 @@
 // Product Types
+export interface ProductVariation {
+  id: string;
+  name: string;
+  price: number; // in cents
+  sku?: string;
+  image?: string; // Optional variation-specific image
+}
+
 export interface Product {
   id: string;
   name: string;
-  type: 'Year-Round' | 'Seasonal' | 'Limited Release';
-  abv: string;
+  type: string;
+  abv?: string; // Alcohol by volume (e.g., "7%")
+  volume?: string; // Volume (e.g., "750ml", "12oz")
+  ciderType?: string; // Type of cider (e.g., "Sparkling Semi-Sweet", "Dry Cider")
   description: string;
-  price: number; // in cents (e.g., 1500 = $15.00)
-  image?: string; // path to product image
+  price: number; // in cents (e.g., 1500 = $15.00) - default/base price
+  image?: string; // path to product image (default/fallback)
+  images?: string[]; // Optional array of additional product images
   inStock: boolean;
   category?: string;
+  variations?: ProductVariation[]; // Product variants (e.g., different sizes, scents)
 }
 
 // Cart Types
 export interface CartItem {
   product: Product;
   quantity: number;
+  selectedVariation?: ProductVariation; // Track which variant was selected
 }
 
 export interface Cart {
