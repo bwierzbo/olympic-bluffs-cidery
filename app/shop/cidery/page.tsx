@@ -3,8 +3,51 @@
 import { useState, useMemo, useEffect } from 'react';
 import CiderCard from '@/components/shop/CiderCard';
 import { Product } from '@/lib/types';
+import Link from 'next/link';
 
 export default function CideryShopPage() {
+  // Show "Coming Soon" page in production
+  if (process.env.NODE_ENV === 'production') {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-white to-sage-50">
+        {/* Hero Section */}
+        <section className="bg-sage-500 py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
+            <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+              Coming Soon
+            </h1>
+            <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">
+              Our online cidery shop is currently being prepared. Check back soon to browse and purchase our handcrafted ciders!
+            </p>
+            <Link
+              href="/"
+              className="inline-block px-8 py-4 bg-white text-sage-700 rounded-md font-semibold text-lg hover:bg-gray-100 transition-colors"
+            >
+              Return Home
+            </Link>
+          </div>
+        </section>
+
+        {/* Info Section */}
+        <section className="py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto text-center">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                About Our Ciders
+              </h2>
+              <p className="text-lg text-gray-700 mb-6">
+                At Olympic Bluffs Cidery, we craft small-batch ciders using Washington-grown apples and ingredients from the Olympic Peninsula. Each cider is carefully made to bring out the natural flavors of the fruit.
+              </p>
+              <p className="text-lg text-gray-700">
+                Our online shop will be available soon. In the meantime, visit us in person or check out our lavender products!
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   const [searchTerm, setSearchTerm] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
