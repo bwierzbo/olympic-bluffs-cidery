@@ -52,7 +52,7 @@ export default function ProductDetailPage() {
               const dimensionsMap: Record<number, Set<string>> = {};
               foundProduct.variations.forEach((variation: any) => {
                 const parts = variation.name.split(',').map((p: string) => p.trim());
-                parts.forEach((part, index) => {
+                parts.forEach((part: string, index: number) => {
                   if (!dimensionsMap[index]) {
                     dimensionsMap[index] = new Set();
                   }
@@ -61,7 +61,7 @@ export default function ProductDetailPage() {
               });
 
               const initialSelections: Record<string, string> = {};
-              Object.keys(dimensionsMap).forEach(key => {
+              Object.keys(dimensionsMap).forEach((key: string) => {
                 const index = parseInt(key);
                 const options = Array.from(dimensionsMap[index]).sort();
                 initialSelections[index] = options[0];
@@ -128,7 +128,7 @@ export default function ProductDetailPage() {
 
     product.variations.forEach((variation: any) => {
       const parts = variation.name.split(',').map((p: string) => p.trim());
-      parts.forEach((part, index) => {
+      parts.forEach((part: string, index: number) => {
         if (!dimensionsMap[index]) {
           dimensionsMap[index] = new Set();
         }
