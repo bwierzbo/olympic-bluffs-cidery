@@ -9,7 +9,6 @@ export async function GET() {
     // Include custom attribute definitions to ensure we get all custom attributes
     const response = await squareClient.catalog.list({
       types: undefined, // Fetch all types
-      includeRelatedObjects: true, // Include related objects like custom attributes
     });
 
     // The Square SDK returns data in the .data property (array of catalog objects)
