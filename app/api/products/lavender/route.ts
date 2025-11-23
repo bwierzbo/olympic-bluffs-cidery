@@ -68,11 +68,6 @@ export async function GET() {
 
     console.log(`=== TOTAL LAVENDER ITEMS FOUND: ${allItems.length} across ${pageCount} pages ===`);
 
-    // Images come from Square in relatedObjects - not from items
-    // relatedObjects is returned at the response level, not per-item
-    const imageMap = new Map<string, string>();
-    console.log('No Square images integrated yet - using local fallback only');
-
     // Transform items to products
     const products = allItems
       .map((item: any) => {
@@ -93,28 +88,15 @@ export async function GET() {
           categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
         }
 
-        // Get image - prefer Square image, fallback to local mapping
+        // Get image from local mapping
         const imageMapping = productImages.images as Record<string, string>;
         const imageDirectory = 'shop/lavender';
         const variationImageMapping = (productImages as any).variationImages?.mappings || {};
 
-        // Try to get Square image first
         let imageUrl = '/images/products/placeholder-lavender.svg';
-        if (itemData.imageIds && itemData.imageIds.length > 0) {
-          const squareImageUrl = imageMap.get(itemData.imageIds[0]);
-          if (squareImageUrl) {
-            imageUrl = squareImageUrl;
-            console.log(`Using Square image for "${productName}": ${squareImageUrl}`);
-          }
-        }
-
-        // Fallback to local image if no Square image
-        if (imageUrl === '/images/products/placeholder-lavender.svg') {
-          const localImageFile = imageMapping[productName];
-          if (localImageFile) {
-            imageUrl = `/images/${imageDirectory}/${localImageFile}`;
-            console.log(`Using local image for "${productName}": ${localImageFile}`);
-          }
+        const localImageFile = imageMapping[productName];
+        if (localImageFile) {
+          imageUrl = `/images/${imageDirectory}/${localImageFile}`;
         }
 
         return {
@@ -132,18 +114,11 @@ export async function GET() {
             const variationName = v.itemVariationData?.name || itemData.name;
             const variationKey = `${productName}|${variationName}`;
 
-            // Try Square image for variation first
+            // Get variation image from local mapping
             let variationImageUrl: string | undefined = undefined;
-            if (v.itemVariationData?.imageIds && v.itemVariationData.imageIds.length > 0) {
-              variationImageUrl = imageMap.get(v.itemVariationData.imageIds[0]);
-            }
-
-            // Fallback to local variation image mapping
-            if (!variationImageUrl) {
-              const variationImageFile = variationImageMapping[variationKey];
-              if (variationImageFile) {
-                variationImageUrl = `/images/${imageDirectory}/${variationImageFile}`;
-              }
+            const variationImageFile = variationImageMapping[variationKey];
+            if (variationImageFile) {
+              variationImageUrl = `/images/${imageDirectory}/${variationImageFile}`;
             }
 
             return {
