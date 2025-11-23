@@ -4,8 +4,13 @@ import productImages from '@/config/product-images.json';
 
 export async function GET() {
   try {
-
     console.log('=== FETCHING CIDER PRODUCTS BY CATEGORY ===');
+    console.log('Environment check:', {
+      hasSquareToken: !!process.env.SQUARE_ACCESS_TOKEN,
+      hasAppId: !!process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
+      hasLocationId: !!process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
+      environment: process.env.SQUARE_ENVIRONMENT || 'sandbox',
+    });
 
     // First, get all categories to find the cider category ID
     const categoryResponse = await squareClient.catalog.list({
@@ -186,11 +191,19 @@ export async function GET() {
     return NextResponse.json({ success: true, products });
   } catch (error: any) {
     console.error('Error fetching cider products:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error details:', {
+      message: error.message,
+      name: error.name,
+      code: error.code,
+    });
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch cider products',
         details: error.message,
+        errorName: error.name,
+        errorCode: error.code,
       },
       { status: 500 }
     );
