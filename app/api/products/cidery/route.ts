@@ -53,7 +53,6 @@ export async function GET() {
         categoryIds: [ciderCategoryId],
         cursor: cursor,
         limit: 100,
-        includeRelatedObjects: true,
       });
 
       console.log(`Page ${pageCount}: Got ${searchResponse.items?.length || 0} items, cursor: ${searchResponse.cursor ? 'YES' : 'NO'}`);
