@@ -47,7 +47,7 @@ export default function ProductDetailPage() {
             setSelectedVariation(foundProduct.variations[0]);
 
             // If multi-dimensional, initialize selections with first options
-            const hasMultiDim = foundProduct.variations.some(v => v.name.includes(','));
+            const hasMultiDim = foundProduct.variations.some((v: any) => v.name.includes(','));
             if (hasMultiDim) {
               const dimensionsMap: Record<number, Set<string>> = {};
               foundProduct.variations.forEach(variation => {
