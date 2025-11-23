@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server';
 import { squareClient } from '@/lib/square';
-import fs from 'fs';
-import path from 'path';
+import productImages from '@/config/product-images.json';
 
 export async function GET() {
   try {
-    // Read product images config dynamically to avoid caching
-    const configPath = path.join(process.cwd(), 'config', 'product-images.json');
-    const productImages = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
     console.log('=== FETCHING CIDER PRODUCTS BY CATEGORY ===');
 
