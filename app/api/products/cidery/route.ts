@@ -133,7 +133,7 @@ export async function GET() {
         // Supports structured format: Description: ... \n Volume: 375ml \n ABV: 6.5%
         if (itemData.description) {
           // Try structured format first
-          const descriptionMatch = itemData.description.match(/Description:\s*(.+?)(?=\n|Volume:|ABV:|$)/is);
+          const descriptionMatch = itemData.description.match(/Description:\s*([\s\S]+?)(?=\n|Volume:|ABV:|$)/i);
           const structuredAbvMatch = itemData.description.match(/ABV:\s*(\d+\.?\d*)%?/i);
           const structuredVolumeMatch = itemData.description.match(/Volume:\s*(\d+)\s*(ml|oz)/i);
 
