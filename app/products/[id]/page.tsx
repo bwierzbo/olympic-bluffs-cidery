@@ -50,8 +50,8 @@ export default function ProductDetailPage() {
             const hasMultiDim = foundProduct.variations.some((v: any) => v.name.includes(','));
             if (hasMultiDim) {
               const dimensionsMap: Record<number, Set<string>> = {};
-              foundProduct.variations.forEach(variation => {
-                const parts = variation.name.split(',').map(p => p.trim());
+              foundProduct.variations.forEach((variation: any) => {
+                const parts = variation.name.split(',').map((p: string) => p.trim());
                 parts.forEach((part, index) => {
                   if (!dimensionsMap[index]) {
                     dimensionsMap[index] = new Set();
@@ -108,7 +108,7 @@ export default function ProductDetailPage() {
     if (!product?.variations || product.variations.length <= 1) {
       return false;
     }
-    const prices = product.variations.map(v => v.price);
+    const prices = product.variations.map((v: any) => v.price);
     return new Set(prices).size > 1;
   };
 
@@ -117,7 +117,7 @@ export default function ProductDetailPage() {
     if (!product?.variations || product.variations.length <= 1) {
       return false;
     }
-    return product.variations.some(v => v.name.includes(','));
+    return product.variations.some((v: any) => v.name.includes(','));
   };
 
   // Parse multi-dimensional variations into separate dimension options
@@ -126,8 +126,8 @@ export default function ProductDetailPage() {
 
     const dimensionsMap: Record<number, Set<string>> = {};
 
-    product.variations.forEach(variation => {
-      const parts = variation.name.split(',').map(p => p.trim());
+    product.variations.forEach((variation: any) => {
+      const parts = variation.name.split(',').map((p: string) => p.trim());
       parts.forEach((part, index) => {
         if (!dimensionsMap[index]) {
           dimensionsMap[index] = new Set();
@@ -136,7 +136,7 @@ export default function ProductDetailPage() {
       });
     });
 
-    return Object.values(dimensionsMap).map(set => Array.from(set).sort());
+    return Object.values(dimensionsMap).map((set: Set<string>) => Array.from(set).sort());
   };
 
   // Find variation matching multi-dimensional selections
@@ -144,10 +144,10 @@ export default function ProductDetailPage() {
     if (!product?.variations) return null;
 
     const selectionValues = Object.values(selections);
-    if (selectionValues.some(v => !v)) return null; // Not all dimensions selected
+    if (selectionValues.some((v: string) => !v)) return null; // Not all dimensions selected
 
     const searchName = selectionValues.join(', ');
-    return product.variations.find(v => v.name === searchName) || null;
+    return product.variations.find((v: any) => v.name === searchName) || null;
   };
 
   // Handle multi-dimensional selection change
@@ -291,7 +291,7 @@ export default function ProductDetailPage() {
                 {isMultiDimensional() ? (
                   // Multi-dimensional variations - show separate dropdowns
                   <div className="space-y-4">
-                    {getVariationDimensions().map((options, dimensionIndex) => (
+                    {getVariationDimensions().map((options: string[], dimensionIndex: number) => (
                       <div key={dimensionIndex}>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           {dimensionIndex === 0 ? 'Select Scent' : 'Select Design'}
@@ -301,7 +301,7 @@ export default function ProductDetailPage() {
                           onChange={(e) => handleMultiDimChange(dimensionIndex, e.target.value)}
                           className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-sage-500 focus:ring-2 focus:ring-sage-200 transition-all"
                         >
-                          {options.map((option) => (
+                          {options.map((option: string) => (
                             <option key={option} value={option}>
                               {option}
                             </option>
@@ -317,7 +317,7 @@ export default function ProductDetailPage() {
                       Select Option
                     </label>
                     <div className="grid grid-cols-2 gap-3">
-                      {product.variations.map((variation) => (
+                      {product.variations.map((variation: any) => (
                         <button
                           key={variation.id}
                           onClick={() => setSelectedVariation(variation)}
