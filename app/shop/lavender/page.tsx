@@ -38,7 +38,7 @@ export default function ProductsPage() {
   // Get all unique categories
   const allCategories = useMemo(() => {
     return Array.from(
-      new Set(products.map((p) => p.category).filter(Boolean))
+      new Set(products.map((p) => p.category).filter((c): c is string => Boolean(c)))
     ).sort();
   }, [products]);
 
