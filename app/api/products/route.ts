@@ -65,7 +65,7 @@ export async function GET() {
     // Check first item for all available fields that might contain filters
     if (items.length > 0) {
       console.log('\n=== FIRST ITEM FULL STRUCTURE ===');
-      const firstItem = items[0];
+      const firstItem: any = items[0];
       console.log('Top-level keys:', Object.keys(firstItem));
       console.log('itemData keys:', Object.keys(firstItem.itemData || {}));
       console.log('Has labelColor?', firstItem.labelColor);
