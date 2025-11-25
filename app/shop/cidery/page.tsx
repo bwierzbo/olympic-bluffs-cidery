@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import CiderCard from '@/components/shop/CiderCard';
+import FeaturedCiderSection from '@/components/shop/FeaturedCiderSection';
 import { Product } from '@/lib/types';
 import Link from 'next/link';
 
@@ -76,6 +77,14 @@ export default function CideryShopPage() {
     fetchProducts();
   }, []);
 
+  // Get featured products for parallax section
+  const featuredProducts = useMemo(() => {
+    const featuredNames = ['Strawberry Rhubarb', 'Strawberry-Rhubarb Cider Bottle', 'Salish'];
+    return products.filter(p =>
+      featuredNames.some(name => p.name.toLowerCase().includes(name.toLowerCase()))
+    );
+  }, [products]);
+
   // Filter products based on search term
   const filteredProducts = useMemo(() => {
     let filtered = products;
@@ -136,6 +145,11 @@ export default function CideryShopPage() {
           </p>
         </div>
       </div>
+
+      {/* Featured Products with Parallax */}
+      {!isLoading && !error && featuredProducts.length > 0 && (
+        <FeaturedCiderSection products={featuredProducts} />
+      )}
 
       {/* Products Grid */}
       <section className="py-16 bg-gradient-to-b from-white to-sage-50/30">

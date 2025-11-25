@@ -15,7 +15,7 @@ export default function Farm() {
     },
     {
       title: 'THE FIELDS',
-      image: '/images/farm/lavender-fields.jpeg',
+      image: '/images/farm/the-fields.jpeg',
       description: 'Our fields come to life from mid-June through August, when the lavender burst into bloom painting the landscape in shades of purple, pink and white. Whether you\'re here to take in the beauty, enjoy the aromas, or experience the farm\'s bounty, our fields offer a truly unforgettable setting.',
     },
     {
