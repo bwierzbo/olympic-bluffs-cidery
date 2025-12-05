@@ -77,17 +77,22 @@ export default function CideryShopPage() {
     fetchProducts();
   }, []);
 
-  // Get featured products for parallax section
+  // Get featured products for parallax section (exclude placeholders)
   const featuredProducts = useMemo(() => {
-    const featuredNames = ['Strawberry Rhubarb', 'Strawberry-Rhubarb Cider Bottle', 'Salish'];
+    // Match against display names (includes custom names from Square)
+    const featuredNames = ['Sundrift', 'Strawberry-Rhubarb', 'Strawberry Rhubarb', 'Salish'];
     return products.filter(p =>
-      featuredNames.some(name => p.name.toLowerCase().includes(name.toLowerCase()))
+      featuredNames.some(name => p.name.toLowerCase().includes(name.toLowerCase())) &&
+      p.image && !p.image.includes('placeholder')
     );
   }, [products]);
 
-  // Filter products based on search term
+  // Filter products based on search term (exclude placeholders)
   const filteredProducts = useMemo(() => {
-    let filtered = products;
+    // First filter out products without real photos
+    let filtered = products.filter(p =>
+      p.image && !p.image.includes('placeholder')
+    );
 
     // Filter by search term
     if (searchTerm.trim()) {

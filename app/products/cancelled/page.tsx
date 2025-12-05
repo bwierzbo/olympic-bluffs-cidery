@@ -48,7 +48,7 @@ export default function CancelledPage() {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/products/checkout"
+              href="/shop/checkout"
               className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-sage-500 hover:bg-sage-600 transition-colors"
             >
               Try Again
@@ -66,17 +66,10 @@ export default function CancelledPage() {
             <p className="text-sm text-gray-700">
               <strong>Need help?</strong> Contact us at{' '}
               <a
-                href="mailto:scottatobcf@gmail.com"
+                href="mailto:info@olympicbluffs.com"
                 className="text-sage-600 hover:text-sage-700 font-medium"
               >
-                scottatobcf@gmail.com
-              </a>{' '}
-              or{' '}
-              <a
-                href="mailto:gingeratobcf@gmail.com"
-                className="text-sage-600 hover:text-sage-700 font-medium"
-              >
-                gingeratobcf@gmail.com
+                info@olympicbluffs.com
               </a>
             </p>
           </div>

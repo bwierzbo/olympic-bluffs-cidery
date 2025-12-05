@@ -192,7 +192,7 @@ export default function Cart() {
               <span>{formatPrice(totalAmount)}</span>
             </div>
             <Link
-              href="/products/checkout"
+              href="/shop/checkout"
               onClick={closeCart}
               className="block w-full bg-sage-500 text-white text-center px-6 py-3 rounded-md hover:bg-sage-600 transition-colors font-medium"
             >

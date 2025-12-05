@@ -14,7 +14,9 @@ export interface Product {
   abv?: string; // Alcohol by volume (e.g., "7%")
   volume?: string; // Volume (e.g., "750ml", "12oz")
   ciderType?: string; // Type of cider (e.g., "Sparkling Semi-Sweet", "Dry Cider")
-  description: string;
+  taste?: string; // Short taste descriptor (e.g., "Tart & Fruity")
+  description: string; // Short description for shop tiles
+  longDescription?: string; // Detailed description for product page
   price: number; // in cents (e.g., 1500 = $15.00) - default/base price
   image?: string; // path to product image (default/fallback)
   images?: string[]; // Optional array of additional product images

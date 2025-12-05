@@ -81,7 +81,12 @@ export async function GET() {
         if (!itemData) return null;
 
         // Normalize product name - replace curly apostrophes with regular ones
-        const productName = (itemData.name || '').replace(/[\u2018\u2019]/g, "'");
+        const rawProductName = (itemData.name || '').replace(/[\u2018\u2019]/g, "'");
+
+        // Clean up display name - remove "Cider Bottle" suffix for cleaner display
+        const productName = rawProductName
+          .replace(/\s+Cider Bottle$/i, '')
+          .replace(/\s+Bottle$/i, '');
 
         console.log(`Processing cider product: "${productName}"`);
 
@@ -101,44 +106,57 @@ export async function GET() {
         const variationImageMapping = (productImages as any).variationImages?.mappings || {};
 
         let imageUrl = '/images/products/placeholder-cider.svg';
-        const localImageFile = imageMapping[productName];
+        // Use rawProductName for image lookup since config has full Square names
+        const localImageFile = imageMapping[rawProductName];
         if (localImageFile) {
           imageUrl = `/images/${imageDirectory}/${localImageFile}`;
         }
 
-        // Extract ABV, volume, and clean description
-        let abv = undefined;
-        let volume = undefined;
+        // Extract structured fields from Square description
+        // Supports: Name, Description, LongDescription, Taste, Volume, ABV
+        let customName: string | undefined = undefined;
+        let shortDescription = '';
+        let longDescription = '';
+        let taste: string | undefined = undefined;
+        let abv: string | undefined = undefined;
+        let volume: string | undefined = undefined;
         let ciderType = itemData.productType || undefined;
-        let cleanDescription = itemData.description || '';
 
-        // Try to extract from description
-        // Supports structured format: Description: ... \n Volume: 375ml \n ABV: 6.5%
         if (itemData.description) {
-          // Try structured format first
-          const descriptionMatch = itemData.description.match(/Description:\s*([\s\S]+?)(?=\n|Volume:|ABV:|$)/i);
-          const structuredAbvMatch = itemData.description.match(/ABV:\s*(\d+\.?\d*)%?/i);
-          const structuredVolumeMatch = itemData.description.match(/Volume:\s*(\d+)\s*(ml|oz)/i);
+          const desc = itemData.description;
 
-          // Try inline format as fallback (e.g., "6.5% ABV" or "375ml")
-          const inlineAbvMatch = itemData.description.match(/(\d+\.?\d*)%\s*ABV/i);
-          const inlineVolumeMatch = itemData.description.match(/(\d+)\s*(ml|oz)/i);
+          // Parse structured fields (supports both "Description" and "ShortDescription")
+          const nameMatch = desc.match(/Name:\s*(.+?)(?=\n|Short[Dd]escription:|Description:|Long[Dd]escription:|Taste:|Volume:|ABV:|$)/i);
+          const shortDescMatch = desc.match(/(?:Short[Dd]escription|Description):\s*([\s\S]+?)(?=\n\n|Long[Dd]escription:|Taste:|Volume:|ABV:|$)/i);
+          const longDescMatch = desc.match(/Long[Dd]escription:\s*([\s\S]+?)(?=\n\n|Taste:|Volume:|ABV:|$)/i);
+          const tasteMatch = desc.match(/Taste:\s*(.+?)(?=\n|Volume:|ABV:|$)/i);
+          const volumeMatch = desc.match(/Volume:\s*(\d+)\s*(ml|oz)/i);
+          const abvMatch = desc.match(/ABV:\s*(\d+\.?\d*)%?/i);
 
-          // Extract clean description if structured format is used
-          if (descriptionMatch) {
-            cleanDescription = descriptionMatch[1].trim();
+          // Fallback inline formats
+          const inlineAbvMatch = desc.match(/(\d+\.?\d*)%\s*ABV/i);
+          const inlineVolumeMatch = desc.match(/(\d+)\s*(ml|oz)/i);
+
+          if (nameMatch) customName = nameMatch[1].trim();
+          if (shortDescMatch) shortDescription = shortDescMatch[1].trim();
+          if (longDescMatch) longDescription = longDescMatch[1].trim();
+          if (tasteMatch) taste = tasteMatch[1].trim();
+
+          if (volumeMatch) {
+            volume = volumeMatch[1] + volumeMatch[2];
+          } else if (inlineVolumeMatch) {
+            volume = inlineVolumeMatch[1] + inlineVolumeMatch[2];
           }
 
-          if (structuredAbvMatch) {
-            abv = structuredAbvMatch[1] + '%';
+          if (abvMatch) {
+            abv = abvMatch[1] + '%';
           } else if (inlineAbvMatch) {
             abv = inlineAbvMatch[1] + '%';
           }
 
-          if (structuredVolumeMatch) {
-            volume = structuredVolumeMatch[1] + structuredVolumeMatch[2];
-          } else if (inlineVolumeMatch) {
-            volume = inlineVolumeMatch[1] + inlineVolumeMatch[2];
+          // If no structured description, use full text as short description
+          if (!shortDescription && !longDescription) {
+            shortDescription = desc;
           }
         }
 
@@ -149,14 +167,19 @@ export async function GET() {
           if (volumeMatch) volume = volumeMatch[1];
         }
 
+        // Use custom name if provided, otherwise use cleaned product name
+        const displayName = customName || productName;
+
         return {
           id: item.id,
-          name: productName,
+          name: displayName,
           type: itemData.productType || 'Cider',
           abv,
           volume,
           ciderType,
-          description: cleanDescription,
+          taste,
+          description: shortDescription,
+          longDescription,
           price: Number(price),
           image: imageUrl,
           inStock: variations.some((v: any) =>
@@ -165,7 +188,8 @@ export async function GET() {
           category: categoryName,
           variations: variations.map((v: any) => {
             const variationName = v.itemVariationData?.name || itemData.name;
-            const variationKey = `${productName}|${variationName}`;
+            // Use rawProductName for variation key since config has full Square names
+            const variationKey = `${rawProductName}|${variationName}`;
 
             // Get variation image from local mapping
             let variationImageUrl: string | undefined = undefined;

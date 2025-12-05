@@ -57,7 +57,7 @@ export default function CheckoutPage() {
   // Redirect if cart is empty (but not during payment processing)
   useEffect(() => {
     if (items.length === 0 && !isProcessingPayment.current) {
-      router.push('/products');
+      router.push('/shop/lavender');
     }
   }, [items, router]);
 
@@ -68,20 +68,20 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Prevent duplicate initialization
-    if (isInitializingRef.current) {
-      return;
-    }
+    // Track if component is still mounted to prevent state updates after unmount
+    let isMounted = true;
 
     const initSquare = async () => {
       if (!window.Square) {
         console.error('Square.js failed to load');
-        setError('Payment system failed to load. Please refresh the page.');
+        if (isMounted) {
+          setError('Payment system failed to load. Please refresh the page.');
+        }
         return;
       }
 
       // Prevent duplicate initialization
-      if (isInitializingRef.current) {
+      if (!isMounted || isInitializingRef.current || cardInstanceRef.current) {
         return;
       }
       isInitializingRef.current = true;
@@ -89,16 +89,18 @@ export default function CheckoutPage() {
       try {
         // Check if the card container element exists
         const container = document.getElementById('card-container');
-        if (!container) {
-          console.warn('Card container not found');
+        if (!container || !isMounted) {
           isInitializingRef.current = false;
-          setError('Payment form not ready. Please refresh the page.');
+          if (isMounted) {
+            setError('Payment form not ready. Please refresh the page.');
+          }
           return;
         }
 
-        // Check if card is already initialized
-        if (cardInstanceRef.current) {
-          console.log('Card already initialized, skipping...');
+        // Check if container already has children (duplicate prevention)
+        if (container.childNodes.length > 0) {
+          console.log('Container already has content, skipping initialization');
+          isInitializingRef.current = false;
           return;
         }
 
@@ -106,18 +108,29 @@ export default function CheckoutPage() {
           process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!,
           process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
         );
+
+        if (!isMounted) {
+          isInitializingRef.current = false;
+          return;
+        }
+
         setPayments(paymentsInstance);
 
-        // Clear the container before attaching
-        container.innerHTML = '';
-
         const cardInstance = await paymentsInstance.card();
+
+        if (!isMounted) {
+          isInitializingRef.current = false;
+          return;
+        }
+
         await cardInstance.attach('#card-container');
         cardInstanceRef.current = cardInstance;
         setCard(cardInstance);
       } catch (e) {
         console.error('Failed to initialize Square payments:', e);
-        setError('Failed to load payment form. Please refresh the page.');
+        if (isMounted) {
+          setError('Failed to load payment form. Please refresh the page.');
+        }
         isInitializingRef.current = false;
       }
     };
@@ -135,7 +148,9 @@ export default function CheckoutPage() {
       scriptElement.async = true;
       scriptElement.onload = () => initSquare();
       scriptElement.onerror = () => {
-        setError('Failed to load payment system. Please check your internet connection.');
+        if (isMounted) {
+          setError('Failed to load payment system. Please check your internet connection.');
+        }
         isInitializingRef.current = false;
       };
       document.body.appendChild(scriptElement);
@@ -157,7 +172,7 @@ export default function CheckoutPage() {
           clearInterval(checkIntervalRef.current);
           checkIntervalRef.current = null;
         }
-        if (!window.Square) {
+        if (!window.Square && isMounted) {
           setError('Failed to load payment system. Please refresh the page.');
           isInitializingRef.current = false;
         }
@@ -165,13 +180,13 @@ export default function CheckoutPage() {
     }
 
     return () => {
-      // Cleanup card instance
+      isMounted = false;
+
+      // Use detach() instead of destroy() - safer for SPA navigation
       if (cardInstanceRef.current) {
-        try {
-          cardInstanceRef.current.destroy();
-        } catch (e) {
-          console.log('Error during cleanup:', e);
-        }
+        cardInstanceRef.current.detach().catch((e: any) => {
+          console.log('Error during detach:', e);
+        });
         cardInstanceRef.current = null;
       }
 
@@ -182,8 +197,10 @@ export default function CheckoutPage() {
       }
 
       isInitializingRef.current = false;
+      setCard(null);
+      setPayments(null);
     };
-  }, []);
+  }, [items.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -267,7 +284,7 @@ export default function CheckoutPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }
 
   if (items.length === 0) {
     return null; // Will redirect

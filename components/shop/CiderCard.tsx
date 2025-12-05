@@ -33,7 +33,7 @@ export default function CiderCard({ product }: CiderCardProps) {
     <Link href={`/products/${product.id}`} className="block group">
       <div className="text-center">
         {/* Product Image - no background, no border */}
-        <div className="relative h-96 mb-6">
+        <div className="relative h-[450px] mb-6">
           <Image
             src={product.image || '/images/products/placeholder-cider.svg'}
             alt={product.name}
@@ -70,9 +70,17 @@ export default function CiderCard({ product }: CiderCardProps) {
         </div>
 
         {/* ABV */}
-        <div className="text-sm text-gray-600 mb-4">
+        <div className="text-sm text-gray-600 mb-2">
           {product.abv || '7%'} ABV
         </div>
+
+        {/* Taste */}
+        {product.taste && (
+          <p className="text-base font-semibold text-gray-700 mb-4">
+            {product.taste}
+          </p>
+        )}
+        {!product.taste && <div className="mb-4" />}
 
         {/* Add to Cart Button */}
         <button

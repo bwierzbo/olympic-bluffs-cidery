@@ -39,13 +39,13 @@
     "Lavender Essential Oil Car Freshener/Diffuser 6ml": "car-refreshener-2.png",
     "Glass candle with bamboo lid": "candle.png",
     "Shimmer Magnets": "magnet-1.png",
-    "Ashmead's Kernel Cider Bottle": "ashmeads-kernel.png",
-    "Salish": "salish.png",
-    "Ginger Quince Cider Bottle": "ginger-quince.png",
-    "Lavender Black Currant Bottle": "lavender-black-currant.png",
-    "Lavender Salal Cider Bottle": "lavender-salal.png",
-    "Strawberry-Rhubarb Cider Bottle": "strawberry-rhubarb.png",
-    "Kingston Black Stoke Red Cider Bottle": "stokesred-kingstonblack.png"
+    "Ashmead's Kernel Cider Bottle": "trans-ashmeads-kernel.png",
+    "Salish": "trans-salish.png",
+    "Ginger Quince Cider Bottle": "trans-ginger-quince.png",
+    "Lavender Black Currant Bottle": "trans-lavender-black-currant.png",
+    "Lavender Salal Cider Bottle": "trans-lavender-salal.png",
+    "Strawberry-Rhubarb Cider Bottle": "trans-strawberry-rhubarb.png",
+    "Kingston Black Stoke Red Cider Bottle": "trans-stokesred-kingstonblack.png"
   },
   "variationImages": {
     "comment": "Map specific product variations to their own images",
