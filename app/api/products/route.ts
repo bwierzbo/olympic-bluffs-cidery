@@ -135,12 +135,16 @@ export async function GET() {
 
         // Build product object
         // Use local image mapping for product images
-        const imageMapping = productImages.images as Record<string, string>;
-        const imageDirectory = (productImages as any).imageDirectory || 'shop';
-        const localImageFile = imageMapping[productName];
-        const imageUrl = localImageFile
-          ? `/images/${imageDirectory}/${localImageFile}`
-          : '/images/products/placeholder-lavender.svg';
+        const lavenderFolders = (productImages as any).lavenderFolders as Record<string, string>;
+        const ciderImages = (productImages as any).ciderImages as Record<string, string>;
+
+        // Check lavender folders first, then cider images
+        let imageUrl = '/images/products/placeholder-lavender.svg';
+        if (lavenderFolders[productName]) {
+          imageUrl = `/images/shop/lavender/${lavenderFolders[productName]}/main.png`;
+        } else if (ciderImages[productName]) {
+          imageUrl = `/images/shop/cider/${ciderImages[productName]}`;
+        }
 
         return {
           id: item.id,
