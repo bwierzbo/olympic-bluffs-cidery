@@ -1,0 +1,33 @@
+{
+  "_comment": "Product weights in ounces. Used for shipping cost calculation.",
+  "_defaultWeight": 4,
+  "weights": {
+    "Lavender Essential Oil": 2,
+    "Lavender Hydrosol": 8,
+    "Lavender Linen Spray": 6,
+    "Lavender Body Oil": 6,
+    "Lavender Repair Balm": 3,
+    "Lavender Lip Balm": 1,
+    "Lavender Hand Soap": 8,
+    "Lavender Soap Bar": 5,
+    "Culinary Lavender": 2,
+    "Lavender Honey": 12,
+    "Lavender Spices": 3,
+    "Lavender Candle": 10,
+    "Lavender Pouch": 2,
+    "Lavender Sachet": 1,
+    "Wool Dryer Balls": 6,
+    "Car Air Freshener": 2,
+    "Lavender Roller": 2,
+    "Shimmer Roller": 2,
+    "Ring Dish": 4,
+    "Magnet": 2,
+    "Ornament": 3,
+    "T-Shirt": 8,
+    "Sweatshirt": 16,
+    "Apron": 12,
+    "Tea Towel": 4,
+    "Cashew Delight": 6,
+    "Sun Goddess Shimmer": 3
+  }
+}

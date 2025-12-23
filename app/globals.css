@@ -21,6 +21,54 @@
   --color-sage-700: #474c44;
   --color-sage-800: #3a3e38;
   --color-sage-900: #2f322e;
+
+  /* Spring Theme Colors */
+  --color-spring-50: #fdf8f6;
+  --color-spring-100: #f9ede9;
+  --color-spring-200: #f2ddd5;
+  --color-spring-300: #e8c3b5;
+  --color-spring-400: #d99e8a;
+  --color-spring-500: #c7785f;
+  --color-spring-600: #b36047;
+  --color-spring-700: #8b4a37;
+  --color-spring-800: #6f3d2e;
+  --color-spring-900: #5a3426;
+
+  /* Summer Theme Colors */
+  --color-summer-50: #f5f3ff;
+  --color-summer-100: #ede9fe;
+  --color-summer-200: #ddd6fe;
+  --color-summer-300: #c4b5fd;
+  --color-summer-400: #a78bfa;
+  --color-summer-500: #8b5cf6;
+  --color-summer-600: #7c3aed;
+  --color-summer-700: #6d28d9;
+  --color-summer-800: #5b21b6;
+  --color-summer-900: #4c1d95;
+
+  /* Fall Theme Colors */
+  --color-fall-50: #fef7ee;
+  --color-fall-100: #fdedd7;
+  --color-fall-200: #fad9ae;
+  --color-fall-300: #f7be7b;
+  --color-fall-400: #f39945;
+  --color-fall-500: #f0751f;
+  --color-fall-600: #d97706;
+  --color-fall-700: #b45309;
+  --color-fall-800: #92400e;
+  --color-fall-900: #78350f;
+
+  /* Winter Theme Colors */
+  --color-winter-50: #eef2ff;
+  --color-winter-100: #e0e7ff;
+  --color-winter-200: #c7d2fe;
+  --color-winter-300: #a5b4fc;
+  --color-winter-400: #818cf8;
+  --color-winter-500: #6366f1;
+  --color-winter-600: #4f46e5;
+  --color-winter-700: #4338ca;
+  --color-winter-800: #3730a3;
+  --color-winter-900: #312e81;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,4 +82,54 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-open-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* Google Places Autocomplete Dropdown Styling */
+.pac-container {
+  font-family: var(--font-open-sans), -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  border: 1px solid #d1d5d7;
+  border-radius: 0.375rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-top: 4px;
+  z-index: 9999;
+}
+
+.pac-container:after {
+  display: none;
+}
+
+.pac-item {
+  padding: 10px 14px;
+  border-top: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.pac-item:hover {
+  background-color: #f5f6f5;
+}
+
+.pac-item-selected,
+.pac-item-selected:hover {
+  background-color: #e8eae8;
+}
+
+.pac-matched {
+  font-weight: 600;
+  color: #6b7566;
+}
+
+.pac-icon {
+  display: none;
+}
+
+.pac-item-query {
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.pac-logo:after {
+  display: none;
 }

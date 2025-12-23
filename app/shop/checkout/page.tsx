@@ -36,6 +36,10 @@ export default function CheckoutPage() {
   const [state, setState] = useState('');
   const [postalCode, setPostalCode] = useState('');
 
+  // Google Places Autocomplete
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const addressInputRef = useRef<HTMLInputElement>(null);
+
   // Force pickup method if cart contains cider
   useEffect(() => {
     if (hasCiderInCart && fulfillmentMethod === 'shipping') {
@@ -51,7 +55,7 @@ export default function CheckoutPage() {
   const isProcessingPayment = useRef(false);
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const shippingCost = fulfillmentMethod === 'shipping' ? 1000 : 0; // $10 shipping
+  const shippingCost = fulfillmentMethod === 'shipping' ? 2000 : 0; // $20 flat rate shipping
   const total = totalAmount + shippingCost;
 
   // Redirect if cart is empty (but not during payment processing)
@@ -60,6 +64,96 @@ export default function CheckoutPage() {
       router.push('/shop/lavender');
     }
   }, [items, router]);
+
+  // Initialize Google Places Autocomplete
+  useEffect(() => {
+    // Only initialize if shipping is selected and we have an input
+    if (fulfillmentMethod !== 'shipping' || !addressInputRef.current) {
+      return;
+    }
+
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_PLACES_API_KEY;
+    if (!apiKey || apiKey === 'YOUR_GOOGLE_PLACES_API_KEY_HERE') {
+      console.log('Google Places API key not configured');
+      return;
+    }
+
+    // Check if Google Maps script is already loaded
+    if (window.google && window.google.maps && window.google.maps.places) {
+      initAutocomplete();
+      return;
+    }
+
+    // Load Google Maps script
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+    script.async = true;
+    script.defer = true;
+    script.onload = () => initAutocomplete();
+    document.head.appendChild(script);
+
+    function initAutocomplete() {
+      if (!addressInputRef.current || autocompleteRef.current) return;
+
+      const autocomplete = new google.maps.places.Autocomplete(addressInputRef.current, {
+        types: ['address'],
+        componentRestrictions: { country: 'us' },
+        fields: ['address_components', 'formatted_address'],
+      });
+
+      autocomplete.addListener('place_changed', () => {
+        const place = autocomplete.getPlace();
+
+        if (!place.address_components) {
+          return;
+        }
+
+        // Parse address components
+        let streetNumber = '';
+        let route = '';
+        let locality = '';
+        let administrativeArea = '';
+        let postalCodeValue = '';
+
+        place.address_components.forEach((component) => {
+          const types = component.types;
+
+          if (types.includes('street_number')) {
+            streetNumber = component.long_name;
+          }
+          if (types.includes('route')) {
+            route = component.long_name;
+          }
+          if (types.includes('locality')) {
+            locality = component.long_name;
+          }
+          if (types.includes('administrative_area_level_1')) {
+            administrativeArea = component.short_name;
+          }
+          if (types.includes('postal_code')) {
+            postalCodeValue = component.long_name;
+          }
+        });
+
+        // Update form fields
+        const fullAddress = `${streetNumber} ${route}`.trim();
+        setAddressLine1(fullAddress);
+        setCity(locality);
+        setState(administrativeArea);
+        setPostalCode(postalCodeValue);
+      });
+
+      autocompleteRef.current = autocomplete;
+    }
+
+    return () => {
+      // Cleanup autocomplete listener
+      if (autocompleteRef.current) {
+        google.maps.event.clearInstanceListeners(autocompleteRef.current);
+        autocompleteRef.current = null;
+      }
+    };
+  }, [fulfillmentMethod]);
 
   // Initialize Square Web Payments SDK
   useEffect(() => {
@@ -144,7 +238,7 @@ export default function CheckoutPage() {
     } else if (!existingScript) {
       // Script doesn't exist, create it
       const scriptElement = document.createElement('script');
-      scriptElement.src = 'https://web.squarecdn.com/v1/square.js';
+      scriptElement.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
       scriptElement.async = true;
       scriptElement.onload = () => initSquare();
       scriptElement.onerror = () => {
@@ -463,7 +557,7 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                     <div className={`font-semibold ${hasCiderInCart ? 'text-amber-600' : 'text-gray-900'}`}>
-                      {hasCiderInCart ? 'Coming Soon' : '$10.00'}
+                      {hasCiderInCart ? 'Coming Soon' : '$20.00'}
                     </div>
                   </label>
                 </div>
@@ -481,10 +575,13 @@ export default function CheckoutPage() {
                         Address Line 1 *
                       </label>
                       <input
+                        ref={addressInputRef}
                         type="text"
                         required={fulfillmentMethod === 'shipping'}
                         value={addressLine1}
                         onChange={(e) => setAddressLine1(e.target.value)}
+                        placeholder="Start typing your address..."
+                        autoComplete="off"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-sage-500 focus:border-sage-500"
                       />
                     </div>
@@ -496,6 +593,7 @@ export default function CheckoutPage() {
                         type="text"
                         value={addressLine2}
                         onChange={(e) => setAddressLine2(e.target.value)}
+                        autoComplete="off"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-sage-500 focus:border-sage-500"
                       />
                     </div>
@@ -509,6 +607,7 @@ export default function CheckoutPage() {
                           required={fulfillmentMethod === 'shipping'}
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
+                          autoComplete="off"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-sage-500 focus:border-sage-500"
                         />
                       </div>
@@ -521,6 +620,7 @@ export default function CheckoutPage() {
                           required={fulfillmentMethod === 'shipping'}
                           value={state}
                           onChange={(e) => setState(e.target.value)}
+                          autoComplete="off"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-sage-500 focus:border-sage-500"
                         />
                       </div>
@@ -533,6 +633,7 @@ export default function CheckoutPage() {
                           required={fulfillmentMethod === 'shipping'}
                           value={postalCode}
                           onChange={(e) => setPostalCode(e.target.value)}
+                          autoComplete="off"
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-sage-500 focus:border-sage-500"
                         />
                       </div>
@@ -575,9 +676,46 @@ export default function CheckoutPage() {
   );
 }
 
-// Declare Square on window
+// Declare global types
 declare global {
   interface Window {
     Square: any;
+    google: typeof google;
+  }
+
+  namespace google {
+    namespace maps {
+      namespace event {
+        function clearInstanceListeners(instance: any): void;
+      }
+
+      namespace places {
+        class Autocomplete {
+          constructor(
+            input: HTMLInputElement,
+            options?: AutocompleteOptions
+          );
+          addListener(eventName: string, handler: () => void): void;
+          getPlace(): PlaceResult;
+        }
+
+        interface AutocompleteOptions {
+          types?: string[];
+          componentRestrictions?: { country: string | string[] };
+          fields?: string[];
+        }
+
+        interface PlaceResult {
+          address_components?: AddressComponent[];
+          formatted_address?: string;
+        }
+
+        interface AddressComponent {
+          long_name: string;
+          short_name: string;
+          types: string[];
+        }
+      }
+    }
   }
 }

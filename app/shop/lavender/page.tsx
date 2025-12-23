@@ -251,8 +251,8 @@ export default function ProductsPage() {
                 All Products
               </h2>
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {filteredProducts.map((product, index) => (
+                  <ProductCard key={product.id} product={product} priority={index < 6} />
                 ))}
               </div>
             </div>
@@ -265,8 +265,8 @@ export default function ProductsPage() {
                 Search Results
               </h2>
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                {filteredProducts.map((product, index) => (
+                  <ProductCard key={product.id} product={product} priority={index < 6} />
                 ))}
               </div>
             </div>
@@ -288,8 +288,8 @@ export default function ProductsPage() {
                       {category}
                     </h3>
                     <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                      {categoryProducts.map((product) => (
-                        <ProductCard key={product.id} product={product} />
+                      {categoryProducts.map((product, index) => (
+                        <ProductCard key={product.id} product={product} priority={index < 3} />
                       ))}
                     </div>
                   </div>

@@ -19,10 +19,12 @@ export interface Product {
   longDescription?: string; // Detailed description for product page
   price: number; // in cents (e.g., 1500 = $15.00) - default/base price
   image?: string; // path to product image (default/fallback)
-  images?: string[]; // Optional array of additional product images
+  hoverImage?: string; // Alternate image shown on hover (product in use)
+  images?: string[]; // Optional array of additional product images for carousel
   inStock: boolean;
   category?: string;
   variations?: ProductVariation[]; // Product variants (e.g., different sizes, scents)
+  weight?: number; // Weight in ounces for shipping calculation
 }
 
 // Cart Types
@@ -57,9 +59,29 @@ export interface CustomerInfo {
 
 export type FulfillmentMethod = 'pickup' | 'shipping';
 
+export type OrderStatus =
+  | 'pending'      // Payment initiated but not confirmed
+  | 'confirmed'    // Payment successful, order confirmed
+  | 'processing'   // Order being prepared
+  | 'ready'        // Ready for pickup (pickup orders)
+  | 'shipped'      // Shipped (shipping orders)
+  | 'completed'    // Order fulfilled
+  | 'cancelled';   // Order cancelled
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number; // in cents - price per item at time of purchase
+  variation?: {
+    id: string;
+    name: string;
+  };
+}
+
 export interface Order {
   id: string;
-  items: CartItem[];
+  items: OrderItem[];
   customerInfo: CustomerInfo;
   fulfillmentMethod: FulfillmentMethod;
   shippingAddress?: ShippingAddress;
@@ -67,8 +89,17 @@ export interface Order {
   shippingCost: number; // in cents
   tax: number; // in cents
   total: number; // in cents
-  createdAt: Date;
-  status: 'pending' | 'paid' | 'failed' | 'fulfilled';
+  paymentId: string; // Square payment ID
+  status: OrderStatus;
+  createdAt: string; // ISO date string for JSON serialization
+  updatedAt: string; // ISO date string
+  statusHistory: OrderStatusUpdate[];
+}
+
+export interface OrderStatusUpdate {
+  status: OrderStatus;
+  timestamp: string; // ISO date string
+  note?: string;
 }
 
 // Payment Types

@@ -1,8 +1,12 @@
 import Image from 'next/image';
 import SeasonalBanner from '@/components/SeasonalBanner';
 import MeetOwners from '@/components/MeetOwners';
+import { getSiteConfig } from '@/lib/site-config';
 
 export default function Home() {
+  const config = getSiteConfig();
+  const farmStatus = config.seasonal.farmStatus;
+
   return (
     <>
       {/* Hero Section with Background Image */}
@@ -31,16 +35,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Seasonal Banner - Toggle isVisible to show/hide */}
-      <SeasonalBanner isVisible={true} />
+      {/* Seasonal Banner - Controlled by config */}
+      <SeasonalBanner />
 
-      {/* Farm Closed Information Section */}
+      {/* Farm Status Information Section */}
       <section className="py-16 bg-sage-500">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <p className="text-white text-center leading-relaxed mb-12">
-            The Farm is closed for the season.<br />
-            Stay tuned for holiday pop up events coming soon!!<br /><br />
-            During the Winter season we will host selected events in downtown Port Angeles, WA at Basecamp Bistro.<br /><br />
+            {!farmStatus.isOpen && (
+              <>
+                The Farm is closed for the season.<br />
+                {config.seasonal.homePageMessage}<br /><br />
+              </>
+            )}
+            {farmStatus.customMessage && (
+              <>
+                {farmStatus.customMessage}<br /><br />
+              </>
+            )}
             At Olympic Bluffs Cidery, we craft small-batch ciders that showcase the unique character of our orchard-grown apples.
             From pressing fresh apples to fermenting, aging, and bottling on-site, every step is guided by a commitment to quality and sustainability.
             With each bottle, our goal to capture the essence of our farm and the flavors of the Olympic Peninsula.

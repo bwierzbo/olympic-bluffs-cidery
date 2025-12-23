@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { squareClient } from '@/lib/square';
+import { createOrder } from '@/lib/orders';
+import { OrderItem } from '@/lib/types';
 import { randomUUID } from 'crypto';
+import { sendOrderConfirmation, sendFarmNotification } from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,21 +35,55 @@ export async function POST(request: NextRequest) {
 
     if (result.payment) {
       // Payment successful
-      const orderId = result.payment.id || randomUUID();
+      const paymentId = result.payment.id || randomUUID();
+      const orderId = `OB-${Date.now()}-${randomUUID().substring(0, 8)}`;
 
-      // Here you could:
-      // - Save order to database
-      // - Send confirmation email
-      // - Update inventory
-      // - Log the order details
+      // Calculate amounts
+      const shippingCost = fulfillmentMethod === 'shipping' ? 2000 : 0; // $20 flat rate shipping
+      const subtotal = amount - shippingCost;
+      const tax = 0; // Tax calculation can be added later
 
-      console.log('Payment successful:', {
-        orderId,
-        amount,
-        customerInfo,
-        fulfillmentMethod,
-        items,
-      });
+      // Transform cart items to order items
+      const orderItems: OrderItem[] = items.map((item: any) => ({
+        productId: item.productId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        variation: item.variation,
+      }));
+
+      // Save order to file system
+      try {
+        const order = await createOrder({
+          id: orderId,
+          items: orderItems,
+          customerInfo,
+          fulfillmentMethod,
+          shippingAddress,
+          subtotal,
+          shippingCost,
+          tax,
+          total: amount,
+          paymentId,
+        });
+
+        console.log('Order created successfully:', orderId);
+
+        // Send email notifications
+        try {
+          await Promise.all([
+            sendOrderConfirmation(order),
+            sendFarmNotification(order),
+          ]);
+          console.log('Email notifications sent successfully');
+        } catch (emailError) {
+          console.error('Failed to send email notifications:', emailError);
+          // Continue anyway - order was saved successfully
+        }
+      } catch (orderError) {
+        console.error('Failed to save order:', orderError);
+        // Continue anyway - payment was successful
+      }
 
       return NextResponse.json({
         success: true,

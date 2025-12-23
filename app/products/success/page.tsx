@@ -119,9 +119,17 @@ function SuccessContent() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            {orderId && (
+              <Link
+                href={`/orders/${orderId}`}
+                className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-sage-500 hover:bg-sage-600 transition-colors"
+              >
+                Track Order
+              </Link>
+            )}
             <Link
               href="/shop/lavender"
-              className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-sage-500 hover:bg-sage-600 transition-colors"
+              className="inline-flex items-center justify-center px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
             >
               Continue Shopping
             </Link>

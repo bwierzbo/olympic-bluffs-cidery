@@ -2,10 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import CartIcon from './shop/CartIcon';
 import Cart from './shop/Cart';
+import { getSiteConfig, getActiveEvent } from '@/lib/site-config';
 
 type NavigationItem = {
   name: string;
@@ -18,7 +19,45 @@ export default function Header() {
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [desktopShopOpen, setDesktopShopOpen] = useState(false);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [navigation, setNavigation] = useState<NavigationItem[]>([]);
   const pathname = usePathname();
+
+  // Build navigation with optional event tab
+  useEffect(() => {
+    const config = getSiteConfig();
+    const activeEvent = getActiveEvent();
+
+    const baseNavigation: NavigationItem[] = [
+      { name: 'HOME', href: '/' },
+      {
+        name: 'SHOP',
+        children: [
+          { name: 'Lavender', href: '/shop/lavender' },
+          { name: 'Cidery', href: '/shop/cidery' }
+        ]
+      },
+      { name: 'HOURS & LOCATION', href: '/contact' },
+      { name: 'ON THE FARM', href: '/farm' },
+      { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
+      { name: 'ABOUT US', href: '/about' },
+    ];
+
+    // Insert event tab if active
+    if (config.navigation.showEventsTab && activeEvent) {
+      const insertIndex = baseNavigation.findIndex(
+        item => item.name === activeEvent.insertAfter
+      );
+
+      if (insertIndex !== -1) {
+        baseNavigation.splice(insertIndex + 1, 0, {
+          name: activeEvent.name,
+          href: activeEvent.href
+        });
+      }
+    }
+
+    setNavigation(baseNavigation);
+  }, []);
 
   const handleMouseEnter = () => {
     if (closeTimeout) {
@@ -34,21 +73,6 @@ export default function Header() {
     }, 200); // 200ms delay before closing
     setCloseTimeout(timeout);
   };
-
-  const navigation: NavigationItem[] = [
-    { name: 'HOME', href: '/' },
-    {
-      name: 'SHOP',
-      children: [
-        { name: 'Lavender', href: '/shop/lavender' },
-        { name: 'Cidery', href: '/shop/cidery' }
-      ]
-    },
-    { name: 'HOURS & LOCATION', href: '/contact' },
-    { name: 'ON THE FARM', href: '/farm' },
-    { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
-    { name: 'ABOUT US', href: '/about' },
-  ];
 
   const isActive = (href: string) => {
     if (href === '/') return pathname === '/';

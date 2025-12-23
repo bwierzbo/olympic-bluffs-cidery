@@ -8,9 +8,10 @@ import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
+  priority?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
@@ -61,14 +62,32 @@ export default function ProductCard({ product }: ProductCardProps) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Product Image */}
-        <div className="relative h-64 mb-4">
+        {/* Product Image - Square with hover crossfade */}
+        <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100">
+          {/* Main Image */}
           <Image
             src={product.image || '/images/products/placeholder-lavender.svg'}
             alt={product.name}
             fill
-            className="object-contain transition-transform duration-300 group-hover:scale-105"
+            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            priority={priority}
+            className={`object-cover transition-all duration-300 ${
+              isHovered && product.hoverImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+            } ${isHovered && !product.hoverImage ? 'scale-105' : ''}`}
           />
+
+          {/* Hover Image (if exists) - crossfade effect */}
+          {product.hoverImage && (
+            <Image
+              src={product.hoverImage}
+              alt={`${product.name} - in use`}
+              fill
+              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              className={`absolute inset-0 object-cover transition-all duration-300 ${
+                isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
+              }`}
+            />
+          )}
 
           {/* Hover Overlay Button */}
           {product.inStock && isHovered && (
@@ -111,7 +130,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
 
           {!product.inStock && (
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
               <span className="bg-red-600 text-white px-4 py-2 rounded-md font-semibold">
                 SOLD OUT
               </span>

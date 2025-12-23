@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Product, ProductVariation } from '@/lib/types';
 import { useCart } from '@/components/shop/CartProvider';
+import ImageCarousel from '@/components/shop/ImageCarousel';
 
 // Cider descriptions - same as FeaturedCiderSection
 const ciderDescriptions: Record<string, { left: string; right: string }> = {
@@ -356,26 +357,43 @@ export default function ProductDetailPage() {
             </div>
           </div>
         ) : (
-          // Lavender Product - Centered Image with Description Below
+          // Lavender Product - Carousel or Single Image with Description Below
           <div className="max-w-4xl mx-auto mb-12">
-            <div className="relative h-[350px] sm:h-[450px] mb-8">
-              <Image
-                key={getCurrentImage()}
-                src={getCurrentImage()}
-                alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
-                fill
-                sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
-                className="object-contain drop-shadow-xl"
-                priority
-              />
-              {!product.inStock && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
-                    Out of Stock
-                  </span>
-                </div>
-              )}
-            </div>
+            {/* Use carousel if product has multiple images */}
+            {product.images && product.images.length > 0 ? (
+              <div className="mb-8">
+                <ImageCarousel
+                  images={[getCurrentImage(), ...(product.images || [])]}
+                  alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
+                />
+                {!product.inStock && (
+                  <div className="text-center mt-4">
+                    <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg inline-block">
+                      Out of Stock
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="relative h-[350px] sm:h-[450px] mb-8">
+                <Image
+                  key={getCurrentImage()}
+                  src={getCurrentImage()}
+                  alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
+                  fill
+                  sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
+                  className="object-contain drop-shadow-xl"
+                  priority
+                />
+                {!product.inStock && (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
+                      Out of Stock
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
             {product.description && (
               <p className="text-lg text-gray-700 leading-relaxed text-center max-w-2xl mx-auto">
                 {product.description}

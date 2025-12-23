@@ -27,7 +27,7 @@ export default function Contact() {
                 We are closed for the Winter Season.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                Please call us <strong>(123) 456-7890</strong> for information outside regular hours.
+                Please call us <strong>(360) 670-7206</strong> for information outside regular hours.
               </p>
             </div>
           </div>
@@ -44,12 +44,18 @@ export default function Contact() {
                 LOCATION
               </h2>
 
-              {/* Map Placeholder */}
-              <div className="bg-gray-200 rounded-lg h-48 flex items-center justify-center mb-6">
-                <svg className="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+              {/* Google Maps Embed */}
+              <div className="rounded-lg h-48 overflow-hidden mb-6">
+                <iframe
+                  src="https://www.google.com/maps?q=1025+Finn+Hall+Road,+Port+Angeles,+WA+98362&output=embed"
+                  width="100%"
+                  height="100%"
+                  style={{ border: 0 }}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title="Olympic Bluffs Cidery & Lavender Farm Location"
+                ></iframe>
               </div>
 
               <div className="text-center text-gray-600 leading-relaxed">
@@ -59,7 +65,7 @@ export default function Contact() {
                   Port Angeles, WA 98362
                 </p>
                 <p className="mt-4">
-                  <strong>(123) 456-7890</strong>
+                  <strong>(360) 670-7206</strong>
                 </p>
               </div>
             </div>

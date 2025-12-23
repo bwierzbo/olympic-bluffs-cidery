@@ -1,0 +1,52 @@
+{
+  "seasonal": {
+    "theme": "winter",
+    "banner": {
+      "visible": true,
+      "message": "THE FARM IS CLOSED FOR THE SEASON.",
+      "backgroundColor": "sage-500"
+    },
+    "homePageMessage": "Stay tuned for holiday pop up events coming soon!!",
+    "farmStatus": {
+      "isOpen": false,
+      "customMessage": "During the Winter season we will host selected events in downtown Port Angeles, WA at Basecamp Bistro."
+    }
+  },
+  "events": {
+    "active": false,
+    "name": "LAVENDER FESTIVAL",
+    "slug": "lavender-festival",
+    "href": "/events/lavender-festival",
+    "dates": "July 15-17, 2025",
+    "shortDescription": "Join us for our annual Lavender Festival!",
+    "insertAfter": "SHOP"
+  },
+  "navigation": {
+    "showEventsTab": false
+  },
+  "themeColors": {
+    "spring": {
+      "primary": "sage-500",
+      "accent": "#9b87f5"
+    },
+    "summer": {
+      "primary": "sage-600",
+      "accent": "#8b5cf6"
+    },
+    "fall": {
+      "primary": "#8b5a3c",
+      "accent": "#d97706"
+    },
+    "winter": {
+      "primary": "sage-500",
+      "accent": "#6366f1"
+    }
+  },
+  "_comments": {
+    "usage": "Edit this file to control seasonal content, events, and navigation",
+    "seasonal.theme": "Options: spring, summer, fall, winter",
+    "events.active": "Set to true to display the event, false to hide",
+    "events.insertAfter": "Navigation item after which to insert event tab (e.g., 'HOME', 'SHOP')",
+    "navigation.showEventsTab": "Master toggle for showing/hiding event navigation tab"
+  }
+}

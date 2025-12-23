@@ -1,0 +1,33 @@
+{
+  "id": "OB-1766434629197-f953ab65",
+  "items": [
+    {
+      "productId": "5I4JNNOACSJ5SMZOMSDTIGZG",
+      "name": "Lavender Dry Skin Repair Balm",
+      "quantity": 1,
+      "price": 1400
+    }
+  ],
+  "customerInfo": {
+    "email": "bwierzbo@gmail.com",
+    "firstName": "Benjamin",
+    "lastName": "Wierzbanowski",
+    "phone": "5712713751"
+  },
+  "fulfillmentMethod": "pickup",
+  "subtotal": 1400,
+  "shippingCost": 0,
+  "tax": 0,
+  "total": 1400,
+  "paymentId": "1sntlXySNhvW6YChiAikqowaaFOZY",
+  "status": "confirmed",
+  "createdAt": "2025-12-22T20:17:09.198Z",
+  "updatedAt": "2025-12-22T20:17:09.198Z",
+  "statusHistory": [
+    {
+      "status": "confirmed",
+      "timestamp": "2025-12-22T20:17:09.198Z",
+      "note": "Order confirmed and payment received"
+    }
+  ]
+}

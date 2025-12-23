@@ -1,8 +1,11 @@
-import { SquareClient } from 'square';
+import { SquareClient, SquareEnvironment } from 'square';
 
 // Initialize Square client for server-side operations
 export const squareClient = new SquareClient({
   token: process.env.SQUARE_ACCESS_TOKEN || '',
+  environment: process.env.SQUARE_ENVIRONMENT === 'production'
+    ? SquareEnvironment.Production
+    : SquareEnvironment.Sandbox,
 });
 
 // Square configuration for client-side

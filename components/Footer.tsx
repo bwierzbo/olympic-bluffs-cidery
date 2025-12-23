@@ -43,7 +43,7 @@ export default function Footer() {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex justify-center gap-8 mb-6">
+        <nav className="flex justify-center gap-8 mb-4">
           <Link href="/" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             Home
           </Link>
@@ -55,6 +55,25 @@ export default function Footer() {
           </Link>
           <Link href="/about" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             More
+          </Link>
+        </nav>
+
+        {/* Policy Links */}
+        <nav className="flex justify-center flex-wrap gap-x-4 gap-y-2 mb-6">
+          <Link href="/policies/shipping" className="text-sage-200 hover:text-white transition-colors text-xs">
+            Shipping
+          </Link>
+          <span className="text-sage-300">|</span>
+          <Link href="/policies/returns" className="text-sage-200 hover:text-white transition-colors text-xs">
+            Returns
+          </Link>
+          <span className="text-sage-300">|</span>
+          <Link href="/policies/privacy" className="text-sage-200 hover:text-white transition-colors text-xs">
+            Privacy
+          </Link>
+          <span className="text-sage-300">|</span>
+          <Link href="/policies/terms" className="text-sage-200 hover:text-white transition-colors text-xs">
+            Terms
           </Link>
         </nav>
 

@@ -1,6 +1,58 @@
 import { NextResponse } from 'next/server';
 import { squareClient } from '@/lib/square';
 import productImages from '@/config/product-images.json';
+import fs from 'fs';
+import path from 'path';
+
+// Helper to scan a product folder for images
+function scanProductFolder(folderName: string): {
+  mainImage: string;
+  hoverImage?: string;
+  images: string[];
+} {
+  const basePath = path.join(process.cwd(), 'public/images/shop/lavender', folderName);
+  const urlBase = `/images/shop/lavender/${folderName}`;
+
+  let mainImage = '/images/products/placeholder-lavender.svg';
+  let hoverImage: string | undefined = undefined;
+  const images: string[] = [];
+
+  // Check if folder exists
+  if (!fs.existsSync(basePath)) {
+    return { mainImage, hoverImage, images };
+  }
+
+  // Check for main.png (also try .jpg, .webp)
+  for (const ext of ['png', 'jpg', 'jpeg', 'webp']) {
+    if (fs.existsSync(path.join(basePath, `main.${ext}`))) {
+      mainImage = `${urlBase}/main.${ext}`;
+      break;
+    }
+  }
+
+  // Check for hover.png
+  for (const ext of ['png', 'jpg', 'jpeg', 'webp']) {
+    if (fs.existsSync(path.join(basePath, `hover.${ext}`))) {
+      hoverImage = `${urlBase}/hover.${ext}`;
+      break;
+    }
+  }
+
+  // Scan for numbered images (1.png, 2.png, etc.)
+  for (let i = 1; i <= 20; i++) {
+    let found = false;
+    for (const ext of ['png', 'jpg', 'jpeg', 'webp']) {
+      if (fs.existsSync(path.join(basePath, `${i}.${ext}`))) {
+        images.push(`${urlBase}/${i}.${ext}`);
+        found = true;
+        break;
+      }
+    }
+    if (!found) break; // Stop when sequence ends
+  }
+
+  return { mainImage, hoverImage, images };
+}
 
 export async function GET() {
   try {
@@ -73,6 +125,10 @@ export async function GET() {
 
     console.log(`=== TOTAL LAVENDER ITEMS FOUND: ${allItems.length} across ${pageCount} pages ===`);
 
+    // Get folder mappings from config
+    const folderMapping = (productImages as any).lavenderFolders as Record<string, string>;
+    const variationFolderMapping = (productImages as any).variationFolders as Record<string, string>;
+
     // Transform items to products
     const products = allItems
       .map((item: any) => {
@@ -93,15 +149,19 @@ export async function GET() {
           categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
         }
 
-        // Get image from local mapping
-        const imageMapping = productImages.images as Record<string, string>;
-        const imageDirectory = 'shop/lavender';
-        const variationImageMapping = (productImages as any).variationImages?.mappings || {};
+        // Get folder name for this product
+        const folderName = folderMapping[productName];
 
-        let imageUrl = '/images/products/placeholder-lavender.svg';
-        const localImageFile = imageMapping[productName];
-        if (localImageFile) {
-          imageUrl = `/images/${imageDirectory}/${localImageFile}`;
+        // Scan folder for images
+        let mainImage = '/images/products/placeholder-lavender.svg';
+        let hoverImage: string | undefined = undefined;
+        let carouselImages: string[] = [];
+
+        if (folderName) {
+          const scanned = scanProductFolder(folderName);
+          mainImage = scanned.mainImage;
+          hoverImage = scanned.hoverImage;
+          carouselImages = scanned.images;
         }
 
         return {
@@ -110,7 +170,9 @@ export async function GET() {
           type: itemData.productType || 'Product',
           description: itemData.description || '',
           price: Number(price),
-          image: imageUrl,
+          image: mainImage,
+          hoverImage,
+          images: carouselImages.length > 0 ? carouselImages : undefined,
           inStock: variations.some((v: any) =>
             v.itemVariationData?.availableForPickup !== false
           ),
@@ -119,11 +181,14 @@ export async function GET() {
             const variationName = v.itemVariationData?.name || itemData.name;
             const variationKey = `${productName}|${variationName}`;
 
-            // Get variation image from local mapping
+            // Get variation folder from mapping
             let variationImageUrl: string | undefined = undefined;
-            const variationImageFile = variationImageMapping[variationKey];
-            if (variationImageFile) {
-              variationImageUrl = `/images/${imageDirectory}/${variationImageFile}`;
+            const variationFolder = variationFolderMapping[variationKey];
+            if (variationFolder) {
+              const scanned = scanProductFolder(variationFolder);
+              variationImageUrl = scanned.mainImage !== '/images/products/placeholder-lavender.svg'
+                ? scanned.mainImage
+                : undefined;
             }
 
             return {

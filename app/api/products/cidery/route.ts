@@ -100,10 +100,9 @@ export async function GET() {
           categoryName = categoryMap.get(firstCategoryId) || 'Cider';
         }
 
-        // Get image from local mapping
-        const imageMapping = productImages.images as Record<string, string>;
+        // Get image from local mapping (cider uses ciderImages, not lavenderFolders)
+        const imageMapping = (productImages as any).ciderImages as Record<string, string>;
         const imageDirectory = 'shop/cider';
-        const variationImageMapping = (productImages as any).variationImages?.mappings || {};
 
         let imageUrl = '/images/products/placeholder-cider.svg';
         // Use rawProductName for image lookup since config has full Square names
@@ -188,22 +187,12 @@ export async function GET() {
           category: categoryName,
           variations: variations.map((v: any) => {
             const variationName = v.itemVariationData?.name || itemData.name;
-            // Use rawProductName for variation key since config has full Square names
-            const variationKey = `${rawProductName}|${variationName}`;
-
-            // Get variation image from local mapping
-            let variationImageUrl: string | undefined = undefined;
-            const variationImageFile = variationImageMapping[variationKey];
-            if (variationImageFile) {
-              variationImageUrl = `/images/${imageDirectory}/${variationImageFile}`;
-            }
 
             return {
               id: v.id,
               name: variationName,
               price: Number(v.itemVariationData?.priceMoney?.amount || 0),
               sku: v.itemVariationData?.sku,
-              image: variationImageUrl,
             };
           }),
         };
