@@ -292,7 +292,7 @@ Manage orders: ${adminUrl}
 
     <h2 style="font-size: 18px; margin: 30px 0 15px 0; color: #6b7566;">Fulfillment</h2>
     <div style="background-color: ${order.fulfillmentMethod === 'pickup' ? '#e8f5e9' : '#e3f2fd'}; padding: 20px; border-radius: 8px; border-left: 4px solid ${order.fulfillmentMethod === 'pickup' ? '#4caf50' : '#2196f3'}; margin-bottom: 20px;">
-      <p style="margin: 0; font-size: 18px; font-weight: bold;">${order.fulfillmentMethod === 'PICKUP' ? '📦 PICKUP' : '🚚 SHIPPING'}</p>
+      <p style="margin: 0; font-size: 18px; font-weight: bold;">${order.fulfillmentMethod === 'pickup' ? '📦 PICKUP' : '🚚 SHIPPING'}</p>
       ${order.fulfillmentMethod === 'shipping' ? `
         <p style="margin: 15px 0 0 0;"><strong>Ship To:</strong></p>
         <p style="margin: 5px 0 0 0; line-height: 1.6;">
