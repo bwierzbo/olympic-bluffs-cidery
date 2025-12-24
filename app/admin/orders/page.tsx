@@ -1,8 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { Order, OrderStatus } from '@/lib/types';
 import Link from 'next/link';
+
+// Status categories
+const ACTIVE_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'processing', 'ready', 'shipped'];
+const COMPLETED_STATUSES: OrderStatus[] = ['completed', 'cancelled'];
 
 const ADMIN_PASSWORD = 'olympicbluffs2024'; // Change this to your desired password
 
@@ -197,6 +201,36 @@ export default function AdminOrdersPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [updatingOrderId, setUpdatingOrderId] = useState<string | null>(null);
+
+  // Filter states
+  const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Filtered orders with counts
+  const { filteredOrders, activeCount, completedCount } = useMemo(() => {
+    const activeOrders = orders.filter(o => ACTIVE_STATUSES.includes(o.status));
+    const completedOrders = orders.filter(o => COMPLETED_STATUSES.includes(o.status));
+
+    const tabOrders = activeTab === 'active' ? activeOrders : completedOrders;
+
+    const searchFiltered = tabOrders.filter(order => {
+      if (!searchTerm.trim()) return true;
+      const search = searchTerm.toLowerCase();
+      return (
+        order.id.toLowerCase().includes(search) ||
+        order.customerInfo.firstName.toLowerCase().includes(search) ||
+        order.customerInfo.lastName.toLowerCase().includes(search) ||
+        order.customerInfo.email.toLowerCase().includes(search) ||
+        order.customerInfo.phone.includes(search)
+      );
+    });
+
+    return {
+      filteredOrders: searchFiltered,
+      activeCount: activeOrders.length,
+      completedCount: completedOrders.length,
+    };
+  }, [orders, activeTab, searchTerm]);
 
   // Modal states
   const [alertModal, setAlertModal] = useState<{
@@ -463,6 +497,70 @@ export default function AdminOrdersPage() {
           </div>
         )}
 
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="relative max-w-md">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              </svg>
+            </div>
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by order ID, name, email, or phone..."
+              className="block w-full pl-10 pr-10 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sage-500 focus:border-sage-500"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="mb-6 border-b border-gray-200">
+          <nav className="-mb-px flex gap-6">
+            <button
+              onClick={() => setActiveTab('active')}
+              className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'active'
+                  ? 'border-sage-500 text-sage-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Active Orders
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                activeTab === 'active' ? 'bg-sage-100 text-sage-700' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {activeCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveTab('completed')}
+              className={`py-3 px-1 border-b-2 font-medium text-sm transition-colors ${
+                activeTab === 'completed'
+                  ? 'border-sage-500 text-sage-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Completed
+              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs ${
+                activeTab === 'completed' ? 'bg-sage-100 text-sage-700' : 'bg-gray-100 text-gray-600'
+              }`}>
+                {completedCount}
+              </span>
+            </button>
+          </nav>
+        </div>
+
         {/* Orders List */}
         {loading && orders.length === 0 ? (
           <div className="text-center py-12">
@@ -473,9 +571,28 @@ export default function AdminOrdersPage() {
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
             <p className="text-gray-600 text-lg">No orders yet</p>
           </div>
+        ) : filteredOrders.length === 0 ? (
+          <div className="bg-white rounded-lg shadow-sm p-12 text-center">
+            <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
+            <p className="text-gray-600 text-lg mt-4">
+              {searchTerm
+                ? `No ${activeTab === 'active' ? 'active' : 'completed'} orders match "${searchTerm}"`
+                : `No ${activeTab === 'active' ? 'active' : 'completed'} orders`}
+            </p>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="mt-4 text-sage-600 hover:text-sage-700 font-medium"
+              >
+                Clear search
+              </button>
+            )}
+          </div>
         ) : (
           <div className="space-y-4">
-            {orders.map((order) => (
+            {filteredOrders.map((order) => (
               <div key={order.id} className="bg-white rounded-lg shadow-sm p-6">
                 <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                   {/* Order Info */}
