@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import SeasonalBanner from '@/components/SeasonalBanner';
+import LavenderFestival from '@/components/LavenderFestival';
 import MeetOwners from '@/components/MeetOwners';
 import { getSiteConfig } from '@/lib/site-config';
 
@@ -34,6 +35,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Lavender Festival Weekend */}
+      {config.events.active && <LavenderFestival />}
 
       {/* Seasonal Banner - Controlled by config */}
       <SeasonalBanner />

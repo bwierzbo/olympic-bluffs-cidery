@@ -58,6 +58,18 @@
   --color-fall-800: #92400e;
   --color-fall-900: #78350f;
 
+  /* Lavender Purple Palette - for festival/event sections */
+  --color-lavender-50: #f5f3f7;
+  --color-lavender-100: #e8e4ed;
+  --color-lavender-200: #d1c9db;
+  --color-lavender-300: #b5a8c4;
+  --color-lavender-400: #9b8bae;
+  --color-lavender-500: #8b7da3;
+  --color-lavender-600: #7a6d93;
+  --color-lavender-700: #655a7a;
+  --color-lavender-800: #534a64;
+  --color-lavender-900: #443d52;
+
   /* Winter Theme Colors */
   --color-winter-50: #eef2ff;
   --color-winter-100: #e0e7ff;

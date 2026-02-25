@@ -27,7 +27,9 @@ export default function Contact() {
                 We are closed for the Winter Season.
               </p>
               <p className="text-gray-600 leading-relaxed">
-                Please call us <strong>(360) 670-7206</strong> for information outside regular hours.
+                Please call us <strong>(571) 439-1311</strong> or email us at{' '}
+                <a href="mailto:info@olympicbluffs.com" className="text-sage-700 underline">info@olympicbluffs.com</a>{' '}
+                for information outside regular hours.
               </p>
             </div>
           </div>
@@ -47,7 +49,7 @@ export default function Contact() {
               {/* Google Maps Embed */}
               <div className="rounded-lg h-48 overflow-hidden mb-6">
                 <iframe
-                  src="https://www.google.com/maps?q=1025+Finn+Hall+Road,+Port+Angeles,+WA+98362&output=embed"
+                  src="https://maps.google.com/maps?q=1025+Finn+Hall+Road,+Port+Angeles,+WA+98362&t=&z=13&ie=UTF8&iwloc=&output=embed"
                   width="100%"
                   height="100%"
                   style={{ border: 0 }}
@@ -65,7 +67,10 @@ export default function Contact() {
                   Port Angeles, WA 98362
                 </p>
                 <p className="mt-4">
-                  <strong>(360) 670-7206</strong>
+                  <strong>(571) 439-1311</strong>
+                </p>
+                <p className="mt-1">
+                  <a href="mailto:info@olympicbluffs.com" className="text-sage-700 underline">info@olympicbluffs.com</a>
                 </p>
               </div>
             </div>
