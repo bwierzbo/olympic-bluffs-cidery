@@ -18,7 +18,7 @@ export async function createOrder(orderData: {
 }): Promise<Order> {
   const now = new Date().toISOString();
 
-  const statusHistory = [
+  const statusHistory: Order['statusHistory'] = [
     {
       status: 'confirmed',
       timestamp: now,
@@ -65,10 +65,10 @@ export async function getOrder(orderId: string): Promise<Order | null> {
 
     return {
       id: dbOrder.id,
-      items: dbOrder.items as OrderItem[],
-      customerInfo: dbOrder.customerInfo as CustomerInfo,
+      items: dbOrder.items as unknown as OrderItem[],
+      customerInfo: dbOrder.customerInfo as unknown as CustomerInfo,
       fulfillmentMethod: dbOrder.fulfillmentMethod as FulfillmentMethod,
-      shippingAddress: dbOrder.shippingAddress as ShippingAddress | undefined,
+      shippingAddress: dbOrder.shippingAddress as unknown as ShippingAddress | undefined,
       subtotal: dbOrder.subtotal,
       shippingCost: dbOrder.shippingCost,
       tax: dbOrder.tax,
@@ -120,10 +120,10 @@ export async function updateOrderStatus(
 
   return {
     id: dbOrder.id,
-    items: dbOrder.items as OrderItem[],
-    customerInfo: dbOrder.customerInfo as CustomerInfo,
+    items: dbOrder.items as unknown as OrderItem[],
+    customerInfo: dbOrder.customerInfo as unknown as CustomerInfo,
     fulfillmentMethod: dbOrder.fulfillmentMethod as FulfillmentMethod,
-    shippingAddress: dbOrder.shippingAddress as ShippingAddress | undefined,
+    shippingAddress: dbOrder.shippingAddress as unknown as ShippingAddress | undefined,
     subtotal: dbOrder.subtotal,
     shippingCost: dbOrder.shippingCost,
     tax: dbOrder.tax,
@@ -147,10 +147,10 @@ export async function getAllOrders(): Promise<Order[]> {
 
     return dbOrders.map(dbOrder => ({
       id: dbOrder.id,
-      items: dbOrder.items as OrderItem[],
-      customerInfo: dbOrder.customerInfo as CustomerInfo,
+      items: dbOrder.items as unknown as OrderItem[],
+      customerInfo: dbOrder.customerInfo as unknown as CustomerInfo,
       fulfillmentMethod: dbOrder.fulfillmentMethod as FulfillmentMethod,
-      shippingAddress: dbOrder.shippingAddress as ShippingAddress | undefined,
+      shippingAddress: dbOrder.shippingAddress as unknown as ShippingAddress | undefined,
       subtotal: dbOrder.subtotal,
       shippingCost: dbOrder.shippingCost,
       tax: dbOrder.tax,
@@ -184,10 +184,10 @@ export async function getOrdersByEmail(email: string): Promise<Order[]> {
 
     return dbOrders.map(dbOrder => ({
       id: dbOrder.id,
-      items: dbOrder.items as OrderItem[],
-      customerInfo: dbOrder.customerInfo as CustomerInfo,
+      items: dbOrder.items as unknown as OrderItem[],
+      customerInfo: dbOrder.customerInfo as unknown as CustomerInfo,
       fulfillmentMethod: dbOrder.fulfillmentMethod as FulfillmentMethod,
-      shippingAddress: dbOrder.shippingAddress as ShippingAddress | undefined,
+      shippingAddress: dbOrder.shippingAddress as unknown as ShippingAddress | undefined,
       subtotal: dbOrder.subtotal,
       shippingCost: dbOrder.shippingCost,
       tax: dbOrder.tax,
