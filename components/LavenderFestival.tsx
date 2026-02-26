@@ -6,7 +6,7 @@ const schedule = {
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
-      'Live Music by\nNightingale 1-3 pm',
+      'Live Music\nTBD',
     ],
   },
   saturday: {
@@ -22,7 +22,7 @@ const schedule = {
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
-      'Live Music by\nNightingale 1:30-3:30 pm',
+      'Live Music\nTBD',
     ],
   },
 };
@@ -77,7 +77,7 @@ export default function LavenderFestival() {
             LAVENDER FESTIVAL WEEKEND
           </h2>
           <p className="text-xl md:text-2xl font-bold text-white tracking-[0.15em]">
-            JULY 18-20, 2025
+            JULY 17-20, 2026
           </p>
         </div>
       </section>

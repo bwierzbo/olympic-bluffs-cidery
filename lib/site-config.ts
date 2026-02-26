@@ -27,6 +27,7 @@ export interface SiteConfig {
   };
   navigation: {
     showEventsTab: boolean;
+    showShop: boolean;
   };
   themeColors: {
     spring: { primary: string; accent: string };

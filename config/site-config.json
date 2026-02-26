@@ -13,16 +13,17 @@
     }
   },
   "events": {
-    "active": false,
+    "active": true,
     "name": "LAVENDER FESTIVAL",
     "slug": "lavender-festival",
     "href": "/events/lavender-festival",
-    "dates": "July 18-20, 2025",
+    "dates": "July 17-20, 2026",
     "shortDescription": "Join us for our annual Lavender Festival Weekend! Artisan vendors, food trucks, kite flying, and live music.",
     "insertAfter": "SHOP"
   },
   "navigation": {
-    "showEventsTab": false
+    "showEventsTab": true,
+    "showShop": false
   },
   "themeColors": {
     "spring": {

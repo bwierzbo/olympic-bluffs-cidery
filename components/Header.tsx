@@ -20,22 +20,24 @@ export default function Header() {
   const [desktopShopOpen, setDesktopShopOpen] = useState(false);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   const [navigation, setNavigation] = useState<NavigationItem[]>([]);
+  const [showShop, setShowShop] = useState(false);
   const pathname = usePathname();
 
   // Build navigation with optional event tab
   useEffect(() => {
     const config = getSiteConfig();
+    setShowShop(config.navigation.showShop);
     const activeEvent = getActiveEvent();
 
     const baseNavigation: NavigationItem[] = [
       { name: 'HOME', href: '/' },
-      {
+      ...(config.navigation.showShop ? [{
         name: 'SHOP',
         children: [
           { name: 'Lavender', href: '/shop/lavender' },
           { name: 'Cidery', href: '/shop/cidery' }
         ]
-      },
+      }] : []),
       { name: 'HOURS & LOCATION', href: '/contact' },
       { name: 'ON THE FARM', href: '/farm' },
       { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
@@ -152,9 +154,11 @@ export default function Header() {
             ))}
           </div>
           {/* Cart Icon - Desktop only, far right */}
-          <div className="ml-4">
-            <CartIcon />
-          </div>
+          {showShop && (
+            <div className="ml-4">
+              <CartIcon />
+            </div>
+          )}
         </div>
 
         {/* Logo Section */}
@@ -175,7 +179,7 @@ export default function Header() {
           {/* Mobile menu and cart buttons */}
           <div className="flex items-center gap-2 lg:hidden">
             {/* Cart Icon - Mobile only */}
-            <CartIcon />
+            {showShop && <CartIcon />}
 
             {/* Mobile menu button */}
             <button
