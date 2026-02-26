@@ -1,15 +1,15 @@
 {
   "seasonal": {
-    "theme": "winter",
+    "theme": "spring",
     "banner": {
       "visible": true,
-      "message": "THE FARM IS CLOSED FOR THE SEASON.",
+      "message": "THE FARM OPENS APRIL 30TH! THURSDAY - SUNDAY, 12 - 5 PM",
       "backgroundColor": "sage-500"
     },
-    "homePageMessage": "Stay tuned for holiday pop up events coming soon!!",
+    "homePageMessage": "The farm opens April 30th! Join us Thursday through Sunday, 12 - 5 pm.",
     "farmStatus": {
-      "isOpen": false,
-      "customMessage": "During the Winter season we will host selected events in downtown Port Angeles, WA at Basecamp Bistro."
+      "isOpen": true,
+      "customMessage": "The farm, gift shop, and cidery are open Thursday - Sunday, 12 - 5 pm. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm."
     }
   },
   "events": {

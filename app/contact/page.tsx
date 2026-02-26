@@ -24,7 +24,8 @@ export default function Contact() {
                 FARM HOURS
               </h1>
               <p className="text-gray-600 mb-4 leading-relaxed">
-                We are closed for the Winter Season.
+                Open April 30th - Thursday through Sunday, 12 - 5 pm<br />
+                Lavender Festival Weekend (July 17-20): 10 am - 5 pm
               </p>
               <p className="text-gray-600 leading-relaxed">
                 Please call us <strong>(571) 439-1311</strong> or email us at{' '}
