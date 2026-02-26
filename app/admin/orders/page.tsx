@@ -8,7 +8,6 @@ import Link from 'next/link';
 const ACTIVE_STATUSES: OrderStatus[] = ['pending', 'confirmed', 'processing', 'ready', 'shipped'];
 const COMPLETED_STATUSES: OrderStatus[] = ['completed', 'cancelled'];
 
-const ADMIN_PASSWORD = 'olympicbluffs2024'; // Change this to your desired password
 
 // Modal Component
 function Modal({
@@ -271,17 +270,31 @@ export default function AdminOrdersPage() {
     }
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      sessionStorage.setItem('admin_auth', 'true');
-      fetchOrders();
-    } else {
+    try {
+      const res = await fetch('/api/admin/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+      if (res.ok) {
+        setIsAuthenticated(true);
+        sessionStorage.setItem('admin_auth', 'true');
+        fetchOrders();
+      } else {
+        setAlertModal({
+          isOpen: true,
+          title: 'Login Failed',
+          message: 'Incorrect password. Please try again.',
+          type: 'error',
+        });
+      }
+    } catch {
       setAlertModal({
         isOpen: true,
         title: 'Login Failed',
-        message: 'Incorrect password. Please try again.',
+        message: 'Unable to verify password. Please try again.',
         type: 'error',
       });
     }

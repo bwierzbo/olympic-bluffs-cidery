@@ -469,10 +469,10 @@ Status: 🎉 Ready for Pickup
 
 Pickup Location:
 Olympic Bluffs Cidery & Lavender Farm
-[Add your farm address]
+1025 Finn Hall Road, Port Angeles, WA 98362
 
 Pickup Hours:
-[Add your pickup hours]
+Please call (571) 439-1311 for pickup hours
 
 What to bring:
 • Your order number: ${order.id}
@@ -520,12 +520,12 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
           <h3 style="margin-top: 0;">Pickup Location:</h3>
           <p style="margin: 10px 0;">
             <strong>Olympic Bluffs Cidery & Lavender Farm</strong><br>
-            [Add your farm address here]
+            1025 Finn Hall Road, Port Angeles, WA 98362
           </p>
 
           <h3 style="margin-top: 20px;">Pickup Hours:</h3>
           <p style="margin: 10px 0;">
-            [Add your pickup hours here]
+            Please call (571) 439-1311 for pickup hours
           </p>
 
           <p style="margin-top: 20px;"><strong>What to bring:</strong></p>
@@ -545,7 +545,7 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
 
         <div class="footer">
           <p>Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!</p>
-          <p>Questions? Reply to this email or call us at [your phone number].</p>
+          <p>Questions? Reply to this email or call us at (571) 439-1311.</p>
         </div>
       </div>
     </div>
