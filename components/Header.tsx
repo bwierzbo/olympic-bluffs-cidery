@@ -55,6 +55,13 @@ export default function Header() {
           name: activeEvent.name,
           href: activeEvent.href
         });
+      } else {
+        // If insertAfter target not found (e.g. shop hidden), insert after HOME
+        const homeIndex = baseNavigation.findIndex(item => item.name === 'HOME');
+        baseNavigation.splice(homeIndex + 1, 0, {
+          name: activeEvent.name,
+          href: activeEvent.href
+        });
       }
     }
 
