@@ -25,8 +25,31 @@ model Order {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   statusHistory    Json     // Array of OrderStatusUpdate objects
+  trackingNumber   String?  // tracking number for shipped orders
+  adminNotes       String?  // internal notes (not shown to customer)
+  auditLog         OrderAuditLog[]
 
   @@index([status])
   @@index([createdAt])
+  @@index([fulfillmentMethod])
+  @@index([paymentId])
   @@map("orders")
+}
+
+model OrderAuditLog {
+  id          String   @id @default(uuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  action      String   // "status_change", "tracking_added", "note_added", "bulk_status_change"
+  actor       String   // "admin", "system", "customer"
+  fromStatus  String?  // previous status (null for non-status actions)
+  toStatus    String?  // new status (null for non-status actions)
+  note        String?  // optional note or reason
+  metadata    Json?    // extra data (tracking number, bulk operation ID, etc.)
+  createdAt   DateTime @default(now())
+
+  @@index([orderId])
+  @@index([createdAt])
+  @@index([action])
+  @@map("order_audit_log")
 }

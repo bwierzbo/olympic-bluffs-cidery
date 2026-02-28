@@ -60,11 +60,11 @@ export interface CustomerInfo {
 export type FulfillmentMethod = 'pickup' | 'shipping';
 
 export type OrderStatus =
-  | 'pending'      // Payment initiated but not confirmed
   | 'confirmed'    // Payment successful, order confirmed
   | 'processing'   // Order being prepared
   | 'ready'        // Ready for pickup (pickup orders)
   | 'shipped'      // Shipped (shipping orders)
+  | 'on_hold'      // Order paused, requires note
   | 'completed'    // Order fulfilled
   | 'cancelled';   // Order cancelled
 
@@ -108,4 +108,56 @@ export interface PaymentResult {
   orderId?: string;
   error?: string;
   payment?: any; // Square payment object
+}
+
+// Audit Log Types
+export interface OrderAuditEntry {
+  id: string;
+  orderId: string;
+  action: 'status_change' | 'tracking_added' | 'note_added' | 'bulk_status_change';
+  actor: 'admin' | 'system' | 'customer';
+  fromStatus: OrderStatus | null;
+  toStatus: OrderStatus | null;
+  note: string | null;
+  metadata: Record<string, unknown> | null;
+  createdAt: string; // ISO date string
+}
+
+// Pagination Types
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+// Admin Filters
+export interface OrderListFilters {
+  status?: OrderStatus | OrderStatus[];
+  fulfillmentMethod?: FulfillmentMethod;
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  sortBy?: 'createdAt' | 'updatedAt' | 'total' | 'status';
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Bulk Operations
+export interface BulkStatusUpdateRequest {
+  orderIds: string[];
+  status: OrderStatus;
+  note?: string;
+}
+
+export interface BulkStatusUpdateResponse {
+  succeeded: string[];
+  failed: Array<{
+    orderId: string;
+    error: string;
+  }>;
 }

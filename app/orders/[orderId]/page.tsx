@@ -38,17 +38,17 @@ export default function OrderTrackingPage() {
   }, [orderId]);
 
   const getStatusInfo = (status: OrderStatus) => {
-    const statusMap = {
-      pending: { label: 'Pending', color: 'bg-gray-100 text-gray-800', icon: '⏳' },
+    const statusMap: Record<OrderStatus, { label: string; color: string; icon: string }> = {
       confirmed: { label: 'Confirmed', color: 'bg-green-100 text-green-800', icon: '✓' },
       processing: { label: 'Processing', color: 'bg-blue-100 text-blue-800', icon: '📦' },
       ready: { label: 'Ready for Pickup', color: 'bg-purple-100 text-purple-800', icon: '🎉' },
       shipped: { label: 'Shipped', color: 'bg-indigo-100 text-indigo-800', icon: '🚚' },
+      on_hold: { label: 'On Hold', color: 'bg-orange-100 text-orange-800', icon: '⏸' },
       completed: { label: 'Completed', color: 'bg-green-100 text-green-800', icon: '✅' },
       cancelled: { label: 'Cancelled', color: 'bg-red-100 text-red-800', icon: '✕' },
     };
 
-    return statusMap[status] || statusMap.pending;
+    return statusMap[status] || { label: status, color: 'bg-gray-100 text-gray-800', icon: '?' };
   };
 
   const getProgressSteps = () => {

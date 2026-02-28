@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { createAdminToken, setAdminCookie } from '@/lib/admin-auth';
 
 export async function POST(request: Request) {
   const { password } = await request.json();
@@ -8,7 +9,10 @@ export async function POST(request: Request) {
   }
 
   if (password === process.env.ADMIN_PASSWORD) {
-    return NextResponse.json({ success: true });
+    const token = createAdminToken();
+    const response = NextResponse.json({ success: true });
+    setAdminCookie(response, token);
+    return response;
   }
 
   return NextResponse.json({ error: 'Invalid password' }, { status: 401 });

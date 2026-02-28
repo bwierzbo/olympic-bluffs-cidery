@@ -19,11 +19,11 @@ export async function POST(
 
     // Validate status
     const validStatuses: OrderStatus[] = [
-      'pending',
       'confirmed',
       'processing',
       'ready',
       'shipped',
+      'on_hold',
       'completed',
       'cancelled',
     ];
@@ -60,7 +60,7 @@ export async function POST(
         case 'completed':
           await sendCompletedEmail(updatedOrder);
           break;
-        // No email for 'pending', 'confirmed', or 'cancelled' (handled elsewhere)
+        // No email for 'confirmed', 'on_hold', or 'cancelled' (handled elsewhere)
       }
       console.log(`Follow-up email sent for status: ${status}`);
     } catch (emailError) {
