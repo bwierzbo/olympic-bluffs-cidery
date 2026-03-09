@@ -6,7 +6,7 @@ const schedule = {
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
-      'Live Music\nTBD',
+      'Live Music by\nNightingale 1-3',
     ],
   },
   saturday: {
@@ -14,7 +14,7 @@ const schedule = {
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
-      'Live Music by\nBread & Gravy 1:30-3:30',
+      'Live Music by\nBread & Gravy 2-4',
     ],
   },
   sunday: {
@@ -22,7 +22,7 @@ const schedule = {
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
-      'Live Music\nTBD',
+      'Live Music by\nSalty All Day 1-3',
     ],
   },
 };
