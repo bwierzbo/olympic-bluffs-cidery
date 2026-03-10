@@ -29,8 +29,7 @@ export default function Home() {
               to the farm
             </p>
             <p className="text-sm md:text-base text-gray-600 leading-relaxed">
-              Graded between the Olympic Mountain Range and the Strait of Juan De Fuca, the Sequim Valley and Lavender
-              form the northwest area of the exiting 8 mountains.
+              Cradled between the Olympic Mountain Range and the Strait of Juan de Fuca, our Cidery and Lavender farm has sweeping views of the ocean & mountains.
             </p>
           </div>
         </div>
