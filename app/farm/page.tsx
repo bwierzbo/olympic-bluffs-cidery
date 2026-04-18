@@ -53,7 +53,7 @@ export default function Farm() {
         </svg>
       ),
       question: 'IS THE CIDERY CURRENTLY OPEN?',
-      answer: 'Yes! The cidery is open Thursday - Sunday, 12 - 5 pm starting April 30th.',
+      answer: 'Yes! The cidery is open Thursday - Sunday, 12 - 5 pm starting April 24th.',
     },
     {
       icon: (
@@ -89,7 +89,7 @@ export default function Farm() {
         </svg>
       ),
       question: 'IS THE FARM OPEN ALL YEAR?',
-      answer: 'For 2026, the farm, gift shop, and cidery open April 30th. Thursday - Sunday: 12 - 5 pm. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm.',
+      answer: 'For 2026, the farm, gift shop, and cidery open April 24th. Thursday - Sunday: 12 - 5 pm. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm.',
     },
   ];
 
