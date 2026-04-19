@@ -163,7 +163,7 @@ export default function Header() {
           {/* Cart Icon - Desktop only, far right */}
           {showShop && (
             <div className="ml-4">
-              <CartIcon />
+              <CartIcon vinoShipper={pathname.startsWith('/shop/cidery')} />
             </div>
           )}
         </div>
@@ -186,7 +186,7 @@ export default function Header() {
           {/* Mobile menu and cart buttons */}
           <div className="flex items-center gap-2 lg:hidden">
             {/* Cart Icon - Mobile only */}
-            {showShop && <CartIcon />}
+            {showShop && <CartIcon vinoShipper={pathname.startsWith('/shop/cidery')} />}
 
             {/* Mobile menu button */}
             <button

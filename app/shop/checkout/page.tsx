@@ -21,11 +21,6 @@ export default function CheckoutPage() {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
 
-  // Check if cart contains cider products (shipping not available for cider)
-  const hasCiderInCart = items.some(item =>
-    item.product.category?.toLowerCase().includes('cider')
-  );
-
   // Fulfillment
   const [fulfillmentMethod, setFulfillmentMethod] = useState<'pickup' | 'shipping'>('pickup');
 
@@ -39,13 +34,6 @@ export default function CheckoutPage() {
   // Google Places Autocomplete
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
-
-  // Force pickup method if cart contains cider
-  useEffect(() => {
-    if (hasCiderInCart && fulfillmentMethod === 'shipping') {
-      setFulfillmentMethod('pickup');
-    }
-  }, [hasCiderInCart, fulfillmentMethod]);
 
   // Square Payment
   const [card, setCard] = useState<any>(null);
@@ -165,7 +153,7 @@ export default function CheckoutPage() {
     // Track if component is still mounted to prevent state updates after unmount
     let isMounted = true;
 
-    const initSquare = async () => {
+    const initSquare = async (appId: string, locId: string) => {
       if (!window.Square) {
         console.error('Square.js failed to load');
         if (isMounted) {
@@ -198,10 +186,7 @@ export default function CheckoutPage() {
           return;
         }
 
-        const paymentsInstance = window.Square.payments(
-          process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID!,
-          process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!
-        );
+        const paymentsInstance = window.Square.payments(appId, locId);
 
         if (!isMounted) {
           isInitializingRef.current = false;
@@ -229,25 +214,47 @@ export default function CheckoutPage() {
       }
     };
 
-    // Load Square.js script
-    const existingScript = document.querySelector('script[src*="square.js"]');
+    // Fetch Square config from server then load the SDK
+    const loadSquare = async () => {
+      let cdnUrl = 'https://web.squarecdn.com/v1/square.js';
+      let appId = '';
+      let locId = '';
 
-    if (window.Square) {
-      // Square is already loaded
-      initSquare();
-    } else if (!existingScript) {
-      // Script doesn't exist, create it
-      const scriptElement = document.createElement('script');
-      scriptElement.src = 'https://sandbox.web.squarecdn.com/v1/square.js';
-      scriptElement.async = true;
-      scriptElement.onload = () => initSquare();
-      scriptElement.onerror = () => {
-        if (isMounted) {
-          setError('Failed to load payment system. Please check your internet connection.');
+      try {
+        const res = await fetch('/api/square-config');
+        if (res.ok) {
+          const config = await res.json();
+          cdnUrl = config.cdnUrl;
+          appId = config.applicationId;
+          locId = config.locationId;
         }
-        isInitializingRef.current = false;
-      };
-      document.body.appendChild(scriptElement);
+      } catch {
+        // Fall back to env vars
+      }
+
+      if (!isMounted) return;
+
+      // Remove any existing Square script if CDN changed
+      const existingScript = document.querySelector('script[src*="square.js"]');
+      if (existingScript && existingScript.getAttribute('src') !== cdnUrl) {
+        existingScript.remove();
+        delete (window as any).Square;
+      }
+
+      if (window.Square) {
+        initSquare(appId, locId);
+      } else if (!document.querySelector(`script[src="${cdnUrl}"]`)) {
+        const scriptElement = document.createElement('script');
+        scriptElement.src = cdnUrl;
+        scriptElement.async = true;
+        scriptElement.onload = () => initSquare(appId, locId);
+        scriptElement.onerror = () => {
+          if (isMounted) {
+            setError('Failed to load payment system. Please check your internet connection.');
+          }
+          isInitializingRef.current = false;
+        };
+        document.body.appendChild(scriptElement);
     } else {
       // Script exists but may not be loaded yet, wait for it
       checkIntervalRef.current = setInterval(() => {
@@ -256,7 +263,7 @@ export default function CheckoutPage() {
             clearInterval(checkIntervalRef.current);
             checkIntervalRef.current = null;
           }
-          initSquare();
+          initSquare(appId, locId);
         }
       }, 100);
 
@@ -271,7 +278,10 @@ export default function CheckoutPage() {
           isInitializingRef.current = false;
         }
       }, 10000);
-    }
+      }
+    };
+
+    loadSquare();
 
     return () => {
       isMounted = false;
@@ -484,35 +494,6 @@ export default function CheckoutPage() {
                   Fulfillment Method
                 </h2>
 
-                {/* Cider pickup notice */}
-                {hasCiderInCart && (
-                  <div className="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-md">
-                    <div className="flex items-start gap-3">
-                      <svg
-                        className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="2"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-                        />
-                      </svg>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-amber-900">
-                          Your cart contains cider products
-                        </p>
-                        <p className="text-sm text-amber-700 mt-1">
-                          Cider is currently available for pickup only at Olympic Bluffs Cidery & Lavender Farm. Shipping for cider products coming soon!
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
                 <div className="space-y-3">
                   <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                     <input
@@ -534,31 +515,22 @@ export default function CheckoutPage() {
                     <div className="font-semibold text-sage-600">FREE</div>
                   </label>
 
-                  <label className={`flex items-start gap-3 p-4 border-2 rounded-md transition-colors ${
-                    hasCiderInCart
-                      ? 'opacity-50 cursor-not-allowed bg-gray-50'
-                      : 'cursor-pointer hover:bg-gray-50'
-                  }`}>
+                  <label className="flex items-start gap-3 p-4 border-2 rounded-md cursor-pointer hover:bg-gray-50 transition-colors">
                     <input
                       type="radio"
                       name="fulfillment"
                       value="shipping"
                       checked={fulfillmentMethod === 'shipping'}
                       onChange={() => setFulfillmentMethod('shipping')}
-                      disabled={hasCiderInCart}
                       className="mt-1"
                     />
                     <div className="flex-1">
                       <div className="font-medium text-gray-900">Shipping</div>
                       <div className="text-sm text-gray-600">
-                        {hasCiderInCart
-                          ? 'Not available for cider products - pickup only'
-                          : 'Have your order shipped to your address'}
+                        Have your order shipped to your address
                       </div>
                     </div>
-                    <div className={`font-semibold ${hasCiderInCart ? 'text-amber-600' : 'text-gray-900'}`}>
-                      {hasCiderInCart ? 'Coming Soon' : '$20.00'}
-                    </div>
+                    <div className="font-semibold text-gray-900">$20.00</div>
                   </label>
                 </div>
               </div>

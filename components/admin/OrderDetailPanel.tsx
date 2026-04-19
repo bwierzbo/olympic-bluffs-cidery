@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { OrderStatus } from '@/lib/types';
 import { useOrderDetail } from '@/lib/hooks/useOrderDetail';
 import { useStatusUpdate } from '@/lib/hooks/useStatusUpdate';
@@ -35,6 +35,7 @@ export default function OrderDetailPanel({ orderId, onClose, onOrderUpdated }: O
   const { order, auditLog, loading, error, refetch } = useOrderDetail(orderId);
 
   const [transitionTarget, setTransitionTarget] = useState<OrderStatus | null>(null);
+  const [auditExpanded, setAuditExpanded] = useState(false);
 
   const { updating, updateStatus, addTracking, addNote } = useStatusUpdate({
     onSuccess: (id, newStatus) => {
@@ -241,8 +242,25 @@ export default function OrderDetailPanel({ orderId, onClose, onOrderUpdated }: O
 
               {/* Audit Timeline */}
               <section>
-                <h3 className="text-sm font-semibold text-gray-700 mb-2">Activity</h3>
-                <AuditTimeline entries={auditLog} loading={loading} />
+                <button
+                  onClick={() => setAuditExpanded(!auditExpanded)}
+                  className="flex items-center gap-1 text-sm font-semibold text-gray-700 mb-2 hover:text-gray-900"
+                >
+                  <svg
+                    className={`h-4 w-4 transition-transform ${auditExpanded ? 'rotate-90' : ''}`}
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2"
+                    stroke="currentColor"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                  Activity
+                  {auditLog.length > 0 && (
+                    <span className="text-xs font-normal text-gray-400 ml-1">({auditLog.length})</span>
+                  )}
+                </button>
+                {auditExpanded && <AuditTimeline entries={auditLog} loading={loading} />}
               </section>
             </>
           )}

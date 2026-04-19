@@ -363,7 +363,7 @@ export default function ProductDetailPage() {
             {product.images && product.images.length > 0 ? (
               <div className="mb-8">
                 <ImageCarousel
-                  images={[getCurrentImage(), ...(product.images || [])]}
+                  images={product.images}
                   alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
                 />
                 {!product.inStock && (

@@ -64,9 +64,12 @@ export function generateOrderConfirmationEmail(order: Order): EmailTemplate {
   const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
 
   const text = `
-Order Confirmation - Olympic Bluffs Cidery & Lavender Farm
+Olympic Bluffs Cidery & Lavender Farm
+Order Confirmation
 
-Thank you for your order!
+Hi ${order.customerInfo.firstName},
+
+Thank you for your order! We're so glad you chose Olympic Bluffs.
 
 Order Number: ${order.id}
 Order Date: ${new Date(order.createdAt).toLocaleDateString()}
@@ -74,20 +77,18 @@ Order Date: ${new Date(order.createdAt).toLocaleDateString()}
 ITEMS:
 ${itemsList}
 
-TOTALS:
 Subtotal: $${(order.subtotal / 100).toFixed(2)}
 ${order.shippingCost > 0 ? `Shipping: $${(order.shippingCost / 100).toFixed(2)}` : 'Shipping: FREE (Pickup)'}
 ${order.tax > 0 ? `Tax: $${(order.tax / 100).toFixed(2)}` : ''}
 Total: $${(order.total / 100).toFixed(2)}
 
-FULFILLMENT:
-${order.fulfillmentMethod === 'pickup' ? 'Pickup at Olympic Bluffs Cidery & Lavender Farm' : `Shipping to:\n${order.shippingAddress?.addressLine1}\n${order.shippingAddress?.city}, ${order.shippingAddress?.state} ${order.shippingAddress?.postalCode}`}
+${order.fulfillmentMethod === 'pickup' ? 'Pickup at Olympic Bluffs Cidery & Lavender Farm\n1025 Finn Hall Road, Port Angeles, WA 98362' : `Shipping to:\n${order.shippingAddress?.fullName}\n${order.shippingAddress?.addressLine1}\n${order.shippingAddress?.city}, ${order.shippingAddress?.state} ${order.shippingAddress?.postalCode}`}
 
 Track your order: ${trackingUrl}
 
-Questions? Contact us at the farm or visit our website.
+Questions? Email us at info@olympicbluffs.com
 
-Thank you for supporting Olympic Bluffs!
+Thank you for supporting our family farm!
   `.trim();
 
   const html = `
@@ -98,107 +99,135 @@ Thank you for supporting Olympic Bluffs!
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Order Confirmation</title>
 </head>
-<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background-color: #6b7566; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
-    <h1 style="margin: 0; font-size: 24px;">Order Confirmation</h1>
-    <p style="margin: 10px 0 0 0; opacity: 0.9;">Olympic Bluffs Cidery & Lavender Farm</p>
-  </div>
+<body style="margin: 0; padding: 0; background-color: #f4f3f1; font-family: Georgia, 'Times New Roman', serif; color: #3a3a3a;">
+  <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
 
-  <div style="background-color: #f9f9f9; padding: 30px; border-radius: 0 0 8px 8px;">
-    <p style="font-size: 16px; margin-top: 0;">Thank you for your order!</p>
-
-    <div style="background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0;">
-      <p style="margin: 0; color: #666; font-size: 14px;">Order Number</p>
-      <p style="margin: 5px 0 0 0; font-family: monospace; font-size: 18px; font-weight: bold;">${order.id}</p>
-      <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+    <!-- Header -->
+    <div style="background-color: #6b7566; padding: 40px 30px; text-align: center; border-radius: 12px 12px 0 0;">
+      <h1 style="margin: 0; font-size: 26px; color: #ffffff; font-weight: 400; letter-spacing: 1px;">OLYMPIC BLUFFS</h1>
+      <p style="margin: 6px 0 0 0; font-size: 12px; color: rgba(255,255,255,0.75); letter-spacing: 2px; text-transform: uppercase;">Cidery & Lavender Farm</p>
     </div>
 
-    <h2 style="font-size: 18px; margin: 30px 0 15px 0;">Order Items</h2>
-    <div style="background-color: white; padding: 20px; border-radius: 8px;">
+    <!-- Main Content -->
+    <div style="background-color: #ffffff; padding: 40px 35px;">
+
+      <!-- Greeting -->
+      <p style="font-size: 17px; margin: 0 0 5px 0; color: #6b7566; font-weight: 600;">Thank you, ${order.customerInfo.firstName}!</p>
+      <p style="font-size: 15px; margin: 0 0 30px 0; color: #666; line-height: 1.6;">Your order has been confirmed. Here's a summary of what you ordered.</p>
+
+      <!-- Order Number -->
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: 30px;">
+        <tr>
+          <td style="background-color: #f8f7f5; padding: 18px 20px; border-radius: 8px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td>
+                  <span style="font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Order Number</span><br>
+                  <span style="font-family: 'Courier New', monospace; font-size: 16px; font-weight: bold; color: #3a3a3a;">${order.id}</span>
+                </td>
+                <td align="right">
+                  <span style="font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Date</span><br>
+                  <span style="font-size: 14px; color: #3a3a3a;">${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Divider -->
+      <div style="border-top: 1px solid #e8e6e3; margin: 0 0 25px 0;"></div>
+
+      <!-- Items -->
+      <p style="font-size: 13px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 15px 0;">Items Ordered</p>
       ${order.items
         .map(
-          item => `
-        <div style="padding: 10px 0; border-bottom: 1px solid #eee;">
-          <div style="display: flex; justify-content: space-between; align-items: start;">
-            <div>
-              <strong>${item.name}</strong>
-              ${item.variation ? `<div style="font-size: 14px; color: #666;">${item.variation.name}</div>` : ''}
-              <div style="font-size: 14px; color: #666;">Quantity: ${item.quantity}</div>
-            </div>
-            <div style="font-weight: bold;">$${((item.price * item.quantity) / 100).toFixed(2)}</div>
-          </div>
-        </div>
+          (item, i) => `
+        <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom: ${i < order.items.length - 1 ? '12' : '0'}px;">
+          <tr>
+            <td style="padding: 12px 0; ${i < order.items.length - 1 ? 'border-bottom: 1px solid #f0eeeb;' : ''}">
+              <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td>
+                    <span style="font-size: 15px; font-weight: 600; color: #3a3a3a;">${item.name}</span>
+                    ${item.variation ? `<br><span style="font-size: 13px; color: #888;">${item.variation.name}</span>` : ''}
+                    <br><span style="font-size: 13px; color: #888;">Qty: ${item.quantity}</span>
+                  </td>
+                  <td align="right" valign="top" style="font-size: 15px; font-weight: 600; color: #3a3a3a;">$${((item.price * item.quantity) / 100).toFixed(2)}</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
       `
         )
         .join('')}
 
-      <div style="margin-top: 20px; padding-top: 15px; border-top: 2px solid #eee;">
-        <div style="display: flex; justify-content: space-between; margin: 8px 0;">
-          <span>Subtotal</span>
-          <span>$${(order.subtotal / 100).toFixed(2)}</span>
-        </div>
+      <!-- Totals -->
+      <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top: 20px; border-top: 2px solid #e8e6e3; padding-top: 15px;">
+        <tr>
+          <td style="padding: 8px 0; font-size: 14px; color: #666;">Subtotal</td>
+          <td align="right" style="padding: 8px 0; font-size: 14px; color: #3a3a3a;">$${(order.subtotal / 100).toFixed(2)}</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-size: 14px; color: #666;">Shipping</td>
+          <td align="right" style="padding: 8px 0; font-size: 14px; ${order.shippingCost > 0 ? 'color: #3a3a3a;' : 'color: #6b7566; font-weight: 600;'}">${order.shippingCost > 0 ? `$${(order.shippingCost / 100).toFixed(2)}` : 'FREE'}</td>
+        </tr>
+        ${order.tax > 0 ? `
+        <tr>
+          <td style="padding: 8px 0; font-size: 14px; color: #666;">Tax</td>
+          <td align="right" style="padding: 8px 0; font-size: 14px; color: #3a3a3a;">$${(order.tax / 100).toFixed(2)}</td>
+        </tr>
+        ` : ''}
+        <tr>
+          <td colspan="2" style="padding-top: 12px; border-top: 2px solid #e8e6e3;"></td>
+        </tr>
+        <tr>
+          <td style="padding: 4px 0; font-size: 18px; font-weight: bold; color: #3a3a3a;">Total</td>
+          <td align="right" style="padding: 4px 0; font-size: 18px; font-weight: bold; color: #3a3a3a;">$${(order.total / 100).toFixed(2)}</td>
+        </tr>
+      </table>
+
+      <!-- Divider -->
+      <div style="border-top: 1px solid #e8e6e3; margin: 30px 0 25px 0;"></div>
+
+      <!-- Fulfillment -->
+      <p style="font-size: 13px; color: #999; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 12px 0;">${order.fulfillmentMethod === 'pickup' ? 'Pickup Details' : 'Shipping To'}</p>
+      <div style="background-color: #f8f7f5; padding: 20px; border-radius: 8px; border-left: 3px solid #6b7566;">
         ${
-          order.shippingCost > 0
-            ? `<div style="display: flex; justify-content: space-between; margin: 8px 0;">
-          <span>Shipping</span>
-          <span>$${(order.shippingCost / 100).toFixed(2)}</span>
-        </div>`
-            : '<div style="display: flex; justify-content: space-between; margin: 8px 0;"><span>Shipping</span><span style="color: #6b7566; font-weight: bold;">FREE</span></div>'
+          order.fulfillmentMethod === 'pickup'
+            ? `
+          <p style="margin: 0 0 4px 0; font-weight: 600; font-size: 15px;">Olympic Bluffs Cidery & Lavender Farm</p>
+          <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.5;">1025 Finn Hall Road<br>Port Angeles, WA 98362</p>
+          <p style="margin: 12px 0 0 0; font-size: 13px; color: #888; font-style: italic;">We'll notify you when your order is ready for pickup.</p>
+        `
+            : `
+          <p style="margin: 0 0 4px 0; font-weight: 600; font-size: 15px;">${order.shippingAddress?.fullName}</p>
+          <p style="margin: 0; font-size: 14px; color: #666; line-height: 1.5;">
+            ${order.shippingAddress?.addressLine1}<br>
+            ${order.shippingAddress?.addressLine2 ? `${order.shippingAddress.addressLine2}<br>` : ''}
+            ${order.shippingAddress?.city}, ${order.shippingAddress?.state} ${order.shippingAddress?.postalCode}
+          </p>
+          <p style="margin: 12px 0 0 0; font-size: 13px; color: #888; font-style: italic;">You'll receive tracking information once your order ships.</p>
+        `
         }
-        ${
-          order.tax > 0
-            ? `<div style="display: flex; justify-content: space-between; margin: 8px 0;">
-          <span>Tax</span>
-          <span>$${(order.tax / 100).toFixed(2)}</span>
-        </div>`
-            : ''
-        }
-        <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px solid #eee; font-size: 18px; font-weight: bold;">
-          <span>Total</span>
-          <span>$${(order.total / 100).toFixed(2)}</span>
-        </div>
+      </div>
+
+      <!-- Track Order Button -->
+      <div style="text-align: center; margin: 35px 0 10px 0;">
+        <a href="${trackingUrl}" style="display: inline-block; background-color: #6b7566; color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 8px; font-size: 15px; font-weight: 600; letter-spacing: 0.5px;">Track Your Order</a>
       </div>
     </div>
 
-    <h2 style="font-size: 18px; margin: 30px 0 15px 0;">${order.fulfillmentMethod === 'pickup' ? 'Pickup Information' : 'Shipping Information'}</h2>
-    <div style="background-color: white; padding: 20px; border-radius: 8px;">
-      ${
-        order.fulfillmentMethod === 'pickup'
-          ? `
-        <p style="margin: 0;"><strong>Pickup Location:</strong></p>
-        <p style="margin: 5px 0 0 0;">Olympic Bluffs Cidery & Lavender Farm</p>
-        <p style="margin: 15px 0 0 0; color: #666; font-size: 14px;">
-          We'll notify you when your order is ready for pickup!
-        </p>
-      `
-          : `
-        <p style="margin: 0;"><strong>Shipping To:</strong></p>
-        <p style="margin: 5px 0 0 0;">
-          ${order.shippingAddress?.fullName}<br>
-          ${order.shippingAddress?.addressLine1}<br>
-          ${order.shippingAddress?.addressLine2 ? `${order.shippingAddress.addressLine2}<br>` : ''}
-          ${order.shippingAddress?.city}, ${order.shippingAddress?.state} ${order.shippingAddress?.postalCode}
-        </p>
-        <p style="margin: 15px 0 0 0; color: #666; font-size: 14px;">
-          You'll receive tracking information once your order ships.
-        </p>
-      `
-      }
+    <!-- Footer -->
+    <div style="background-color: #f8f7f5; padding: 25px 35px; border-radius: 0 0 12px 12px; text-align: center;">
+      <p style="margin: 0 0 8px 0; font-size: 13px; color: #888;">Questions about your order?</p>
+      <a href="mailto:info@olympicbluffs.com" style="font-size: 14px; color: #6b7566; text-decoration: none; font-weight: 600;">info@olympicbluffs.com</a>
+      <div style="border-top: 1px solid #e8e6e3; margin: 20px 0 15px 0;"></div>
+      <p style="margin: 0; font-size: 12px; color: #aaa;">Olympic Bluffs Cidery & Lavender Farm</p>
+      <p style="margin: 4px 0 0 0; font-size: 12px; color: #aaa;">1025 Finn Hall Road, Port Angeles, WA 98362</p>
     </div>
 
-    <div style="text-align: center; margin: 30px 0;">
-      <a href="${trackingUrl}" style="display: inline-block; background-color: #6b7566; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;">
-        Track Your Order
-      </a>
-    </div>
-
-    <p style="text-align: center; color: #666; font-size: 14px; margin: 20px 0 0 0;">
-      Questions about your order? <a href="/contact" style="color: #6b7566;">Contact us</a>
-    </p>
-  </div>
-
-  <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #999; font-size: 12px;">
-    <p>Thank you for supporting Olympic Bluffs Cidery & Lavender Farm</p>
   </div>
 </body>
 </html>
@@ -437,7 +466,7 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
 
         <div class="footer">
           <p>Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!</p>
-          <p>Questions? Reply to this email or visit our contact page.</p>
+          <p>Questions? Email us at <a href="mailto:info@olympicbluffs.com" style="color: #6b7566;">info@olympicbluffs.com</a></p>
         </div>
       </div>
     </div>
@@ -545,7 +574,7 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
 
         <div class="footer">
           <p>Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!</p>
-          <p>Questions? Reply to this email or call us at (571) 439-1311.</p>
+          <p>Questions? Email us at <a href="mailto:info@olympicbluffs.com" style="color: #6b7566;">info@olympicbluffs.com</a></p>
         </div>
       </div>
     </div>
@@ -649,7 +678,7 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
 
         <div class="footer">
           <p>Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!</p>
-          <p>Questions about your shipment? Reply to this email.</p>
+          <p>Questions? Email us at <a href="mailto:info@olympicbluffs.com" style="color: #6b7566;">info@olympicbluffs.com</a></p>
         </div>
       </div>
     </div>

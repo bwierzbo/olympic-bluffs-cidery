@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { squareClient } from '@/lib/square';
+import { getSquareClient, getSquarePublicConfig } from '@/lib/square';
 import { createOrder } from '@/lib/orders';
 import { OrderItem } from '@/lib/types';
 import { randomUUID } from 'crypto';
@@ -18,30 +18,63 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create payment with Square
-    const result = await squareClient.payments.create({
+    const client = getSquareClient();
+    const { locationId } = getSquarePublicConfig();
+
+    // Calculate amounts
+    const shippingCost = fulfillmentMethod === 'shipping' ? 2000 : 0;
+    const subtotal = amount - shippingCost;
+
+    // 1. Create a Square Order first so it shows as "Online" in dashboard
+    const squareOrderResult = await client.orders.create({
+      order: {
+        locationId,
+        referenceId: `OB-${Date.now()}`,
+        source: { name: 'Olympic Bluffs Website' },
+        lineItems: items.map((item: any) => ({
+          name: item.name,
+          quantity: String(item.quantity),
+          basePriceMoney: {
+            amount: BigInt(item.price),
+            currency: 'USD',
+          },
+          ...(item.variation ? { note: item.variation.name } : {}),
+        })),
+        ...(shippingCost > 0
+          ? {
+              serviceCharges: [
+                {
+                  name: 'Shipping',
+                  amountMoney: { amount: BigInt(shippingCost), currency: 'USD' },
+                  calculationPhase: 'TOTAL_PHASE' as const,
+                },
+              ],
+            }
+          : {}),
+      },
+      idempotencyKey: randomUUID(),
+    });
+
+    const squareOrderId = squareOrderResult.order?.id;
+
+    // 2. Create payment attached to the Square Order
+    const result = await client.payments.create({
       sourceId,
       idempotencyKey: randomUUID(),
       amountMoney: {
-        amount: BigInt(Math.round(amount)), // Convert to BigInt, ensure it's an integer
+        amount: BigInt(Math.round(amount)),
         currency: 'USD',
       },
-      locationId: process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID!,
-      // Optional: Add buyer information
+      locationId,
+      orderId: squareOrderId,
       ...(customerInfo && {
         buyerEmailAddress: customerInfo.email,
       }),
     });
 
     if (result.payment) {
-      // Payment successful
       const paymentId = result.payment.id || randomUUID();
-      const orderId = `OB-${Date.now()}-${randomUUID().substring(0, 8)}`;
-
-      // Calculate amounts
-      const shippingCost = fulfillmentMethod === 'shipping' ? 2000 : 0; // $20 flat rate shipping
-      const subtotal = amount - shippingCost;
-      const tax = 0; // Tax calculation can be added later
+      const orderId = squareOrderResult.order?.referenceId || `OB-${Date.now()}-${randomUUID().substring(0, 8)}`;
 
       // Transform cart items to order items
       const orderItems: OrderItem[] = items.map((item: any) => ({
@@ -52,7 +85,7 @@ export async function POST(request: NextRequest) {
         variation: item.variation,
       }));
 
-      // Save order to file system
+      // Save order to our database
       try {
         const order = await createOrder({
           id: orderId,
@@ -62,7 +95,7 @@ export async function POST(request: NextRequest) {
           shippingAddress,
           subtotal,
           shippingCost,
-          tax,
+          tax: 0,
           total: amount,
           paymentId,
         });
@@ -78,11 +111,9 @@ export async function POST(request: NextRequest) {
           console.log('Email notifications sent successfully');
         } catch (emailError) {
           console.error('Failed to send email notifications:', emailError);
-          // Continue anyway - order was saved successfully
         }
       } catch (orderError) {
         console.error('Failed to save order:', orderError);
-        // Continue anyway - payment was successful
       }
 
       return NextResponse.json({
@@ -95,7 +126,6 @@ export async function POST(request: NextRequest) {
         },
       });
     } else {
-      // Payment failed
       return NextResponse.json(
         {
           success: false,

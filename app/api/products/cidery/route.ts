@@ -7,8 +7,8 @@ export async function GET() {
     console.log('=== FETCHING CIDER PRODUCTS BY CATEGORY ===');
     console.log('Environment check:', {
       hasSquareToken: !!process.env.SQUARE_ACCESS_TOKEN,
-      hasAppId: !!process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
-      hasLocationId: !!process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
+      hasAppId: !!process.env.SQUARE_PROD_APPLICATION_ID,
+      hasLocationId: !!process.env.SQUARE_PROD_LOCATION_ID,
       environment: process.env.SQUARE_ENVIRONMENT || 'sandbox',
     });
 

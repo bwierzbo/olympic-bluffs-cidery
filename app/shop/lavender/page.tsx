@@ -129,6 +129,15 @@ export default function ProductsPage() {
         </div>
       </section>
 
+      {/* Cart info banner */}
+      <div className="bg-sage-50 border-y border-sage-200">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 text-center">
+          <p className="text-sage-800 text-sm">
+            Lavender products are purchased through our farm shop. Looking for cider? Visit our <a href="/shop/cidery" className="underline font-medium hover:text-sage-900">Cidery Shop</a> for pickup and shipping.
+          </p>
+        </div>
+      </div>
+
       {/* Products Grid */}
       <section className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

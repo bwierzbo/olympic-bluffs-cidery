@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { getSiteConfig } from '@/lib/site-config';
 
 export default function Footer() {
+  const showShop = getSiteConfig().navigation.showShop;
+
   return (
     <footer className="bg-sage-600 text-white">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -47,12 +50,16 @@ export default function Footer() {
           <Link href="/" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             Home
           </Link>
-          <Link href="/shop/lavender" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
-            Shop Lavender
-          </Link>
-          <Link href="/shop/cidery" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
-            Shop Cider
-          </Link>
+          {showShop && (
+            <>
+              <Link href="/shop/lavender" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+                Shop Lavender
+              </Link>
+              <Link href="/shop/cidery" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+                Shop Cider
+              </Link>
+            </>
+          )}
           <Link href="/about" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             More
           </Link>

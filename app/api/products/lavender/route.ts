@@ -1,73 +1,79 @@
 import { NextResponse } from 'next/server';
-import { squareClient } from '@/lib/square';
-import productImages from '@/config/product-images.json';
-import fs from 'fs';
-import path from 'path';
+import { getSquareClient, getSquarePublicConfig } from '@/lib/square';
 
-// Helper to scan a product folder for images
-function scanProductFolder(folderName: string): {
-  mainImage: string;
-  hoverImage?: string;
-  images: string[];
-} {
-  const basePath = path.join(process.cwd(), 'public/images/shop/lavender', folderName);
-  const urlBase = `/images/shop/lavender/${folderName}`;
+export const dynamic = 'force-dynamic';
 
-  let mainImage = '/images/products/placeholder-lavender.svg';
-  let hoverImage: string | undefined = undefined;
-  const images: string[] = [];
-
-  // Check if folder exists
-  if (!fs.existsSync(basePath)) {
-    return { mainImage, hoverImage, images };
-  }
-
-  // Check for main.png (also try .jpg, .webp)
-  for (const ext of ['png', 'jpg', 'jpeg', 'webp']) {
-    if (fs.existsSync(path.join(basePath, `main.${ext}`))) {
-      mainImage = `${urlBase}/main.${ext}`;
-      break;
-    }
-  }
-
-  // Check for hover.png
-  for (const ext of ['png', 'jpg', 'jpeg', 'webp']) {
-    if (fs.existsSync(path.join(basePath, `hover.${ext}`))) {
-      hoverImage = `${urlBase}/hover.${ext}`;
-      break;
-    }
-  }
-
-  // Scan for numbered images (1.png, 2.png, etc.)
-  for (let i = 1; i <= 20; i++) {
-    let found = false;
-    for (const ext of ['png', 'jpg', 'jpeg', 'webp']) {
-      if (fs.existsSync(path.join(basePath, `${i}.${ext}`))) {
-        images.push(`${urlBase}/${i}.${ext}`);
-        found = true;
-        break;
-      }
-    }
-    if (!found) break; // Stop when sequence ends
-  }
-
-  return { mainImage, hoverImage, images };
-}
+// In-memory cache for image URLs (survives across requests, clears on server restart)
+const imageCache = new Map<string, { url: string; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 30; // 30 minutes
 
 export async function GET() {
   try {
-    console.log('=== FETCHING LAVENDER PRODUCTS BY CATEGORY ===');
-    console.log('Environment check:', {
-      hasSquareToken: !!process.env.SQUARE_ACCESS_TOKEN,
-      hasAppId: !!process.env.NEXT_PUBLIC_SQUARE_APPLICATION_ID,
-      hasLocationId: !!process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID,
-      environment: process.env.SQUARE_ENVIRONMENT || 'sandbox',
-    });
+    const client = getSquareClient();
+    const config = getSquarePublicConfig();
+    const token =
+      config.environment === 'sandbox'
+        ? process.env.SQUARE_SANDBOX_ACCESS_TOKEN || ''
+        : process.env.SQUARE_PROD_ACCESS_TOKEN || '';
 
-    // First, get all categories to find the lavender category ID
-    const categoryResponse = await squareClient.catalog.list({
-      types: 'CATEGORY',
-    });
+    const apiBase =
+      config.environment === 'sandbox'
+        ? 'https://connect.squareupsandbox.com'
+        : 'https://connect.squareup.com';
+
+    /** Fetch image URL with caching */
+    async function fetchImageUrl(imageId: string): Promise<string | null> {
+      // Check cache
+      const cached = imageCache.get(imageId);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        return cached.url;
+      }
+
+      try {
+        const res = await fetch(`${apiBase}/v2/catalog/object/${imageId}`, {
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const url = data.object?.image_data?.url || null;
+        if (url) {
+          imageCache.set(imageId, { url, timestamp: Date.now() });
+        }
+        return url;
+      } catch {
+        return null;
+      }
+    }
+
+    /** Batch fetch image URLs with concurrency limit */
+    async function fetchAllImageUrls(imageIds: string[]): Promise<Map<string, string>> {
+      const results = new Map<string, string>();
+      const uncachedIds: string[] = [];
+
+      // Resolve from cache first
+      for (const id of imageIds) {
+        const cached = imageCache.get(id);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+          results.set(id, cached.url);
+        } else {
+          uncachedIds.push(id);
+        }
+      }
+
+      // Fetch uncached in batches of 10
+      for (let i = 0; i < uncachedIds.length; i += 10) {
+        const batch = uncachedIds.slice(i, i + 10);
+        const urls = await Promise.all(batch.map(id => fetchImageUrl(id)));
+        batch.forEach((id, idx) => {
+          if (urls[idx]) results.set(id, urls[idx]!);
+        });
+      }
+
+      return results;
+    }
+
+    // Get all categories
+    const categoryResponse = await client.catalog.list({ types: 'CATEGORY' });
 
     const categoryMap = new Map<string, string>();
     let lavenderCategoryId: string | undefined;
@@ -78,67 +84,55 @@ export async function GET() {
           const categoryName = cat.categoryData.name;
           categoryMap.set(cat.id, categoryName);
 
-          // Look for category containing both "online sales" and "lavender"
           const lowerName = categoryName.toLowerCase();
           if (lowerName.includes('online sales') && lowerName.includes('lavender')) {
             lavenderCategoryId = cat.id;
-            console.log(`Found lavender category: "${categoryName}" (ID: ${cat.id})`);
           }
         }
       });
     }
 
     if (!lavenderCategoryId) {
-      console.log('⚠️  No "Online Sales | Lavender" category found');
       return NextResponse.json({ success: true, products: [] });
     }
 
-    // Use searchCatalogItems to fetch items by category (supports pagination)
-    console.log(`Searching for items in category: ${lavenderCategoryId}`);
-
+    // Fetch all items in the category
     let allItems: any[] = [];
     let cursor: string | undefined = undefined;
     let pageCount = 0;
 
     do {
       pageCount++;
-      const searchResponse = await squareClient.catalog.searchItems({
+      const searchResponse = await client.catalog.searchItems({
         categoryIds: [lavenderCategoryId],
-        cursor: cursor,
+        cursor,
         limit: 100,
       });
-
-      console.log(`Page ${pageCount}: Got ${searchResponse.items?.length || 0} items, cursor: ${searchResponse.cursor ? 'YES' : 'NO'}`);
 
       if (searchResponse.items) {
         allItems = allItems.concat(searchResponse.items);
       }
-
       cursor = searchResponse.cursor;
-
-      // Safety limit to prevent infinite loops
-      if (pageCount > 20) {
-        console.log('⚠️  Hit safety limit of 20 pages');
-        break;
-      }
+      if (pageCount > 20) break;
     } while (cursor);
 
-    console.log(`=== TOTAL LAVENDER ITEMS FOUND: ${allItems.length} across ${pageCount} pages ===`);
+    // Collect all image IDs upfront
+    const allImageIds: string[] = [];
+    for (const item of allItems) {
+      const ids = item.itemData?.imageIds || [];
+      allImageIds.push(...ids);
+    }
 
-    // Get folder mappings from config
-    const folderMapping = (productImages as any).lavenderFolders as Record<string, string>;
-    const variationFolderMapping = (productImages as any).variationFolders as Record<string, string>;
+    // Batch fetch all images at once
+    const imageUrlMap = await fetchAllImageUrls(allImageIds);
 
-    // Transform items to products
+    // Transform items using pre-fetched image URLs
     const products = allItems
       .map((item: any) => {
-        // searchCatalogItems returns items with itemData directly
         const itemData = item.itemData;
         if (!itemData) return null;
 
-        // Normalize product name - replace curly apostrophes with regular ones
         const productName = (itemData.name || '').replace(/[\u2018\u2019]/g, "'");
-
         const variations = itemData.variations || [];
         const firstVariation = variations[0];
         const price = firstVariation?.itemVariationData?.priceMoney?.amount || 0;
@@ -149,20 +143,15 @@ export async function GET() {
           categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
         }
 
-        // Get folder name for this product
-        const folderName = folderMapping[productName];
+        // Resolve images from pre-fetched map
+        const imageIds: string[] = itemData.imageIds || [];
+        const validImages = imageIds
+          .map((id: string) => imageUrlMap.get(id))
+          .filter((url): url is string => !!url);
 
-        // Scan folder for images
-        let mainImage = '/images/products/placeholder-lavender.svg';
-        let hoverImage: string | undefined = undefined;
-        let carouselImages: string[] = [];
-
-        if (folderName) {
-          const scanned = scanProductFolder(folderName);
-          mainImage = scanned.mainImage;
-          hoverImage = scanned.hoverImage;
-          carouselImages = scanned.images;
-        }
+        const mainImage = validImages[0] || '/images/products/placeholder-lavender.svg';
+        const hoverImage = validImages[1] || undefined;
+        const carouselImages = validImages.length > 1 ? validImages : undefined;
 
         return {
           id: item.id,
@@ -172,33 +161,17 @@ export async function GET() {
           price: Number(price),
           image: mainImage,
           hoverImage,
-          images: carouselImages.length > 0 ? carouselImages : undefined,
-          inStock: variations.some((v: any) =>
-            v.itemVariationData?.availableForPickup !== false
+          images: carouselImages,
+          inStock: variations.some(
+            (v: any) => v.itemVariationData?.availableForPickup !== false
           ),
           category: categoryName,
-          variations: variations.map((v: any) => {
-            const variationName = v.itemVariationData?.name || itemData.name;
-            const variationKey = `${productName}|${variationName}`;
-
-            // Get variation folder from mapping
-            let variationImageUrl: string | undefined = undefined;
-            const variationFolder = variationFolderMapping[variationKey];
-            if (variationFolder) {
-              const scanned = scanProductFolder(variationFolder);
-              variationImageUrl = scanned.mainImage !== '/images/products/placeholder-lavender.svg'
-                ? scanned.mainImage
-                : undefined;
-            }
-
-            return {
-              id: v.id,
-              name: variationName,
-              price: Number(v.itemVariationData?.priceMoney?.amount || 0),
-              sku: v.itemVariationData?.sku,
-              image: variationImageUrl,
-            };
-          }),
+          variations: variations.map((v: any) => ({
+            id: v.id,
+            name: v.itemVariationData?.name || itemData.name,
+            price: Number(v.itemVariationData?.priceMoney?.amount || 0),
+            sku: v.itemVariationData?.sku,
+          })),
         };
       })
       .filter(Boolean);
@@ -206,19 +179,11 @@ export async function GET() {
     return NextResponse.json({ success: true, products });
   } catch (error: any) {
     console.error('Error fetching lavender products:', error);
-    console.error('Error stack:', error.stack);
-    console.error('Error details:', {
-      message: error.message,
-      name: error.name,
-      code: error.code,
-    });
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch products',
         details: error.message,
-        errorName: error.name,
-        errorCode: error.code,
       },
       { status: 500 }
     );
