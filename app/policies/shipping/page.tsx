@@ -44,7 +44,7 @@ export default function ShippingPage() {
 
           <h2 className="text-xl font-semibold text-gray-900 mt-8 mb-4">Farm Pickup</h2>
           <p className="text-gray-700 mb-4">
-            Skip shipping costs by picking up your order at our farm! When you select "Pickup at Farm"
+            Skip shipping costs by picking up your order at our farm! When you select &quot;Pickup at Farm&quot;
             during checkout, we will email you when your order is ready for pickup.
           </p>
           <div className="bg-gray-50 rounded-lg p-4 mb-6">

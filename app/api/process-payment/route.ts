@@ -5,6 +5,21 @@ import { OrderItem } from '@/lib/types';
 import { randomUUID } from 'crypto';
 import { sendOrderConfirmation, sendFarmNotification } from '@/lib/email';
 
+// Shape of an item from the checkout request body
+interface CheckoutItem {
+  productId: string;
+  name: string;
+  quantity: number;
+  price: number;
+  variation?: { id: string; name: string };
+}
+
+// Partial shape of Square SDK error objects we read from
+interface SquareApiError {
+  body?: { payment?: { status?: string } };
+  errors?: Array<{ code?: string; detail?: string }>;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -31,7 +46,7 @@ export async function POST(request: NextRequest) {
         locationId,
         referenceId: `OB-${Date.now()}`,
         source: { name: 'Olympic Bluffs Website' },
-        lineItems: items.map((item: any) => ({
+        lineItems: items.map((item: CheckoutItem) => ({
           name: item.name,
           quantity: String(item.quantity),
           basePriceMoney: {
@@ -77,7 +92,7 @@ export async function POST(request: NextRequest) {
       const orderId = squareOrderResult.order?.referenceId || `OB-${Date.now()}-${randomUUID().substring(0, 8)}`;
 
       // Transform cart items to order items
-      const orderItems: OrderItem[] = items.map((item: any) => ({
+      const orderItems: OrderItem[] = items.map((item: CheckoutItem) => ({
         productId: item.productId,
         name: item.name,
         quantity: item.quantity,
@@ -134,13 +149,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as SquareApiError;
     console.error('Payment processing error:', error);
 
     // Check if this is a declined payment (has payment object with FAILED status)
-    if (error.body && error.body.payment && error.body.payment.status === 'FAILED') {
+    if (err.body && err.body.payment && err.body.payment.status === 'FAILED') {
       // Payment was declined but processed - return as failed with user-friendly message
-      const errorCode = error.errors?.[0]?.code;
+      const errorCode = err.errors?.[0]?.code;
       let userMessage = 'Your card was declined. Please try a different payment method.';
 
       // Customize message based on error code
@@ -163,8 +179,8 @@ export async function POST(request: NextRequest) {
 
     // Extract error message from Square API error
     let errorMessage = 'Payment failed. Please try again.';
-    if (error.errors && error.errors.length > 0) {
-      errorMessage = error.errors[0].detail || errorMessage;
+    if (err.errors && err.errors.length > 0) {
+      errorMessage = err.errors[0].detail || errorMessage;
     }
 
     return NextResponse.json(

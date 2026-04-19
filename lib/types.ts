@@ -107,7 +107,7 @@ export interface PaymentResult {
   success: boolean;
   orderId?: string;
   error?: string;
-  payment?: any; // Square payment object
+  payment?: unknown; // Square payment object - shape varies by Square SDK version
 }
 
 // Audit Log Types

@@ -3,6 +3,43 @@ import { getSquareClient, getSquarePublicConfig } from '@/lib/square';
 
 export const dynamic = 'force-dynamic';
 
+// Narrow types for Square catalog responses (SDK types are complex discriminated unions;
+// we only access a subset of fields on camelCase properties).
+// Uses null|undefined to match Square SDK's emitted type signatures.
+type Nullable<T> = T | null | undefined;
+
+interface SquareVariation {
+  id?: Nullable<string>;
+  itemVariationData?: Nullable<{
+    name?: Nullable<string>;
+    sku?: Nullable<string>;
+    priceMoney?: Nullable<{ amount?: Nullable<number | bigint | string> }>;
+    availableForPickup?: Nullable<boolean>;
+  }>;
+}
+
+interface SquareCatalogItem {
+  id?: Nullable<string>;
+  type?: Nullable<string>;
+  itemData?: Nullable<{
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+    productType?: Nullable<string>;
+    categories?: Nullable<Array<{ id?: Nullable<string> }>>;
+    variations?: Nullable<SquareVariation[]>;
+    imageIds?: Nullable<string[]>;
+  }>;
+  categoryData?: Nullable<{
+    name?: Nullable<string>;
+  }>;
+}
+
+interface CatalogObjectFetchResponse {
+  object?: {
+    image_data?: { url?: string };
+  };
+}
+
 // In-memory cache for image URLs (survives across requests, clears on server restart)
 const imageCache = new Map<string, { url: string; timestamp: number }>();
 const CACHE_TTL = 1000 * 60 * 30; // 30 minutes
@@ -34,7 +71,7 @@ export async function GET() {
           headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         });
         if (!res.ok) return null;
-        const data = await res.json();
+        const data: CatalogObjectFetchResponse = await res.json();
         const url = data.object?.image_data?.url || null;
         if (url) {
           imageCache.set(imageId, { url, timestamp: Date.now() });
@@ -79,8 +116,8 @@ export async function GET() {
     let lavenderCategoryId: string | undefined;
 
     if (categoryResponse.data) {
-      categoryResponse.data.forEach((cat: any) => {
-        if (cat.type === 'CATEGORY' && cat.categoryData?.name) {
+      (categoryResponse.data as unknown as SquareCatalogItem[]).forEach((cat) => {
+        if (cat.type === 'CATEGORY' && cat.categoryData?.name && cat.id) {
           const categoryName = cat.categoryData.name;
           categoryMap.set(cat.id, categoryName);
 
@@ -97,7 +134,7 @@ export async function GET() {
     }
 
     // Fetch all items in the category
-    let allItems: any[] = [];
+    let allItems: SquareCatalogItem[] = [];
     let cursor: string | undefined = undefined;
     let pageCount = 0;
 
@@ -110,7 +147,7 @@ export async function GET() {
       });
 
       if (searchResponse.items) {
-        allItems = allItems.concat(searchResponse.items);
+        allItems = allItems.concat(searchResponse.items as SquareCatalogItem[]);
       }
       cursor = searchResponse.cursor;
       if (pageCount > 20) break;
@@ -128,7 +165,7 @@ export async function GET() {
 
     // Transform items using pre-fetched image URLs
     const products = allItems
-      .map((item: any) => {
+      .map((item: SquareCatalogItem) => {
         const itemData = item.itemData;
         if (!itemData) return null;
 
@@ -140,7 +177,9 @@ export async function GET() {
         let categoryName = 'Uncategorized';
         if (itemData.categories && itemData.categories.length > 0) {
           const firstCategoryId = itemData.categories[0].id;
-          categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
+          if (firstCategoryId) {
+            categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
+          }
         }
 
         // Resolve images from pre-fetched map
@@ -163,10 +202,10 @@ export async function GET() {
           hoverImage,
           images: carouselImages,
           inStock: variations.some(
-            (v: any) => v.itemVariationData?.availableForPickup !== false
+            (v: SquareVariation) => v.itemVariationData?.availableForPickup !== false
           ),
           category: categoryName,
-          variations: variations.map((v: any) => ({
+          variations: variations.map((v: SquareVariation) => ({
             id: v.id,
             name: v.itemVariationData?.name || itemData.name,
             price: Number(v.itemVariationData?.priceMoney?.amount || 0),
@@ -177,13 +216,14 @@ export async function GET() {
       .filter(Boolean);
 
     return NextResponse.json({ success: true, products });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string };
     console.error('Error fetching lavender products:', error);
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch products',
-        details: error.message,
+        details: err.message,
       },
       { status: 500 }
     );

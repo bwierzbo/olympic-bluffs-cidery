@@ -30,17 +30,17 @@ export async function createOrder(orderData: {
   const dbOrder = await prisma.order.create({
     data: {
       id: orderData.id,
-      items: orderData.items as any,
-      customerInfo: orderData.customerInfo as any,
+      items: orderData.items as unknown as Prisma.InputJsonValue,
+      customerInfo: orderData.customerInfo as unknown as Prisma.InputJsonValue,
       fulfillmentMethod: orderData.fulfillmentMethod,
-      shippingAddress: orderData.shippingAddress as any,
+      shippingAddress: orderData.shippingAddress as unknown as Prisma.InputJsonValue,
       subtotal: orderData.subtotal,
       shippingCost: orderData.shippingCost,
       tax: orderData.tax,
       total: orderData.total,
       paymentId: orderData.paymentId,
       status: 'confirmed',
-      statusHistory: statusHistory as any,
+      statusHistory: statusHistory as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -78,7 +78,7 @@ export async function getOrder(orderId: string): Promise<Order | null> {
       status: dbOrder.status as OrderStatus,
       createdAt: dbOrder.createdAt.toISOString(),
       updatedAt: dbOrder.updatedAt.toISOString(),
-      statusHistory: dbOrder.statusHistory as any,
+      statusHistory: dbOrder.statusHistory as unknown as Order['statusHistory'],
     };
   } catch (error) {
     console.error('Error fetching order:', error);
@@ -115,7 +115,7 @@ export async function updateOrderStatus(
     where: { id: orderId },
     data: {
       status: newStatus,
-      statusHistory: newStatusHistory as any,
+      statusHistory: newStatusHistory as unknown as Prisma.InputJsonValue,
     },
   });
 
@@ -133,7 +133,7 @@ export async function updateOrderStatus(
     status: dbOrder.status as OrderStatus,
     createdAt: dbOrder.createdAt.toISOString(),
     updatedAt: dbOrder.updatedAt.toISOString(),
-    statusHistory: dbOrder.statusHistory as any,
+    statusHistory: dbOrder.statusHistory as unknown as Order['statusHistory'],
   };
 }
 
@@ -160,7 +160,7 @@ export async function getAllOrders(): Promise<Order[]> {
       status: dbOrder.status as OrderStatus,
       createdAt: dbOrder.createdAt.toISOString(),
       updatedAt: dbOrder.updatedAt.toISOString(),
-      statusHistory: dbOrder.statusHistory as any,
+      statusHistory: dbOrder.statusHistory as unknown as Order['statusHistory'],
     }));
   } catch (error) {
     console.error('Error fetching orders:', error);
@@ -197,7 +197,7 @@ export async function getOrdersByEmail(email: string): Promise<Order[]> {
       status: dbOrder.status as OrderStatus,
       createdAt: dbOrder.createdAt.toISOString(),
       updatedAt: dbOrder.updatedAt.toISOString(),
-      statusHistory: dbOrder.statusHistory as any,
+      statusHistory: dbOrder.statusHistory as unknown as Order['statusHistory'],
     }));
   } catch (error) {
     console.error('Error fetching orders by email:', error);
@@ -431,7 +431,7 @@ export async function getOrderWithAuditLog(orderId: string): Promise<{
     status: dbOrder.status as OrderStatus,
     createdAt: dbOrder.createdAt.toISOString(),
     updatedAt: dbOrder.updatedAt.toISOString(),
-    statusHistory: dbOrder.statusHistory as any,
+    statusHistory: dbOrder.statusHistory as unknown as Order['statusHistory'],
     trackingNumber: dbOrder.trackingNumber,
     adminNotes: dbOrder.adminNotes,
   };

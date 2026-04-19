@@ -61,21 +61,41 @@ const getDescriptions = (productName: string, originalDescription?: string): { l
 
 export default function FeaturedCiderSection({ products }: FeaturedCiderSectionProps) {
   const { addToCart } = useCart();
-  const [scrollY, setScrollY] = useState(0);
   const [addingProduct, setAddingProduct] = useState<string | null>(null);
   const [visibleSections, setVisibleSections] = useState<Set<number>>(new Set());
+  // Parallax offsets computed in a scroll effect (not during render) so refs
+  // aren't read at render time.
+  const [parallaxOffsets, setParallaxOffsets] = useState<number[]>([]);
   const sectionRefs = useRef<(HTMLDivElement | null)[]>([]);
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
 
-  // Track scroll position for parallax effect
+  // Track scroll position and recompute parallax offsets based on ref positions.
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const computeOffsets = () => {
+      if (typeof window === 'undefined') return;
+      const scrollY = window.scrollY;
+      const viewportHeight = window.innerHeight;
+      const offsets = sectionRefs.current.map((section) => {
+        if (!section) return 0;
+        const rect = section.getBoundingClientRect();
+        const sectionTop = rect.top + scrollY;
+        const sectionHeight = rect.height;
+        const scrollProgress =
+          (scrollY + viewportHeight - sectionTop) / (sectionHeight + viewportHeight);
+        if (scrollProgress > 0 && scrollProgress < 1) {
+          return scrollProgress * 80 * 0.3;
+        }
+        return 0;
+      });
+      setParallaxOffsets(offsets);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    // Initial compute after mount
+    computeOffsets();
+
+    window.addEventListener('scroll', computeOffsets, { passive: true });
+    return () => window.removeEventListener('scroll', computeOffsets);
+  }, [products.length]);
 
   // Intersection Observer for fade-up animations
   useEffect(() => {
@@ -116,25 +136,6 @@ export default function FeaturedCiderSection({ products }: FeaturedCiderSectionP
     }, 1000);
   };
 
-  // Calculate parallax offset for each section
-  const getParallaxOffset = (index: number) => {
-    const section = sectionRefs.current[index];
-    if (!section || typeof window === 'undefined') return 0;
-
-    const rect = section.getBoundingClientRect();
-    const sectionTop = rect.top + scrollY;
-    const sectionHeight = rect.height;
-    const viewportHeight = window.innerHeight;
-
-    const scrollProgress = (scrollY + viewportHeight - sectionTop) / (sectionHeight + viewportHeight);
-
-    if (scrollProgress > 0 && scrollProgress < 1) {
-      return scrollProgress * 80 * 0.3;
-    }
-
-    return 0;
-  };
-
   if (products.length === 0) return null;
 
   // Alternating background styles
@@ -150,7 +151,7 @@ export default function FeaturedCiderSection({ products }: FeaturedCiderSectionP
   return (
     <div>
       {products.map((product, index) => {
-        const parallaxOffset = getParallaxOffset(index);
+        const parallaxOffset = parallaxOffsets[index] ?? 0;
         const isAdding = addingProduct === product.id;
         const isVisible = visibleSections.has(index);
         const descriptions = getDescriptions(product.name, product.description);

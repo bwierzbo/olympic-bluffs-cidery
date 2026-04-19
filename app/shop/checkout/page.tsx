@@ -6,6 +6,69 @@ import { useCart } from '@/components/shop/CartProvider';
 import OrderSummary from '@/components/shop/OrderSummary';
 import Link from 'next/link';
 
+// Minimal Square Web Payments SDK surface used in this file.
+// (Full typings aren't exported from 'square' for the Web Payments SDK.)
+interface SquareCardInstance {
+  attach: (selector: string) => Promise<void>;
+  detach: () => Promise<void>;
+  tokenize: () => Promise<{ status: string; token?: string }>;
+}
+
+interface SquarePaymentsInstance {
+  card: () => Promise<SquareCardInstance>;
+}
+
+interface SquareSdk {
+  payments: (appId: string, locId: string) => SquarePaymentsInstance;
+}
+
+// Minimal Google Places Autocomplete surface used in this file.
+interface GoogleAutocompleteOptions {
+  types?: string[];
+  componentRestrictions?: { country: string | string[] };
+  fields?: string[];
+}
+
+interface GoogleAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+interface GooglePlaceResult {
+  address_components?: GoogleAddressComponent[];
+  formatted_address?: string;
+}
+
+interface GoogleAutocomplete {
+  addListener: (eventName: string, handler: () => void) => void;
+  getPlace: () => GooglePlaceResult;
+}
+
+interface GoogleAutocompleteConstructor {
+  new (input: HTMLInputElement, options?: GoogleAutocompleteOptions): GoogleAutocomplete;
+}
+
+interface GoogleMapsApi {
+  places: {
+    Autocomplete: GoogleAutocompleteConstructor;
+  };
+  event: {
+    clearInstanceListeners: (instance: unknown) => void;
+  };
+}
+
+declare global {
+  interface Window {
+    Square?: SquareSdk;
+    google?: { maps: GoogleMapsApi };
+  }
+}
+
+// Alias the global `google` symbol referenced at the top level of this file
+// to our typed surface (no @types/google.maps dependency).
+declare const google: { maps: GoogleMapsApi };
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, totalAmount, clearCart } = useCart();
@@ -32,13 +95,13 @@ export default function CheckoutPage() {
   const [postalCode, setPostalCode] = useState('');
 
   // Google Places Autocomplete
-  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null);
+  const autocompleteRef = useRef<GoogleAutocomplete | null>(null);
   const addressInputRef = useRef<HTMLInputElement>(null);
 
   // Square Payment
-  const [card, setCard] = useState<any>(null);
-  const [payments, setPayments] = useState<any>(null);
-  const cardInstanceRef = useRef<any>(null);
+  const [card, setCard] = useState<SquareCardInstance | null>(null);
+  const [, setPayments] = useState<SquarePaymentsInstance | null>(null);
+  const cardInstanceRef = useRef<SquareCardInstance | null>(null);
   const isInitializingRef = useRef(false);
   const isProcessingPayment = useRef(false);
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -238,7 +301,7 @@ export default function CheckoutPage() {
       const existingScript = document.querySelector('script[src*="square.js"]');
       if (existingScript && existingScript.getAttribute('src') !== cdnUrl) {
         existingScript.remove();
-        delete (window as any).Square;
+        delete (window as { Square?: unknown }).Square;
       }
 
       if (window.Square) {
@@ -288,7 +351,7 @@ export default function CheckoutPage() {
 
       // Use detach() instead of destroy() - safer for SPA navigation
       if (cardInstanceRef.current) {
-        cardInstanceRef.current.detach().catch((e: any) => {
+        cardInstanceRef.current.detach().catch((e: unknown) => {
           console.log('Error during detach:', e);
         });
         cardInstanceRef.current = null;
@@ -648,46 +711,3 @@ export default function CheckoutPage() {
   );
 }
 
-// Declare global types
-declare global {
-  interface Window {
-    Square: any;
-    google: typeof google;
-  }
-
-  namespace google {
-    namespace maps {
-      namespace event {
-        function clearInstanceListeners(instance: any): void;
-      }
-
-      namespace places {
-        class Autocomplete {
-          constructor(
-            input: HTMLInputElement,
-            options?: AutocompleteOptions
-          );
-          addListener(eventName: string, handler: () => void): void;
-          getPlace(): PlaceResult;
-        }
-
-        interface AutocompleteOptions {
-          types?: string[];
-          componentRestrictions?: { country: string | string[] };
-          fields?: string[];
-        }
-
-        interface PlaceResult {
-          address_components?: AddressComponent[];
-          formatted_address?: string;
-        }
-
-        interface AddressComponent {
-          long_name: string;
-          short_name: string;
-          types: string[];
-        }
-      }
-    }
-  }
-}

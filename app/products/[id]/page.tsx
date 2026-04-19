@@ -40,7 +40,7 @@ const ciderDescriptions: Record<string, { left: string; right: string }> = {
 };
 
 // Get descriptions by matching product name
-const getDescriptions = (productName: string, originalDescription?: string): { left: string; right: string } | null => {
+const getDescriptions = (productName: string): { left: string; right: string } | null => {
   // Normalize: lowercase and remove apostrophes/special chars
   const nameLower = productName.toLowerCase().replace(/['']/g, '');
 
@@ -93,10 +93,10 @@ export default function ProductDetailPage() {
           if (foundProduct.variations && foundProduct.variations.length > 0) {
             setSelectedVariation(foundProduct.variations[0]);
 
-            const hasMultiDim = foundProduct.variations.some((v: any) => v.name.includes(','));
+            const hasMultiDim = foundProduct.variations.some((v: ProductVariation) => v.name.includes(','));
             if (hasMultiDim) {
               const dimensionsMap: Record<number, Set<string>> = {};
-              foundProduct.variations.forEach((variation: any) => {
+              foundProduct.variations.forEach((variation: ProductVariation) => {
                 const parts = variation.name.split(',').map((p: string) => p.trim());
                 parts.forEach((part: string, index: number) => {
                   if (!dimensionsMap[index]) {
@@ -152,7 +152,7 @@ export default function ProductDetailPage() {
     if (!product?.variations || product.variations.length <= 1) {
       return false;
     }
-    const prices = product.variations.map((v: any) => v.price);
+    const prices = product.variations.map((v: ProductVariation) => v.price);
     return new Set(prices).size > 1;
   };
 
@@ -160,7 +160,7 @@ export default function ProductDetailPage() {
     if (!product?.variations || product.variations.length <= 1) {
       return false;
     }
-    return product.variations.some((v: any) => v.name.includes(','));
+    return product.variations.some((v: ProductVariation) => v.name.includes(','));
   };
 
   const getVariationDimensions = () => {
@@ -168,7 +168,7 @@ export default function ProductDetailPage() {
 
     const dimensionsMap: Record<number, Set<string>> = {};
 
-    product.variations.forEach((variation: any) => {
+    product.variations.forEach((variation: ProductVariation) => {
       const parts = variation.name.split(',').map((p: string) => p.trim());
       parts.forEach((part: string, index: number) => {
         if (!dimensionsMap[index]) {
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
     if (selectionValues.some((v: string) => !v)) return null;
 
     const searchName = selectionValues.join(', ');
-    return product.variations.find((v: any) => v.name === searchName) || null;
+    return product.variations.find((v: ProductVariation) => v.name === searchName) || null;
   };
 
   const handleMultiDimChange = (dimensionIndex: number, value: string) => {
@@ -242,7 +242,7 @@ export default function ProductDetailPage() {
   }
 
   // Check if this is a cider product with custom descriptions
-  const descriptions = getDescriptions(product.name, product.description);
+  const descriptions = getDescriptions(product.name);
   const isCiderProduct = descriptions !== null;
 
   return (
@@ -439,7 +439,7 @@ export default function ProductDetailPage() {
                     Select Option
                   </label>
                   <div className="grid grid-cols-2 gap-3">
-                    {product.variations.map((variation: any) => (
+                    {product.variations.map((variation: ProductVariation) => (
                       <button
                         key={variation.id}
                         onClick={() => setSelectedVariation(variation)}

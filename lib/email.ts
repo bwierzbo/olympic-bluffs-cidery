@@ -698,8 +698,6 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
  * Generate "Completed" thank you email
  */
 function generateCompletedEmail(order: Order): EmailTemplate {
-  const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
-
   const text = `
 Hi ${order.customerInfo.firstName},
 

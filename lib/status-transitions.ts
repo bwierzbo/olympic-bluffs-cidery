@@ -1,4 +1,4 @@
-import { OrderStatus, FulfillmentMethod } from './types';
+import { OrderStatus } from './types';
 
 /**
  * Allowed status transitions per the status model spec.

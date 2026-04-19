@@ -2,6 +2,42 @@ import { NextResponse } from 'next/server';
 import { squareClient } from '@/lib/square';
 import productImages from '@/config/product-images.json';
 
+// Narrow types for Square catalog responses (SDK types are complex discriminated unions;
+// we access a subset of fields on camelCase properties).
+// Uses null|undefined to match Square SDK's emitted type signatures.
+type Nullable<T> = T | null | undefined;
+
+interface SquareVariation {
+  id?: Nullable<string>;
+  itemVariationData?: Nullable<{
+    name?: Nullable<string>;
+    sku?: Nullable<string>;
+    priceMoney?: Nullable<{ amount?: Nullable<number | bigint | string> }>;
+    availableForPickup?: Nullable<boolean>;
+  }>;
+}
+
+interface SquareCatalogItem {
+  id?: Nullable<string>;
+  type?: Nullable<string>;
+  itemData?: Nullable<{
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+    productType?: Nullable<string>;
+    categories?: Nullable<Array<{ id?: Nullable<string> }>>;
+    variations?: Nullable<SquareVariation[]>;
+    imageIds?: Nullable<string[]>;
+  }>;
+  categoryData?: Nullable<{
+    name?: Nullable<string>;
+  }>;
+}
+
+interface ProductImagesConfig {
+  lavenderFolders?: Record<string, string>;
+  ciderImages?: Record<string, string>;
+}
+
 export async function GET() {
   try {
     console.log('=== FETCHING CIDER PRODUCTS BY CATEGORY ===');
@@ -21,8 +57,8 @@ export async function GET() {
     let ciderCategoryId: string | undefined;
 
     if (categoryResponse.data) {
-      categoryResponse.data.forEach((cat: any) => {
-        if (cat.type === 'CATEGORY' && cat.categoryData?.name) {
+      (categoryResponse.data as unknown as SquareCatalogItem[]).forEach((cat) => {
+        if (cat.type === 'CATEGORY' && cat.categoryData?.name && cat.id) {
           const categoryName = cat.categoryData.name;
           categoryMap.set(cat.id, categoryName);
 
@@ -44,7 +80,7 @@ export async function GET() {
     // Use searchCatalogItems to fetch items by category (supports pagination)
     console.log(`Searching for items in category: ${ciderCategoryId}`);
 
-    let allItems: any[] = [];
+    let allItems: SquareCatalogItem[] = [];
     let cursor: string | undefined = undefined;
     let pageCount = 0;
 
@@ -59,7 +95,7 @@ export async function GET() {
       console.log(`Page ${pageCount}: Got ${searchResponse.items?.length || 0} items, cursor: ${searchResponse.cursor ? 'YES' : 'NO'}`);
 
       if (searchResponse.items) {
-        allItems = allItems.concat(searchResponse.items);
+        allItems = allItems.concat(searchResponse.items as SquareCatalogItem[]);
       }
 
       cursor = searchResponse.cursor;
@@ -75,7 +111,7 @@ export async function GET() {
 
     // Transform items to products
     const products = allItems
-      .map((item: any) => {
+      .map((item: SquareCatalogItem) => {
         // searchCatalogItems returns items with itemData directly
         const itemData = item.itemData;
         if (!itemData) return null;
@@ -97,11 +133,13 @@ export async function GET() {
         let categoryName = 'Cider';
         if (itemData.categories && itemData.categories.length > 0) {
           const firstCategoryId = itemData.categories[0].id;
-          categoryName = categoryMap.get(firstCategoryId) || 'Cider';
+          if (firstCategoryId) {
+            categoryName = categoryMap.get(firstCategoryId) || 'Cider';
+          }
         }
 
         // Get image from local mapping (cider uses ciderImages, not lavenderFolders)
-        const imageMapping = (productImages as any).ciderImages as Record<string, string>;
+        const imageMapping = (productImages as ProductImagesConfig).ciderImages || {};
         const imageDirectory = 'shop/cider';
 
         let imageUrl = '/images/products/placeholder-cider.svg';
@@ -119,7 +157,7 @@ export async function GET() {
         let taste: string | undefined = undefined;
         let abv: string | undefined = undefined;
         let volume: string | undefined = undefined;
-        let ciderType = itemData.productType || undefined;
+        const ciderType = itemData.productType || undefined;
 
         if (itemData.description) {
           const desc = itemData.description;
@@ -181,11 +219,11 @@ export async function GET() {
           longDescription,
           price: Number(price),
           image: imageUrl,
-          inStock: variations.some((v: any) =>
+          inStock: variations.some((v: SquareVariation) =>
             v.itemVariationData?.availableForPickup !== false
           ),
           category: categoryName,
-          variations: variations.map((v: any) => {
+          variations: variations.map((v: SquareVariation) => {
             const variationName = v.itemVariationData?.name || itemData.name;
 
             return {
@@ -202,21 +240,22 @@ export async function GET() {
     console.log(`=== RETURNING ${products.length} CIDER PRODUCTS ===`);
 
     return NextResponse.json({ success: true, products });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; stack?: string; name?: string; code?: string };
     console.error('Error fetching cider products:', error);
-    console.error('Error stack:', error.stack);
+    console.error('Error stack:', err.stack);
     console.error('Error details:', {
-      message: error.message,
-      name: error.name,
-      code: error.code,
+      message: err.message,
+      name: err.name,
+      code: err.code,
     });
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch cider products',
-        details: error.message,
-        errorName: error.name,
-        errorCode: error.code,
+        details: err.message,
+        errorName: err.name,
+        errorCode: err.code,
       },
       { status: 500 }
     );

@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { getSiteConfig } from '@/lib/site-config';
 import { notFound } from 'next/navigation';
 import LavenderFestival from '@/components/LavenderFestival';

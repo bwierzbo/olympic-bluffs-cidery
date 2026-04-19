@@ -18,21 +18,23 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+// Read initial cart from localStorage. SSR-safe: returns [] when window is undefined.
+function loadInitialCart(): CartItem[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const savedCart = window.localStorage.getItem('olympicBluffsCart');
+    if (!savedCart) return [];
+    return JSON.parse(savedCart) as CartItem[];
+  } catch (error) {
+    console.error('Error loading cart:', error);
+    return [];
+  }
+}
 
-  // Load cart from localStorage on mount
-  useEffect(() => {
-    const savedCart = localStorage.getItem('olympicBluffsCart');
-    if (savedCart) {
-      try {
-        setItems(JSON.parse(savedCart));
-      } catch (error) {
-        console.error('Error loading cart:', error);
-      }
-    }
-  }, []);
+export function CartProvider({ children }: { children: React.ReactNode }) {
+  // Lazy initializer reads localStorage once instead of triggering setState-in-effect.
+  const [items, setItems] = useState<CartItem[]>(() => loadInitialCart());
+  const [isOpen, setIsOpen] = useState(false);
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {

@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { OrderStatus, FulfillmentMethod } from '@/lib/types';
-import StatusBadge from './StatusBadge';
 import FulfillmentBadge from './FulfillmentBadge';
 import OrderAge from './OrderAge';
 

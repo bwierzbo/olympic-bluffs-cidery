@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import lavenderBanner from '@/public/images/farm/lavender-banner.jpg';
 
 export default function Farm() {
   const farmSections = [
@@ -97,10 +96,13 @@ export default function Farm() {
     <>
       {/* Hero Section */}
       <section className="relative h-[200px] md:h-[250px] bg-gray-200">
-        <img
+        <Image
           src="/images/farm/lavender-banner.jpg"
           alt="Lavender fields"
-          className="absolute inset-0 w-full h-full object-cover z-0"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover z-0"
         />
         <div className="absolute inset-0 flex items-center justify-center z-10">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white tracking-wider px-4" style={{textShadow: '2px 2px 4px rgba(0,0,0,0.7)'}}>

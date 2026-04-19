@@ -2,12 +2,18 @@
 
 import { useEffect } from 'react';
 
+interface VinoshipperApi {
+  init: (id: number, options: { cartPosition: string; cartButton: boolean }) => void;
+  cartOpen?: () => void;
+}
+
 export default function CideryShopPage() {
   useEffect(() => {
     // Initialize VinoShipper injector
     const handleLoaded = () => {
-      if ((window as any).Vinoshipper) {
-        (window as any).Vinoshipper.init(5980, {
+      const vs = (window as unknown as { Vinoshipper?: VinoshipperApi }).Vinoshipper;
+      if (vs) {
+        vs.init(5980, {
           cartPosition: 'end',
           cartButton: false,
         });

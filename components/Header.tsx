@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import CartIcon from './shop/CartIcon';
 import Cart from './shop/Cart';
@@ -14,59 +14,59 @@ type NavigationItem = {
   children?: { name: string; href: string }[];
 };
 
+function buildInitialNavigation(): { navigation: NavigationItem[]; showShop: boolean } {
+  const config = getSiteConfig();
+  const showShop = config.navigation.showShop;
+  const activeEvent = getActiveEvent();
+
+  const baseNavigation: NavigationItem[] = [
+    { name: 'HOME', href: '/' },
+    ...(showShop ? [{
+      name: 'SHOP',
+      children: [
+        { name: 'Lavender', href: '/shop/lavender' },
+        { name: 'Cidery', href: '/shop/cidery' }
+      ]
+    }] : []),
+    { name: 'HOURS & LOCATION', href: '/contact' },
+    { name: 'ON THE FARM', href: '/farm' },
+    { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
+    { name: 'ABOUT US', href: '/about' },
+  ];
+
+  // Insert event tab if active
+  if (config.navigation.showEventsTab && activeEvent) {
+    const insertIndex = baseNavigation.findIndex(
+      item => item.name === activeEvent.insertAfter
+    );
+
+    if (insertIndex !== -1) {
+      baseNavigation.splice(insertIndex + 1, 0, {
+        name: activeEvent.name,
+        href: activeEvent.href
+      });
+    } else {
+      // If insertAfter target not found (e.g. shop hidden), insert after HOME
+      const homeIndex = baseNavigation.findIndex(item => item.name === 'HOME');
+      baseNavigation.splice(homeIndex + 1, 0, {
+        name: activeEvent.name,
+        href: activeEvent.href
+      });
+    }
+  }
+
+  return { navigation: baseNavigation, showShop };
+}
+
 export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileShopOpen, setMobileShopOpen] = useState(false);
   const [desktopShopOpen, setDesktopShopOpen] = useState(false);
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [navigation, setNavigation] = useState<NavigationItem[]>([]);
-  const [showShop, setShowShop] = useState(false);
+  // Compute navigation state via lazy initializer so we don't need a setState-in-effect.
+  // Site config is derived from a static JSON file, so the value is stable across renders.
+  const [{ navigation, showShop }] = useState(() => buildInitialNavigation());
   const pathname = usePathname();
-
-  // Build navigation with optional event tab
-  useEffect(() => {
-    const config = getSiteConfig();
-    setShowShop(config.navigation.showShop);
-    const activeEvent = getActiveEvent();
-
-    const baseNavigation: NavigationItem[] = [
-      { name: 'HOME', href: '/' },
-      ...(config.navigation.showShop ? [{
-        name: 'SHOP',
-        children: [
-          { name: 'Lavender', href: '/shop/lavender' },
-          { name: 'Cidery', href: '/shop/cidery' }
-        ]
-      }] : []),
-      { name: 'HOURS & LOCATION', href: '/contact' },
-      { name: 'ON THE FARM', href: '/farm' },
-      { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
-      { name: 'ABOUT US', href: '/about' },
-    ];
-
-    // Insert event tab if active
-    if (config.navigation.showEventsTab && activeEvent) {
-      const insertIndex = baseNavigation.findIndex(
-        item => item.name === activeEvent.insertAfter
-      );
-
-      if (insertIndex !== -1) {
-        baseNavigation.splice(insertIndex + 1, 0, {
-          name: activeEvent.name,
-          href: activeEvent.href
-        });
-      } else {
-        // If insertAfter target not found (e.g. shop hidden), insert after HOME
-        const homeIndex = baseNavigation.findIndex(item => item.name === 'HOME');
-        baseNavigation.splice(homeIndex + 1, 0, {
-          name: activeEvent.name,
-          href: activeEvent.href
-        });
-      }
-    }
-
-    setNavigation(baseNavigation);
-  }, []);
 
   const handleMouseEnter = () => {
     if (closeTimeout) {

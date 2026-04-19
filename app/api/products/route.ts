@@ -1,7 +1,47 @@
 import { NextResponse } from 'next/server';
 import { squareClient } from '@/lib/square';
-import websiteProducts from '@/config/website-products.json';
 import productImages from '@/config/product-images.json';
+
+// Narrow types for Square catalog responses (SDK types are complex discriminated unions;
+// we only access a subset of fields on camelCase properties).
+// Uses null|undefined to match Square SDK's emitted type signatures.
+type Nullable<T> = T | null | undefined;
+
+interface SquareVariation {
+  id?: Nullable<string>;
+  itemVariationData?: Nullable<{
+    name?: Nullable<string>;
+    sku?: Nullable<string>;
+    priceMoney?: Nullable<{ amount?: Nullable<number | bigint | string> }>;
+    availableForPickup?: Nullable<boolean>;
+  }>;
+}
+
+interface SquareCatalogItem {
+  id?: Nullable<string>;
+  type?: Nullable<string>;
+  itemData?: Nullable<{
+    name?: Nullable<string>;
+    description?: Nullable<string>;
+    productType?: Nullable<string>;
+    categories?: Nullable<Array<{ id?: Nullable<string> }>>;
+    variations?: Nullable<SquareVariation[]>;
+    imageIds?: Nullable<string[]>;
+    labelColor?: Nullable<string>;
+    customAttributeValues?: Nullable<Record<string, unknown>>;
+  }>;
+  categoryData?: Nullable<{
+    name?: Nullable<string>;
+  }>;
+  customAttributeValues?: Nullable<Record<string, unknown>>;
+  labelColor?: Nullable<string>;
+  tags?: unknown;
+}
+
+interface ProductImagesConfig {
+  lavenderFolders?: Record<string, string>;
+  ciderImages?: Record<string, string>;
+}
 
 export async function GET() {
   try {
@@ -17,13 +57,15 @@ export async function GET() {
     console.log(`Fetched ${catalogObjects.length} total catalog objects`);
 
     // Separate items and categories
-    const items = catalogObjects.filter((obj: any) => obj.type === 'ITEM');
+    const items = (catalogObjects as unknown as SquareCatalogItem[]).filter(
+      (obj) => obj.type === 'ITEM',
+    );
 
     // Collect all unique category IDs from items
     const categoryIds = new Set<string>();
-    items.forEach((item: any) => {
+    items.forEach((item: SquareCatalogItem) => {
       if (item.itemData?.categories) {
-        item.itemData.categories.forEach((cat: any) => {
+        item.itemData.categories.forEach((cat) => {
           if (cat.id) categoryIds.add(cat.id);
         });
       }
@@ -34,9 +76,9 @@ export async function GET() {
     // Debug: Collect ALL custom attribute keys across ALL items
     console.log('=== CUSTOM ATTRIBUTES DEBUG ===');
     const allCustomAttrKeys = new Set<string>();
-    const itemsWithCustomAttrs: any[] = [];
+    const itemsWithCustomAttrs: Array<{ name?: string | null; keys: string[]; values: Record<string, unknown> }> = [];
 
-    items.forEach((item: any) => {
+    items.forEach((item: SquareCatalogItem) => {
       const customAttrs = item.customAttributeValues || item.itemData?.customAttributeValues;
       if (customAttrs && Object.keys(customAttrs).length > 0) {
         itemsWithCustomAttrs.push({
@@ -65,7 +107,7 @@ export async function GET() {
     // Check first item for all available fields that might contain filters
     if (items.length > 0) {
       console.log('\n=== FIRST ITEM FULL STRUCTURE ===');
-      const firstItem: any = items[0];
+      const firstItem: SquareCatalogItem = items[0];
       console.log('Top-level keys:', Object.keys(firstItem));
       console.log('itemData keys:', Object.keys(firstItem.itemData || {}));
       console.log('Has labelColor?', firstItem.labelColor);
@@ -83,8 +125,8 @@ export async function GET() {
         });
 
         if (categoryResponse.data) {
-          categoryResponse.data.forEach((cat: any) => {
-            if (cat.type === 'CATEGORY' && cat.categoryData?.name) {
+          (categoryResponse.data as unknown as SquareCatalogItem[]).forEach((cat) => {
+            if (cat.type === 'CATEGORY' && cat.categoryData?.name && cat.id) {
               categoryMap.set(cat.id, cat.categoryData.name);
             }
           });
@@ -97,7 +139,7 @@ export async function GET() {
 
     // Transform Square catalog items to our Product format
     const products = items
-      .map((item: any) => {
+      .map((item: SquareCatalogItem) => {
         if (!item.itemData) return null;
 
         const itemData = item.itemData;
@@ -107,6 +149,7 @@ export async function GET() {
         let isInOnlineSalesCategory = false;
         if (itemData.categories && itemData.categories.length > 0) {
           for (const category of itemData.categories) {
+            if (!category.id) continue;
             const categoryName = categoryMap.get(category.id);
             if (categoryName && categoryName.toLowerCase() === 'online sales') {
               isInOnlineSalesCategory = true;
@@ -130,13 +173,15 @@ export async function GET() {
         let categoryName = 'Uncategorized';
         if (itemData.categories && itemData.categories.length > 0) {
           const firstCategoryId = itemData.categories[0].id;
-          categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
+          if (firstCategoryId) {
+            categoryName = categoryMap.get(firstCategoryId) || 'Uncategorized';
+          }
         }
 
         // Build product object
         // Use local image mapping for product images
-        const lavenderFolders = (productImages as any).lavenderFolders as Record<string, string>;
-        const ciderImages = (productImages as any).ciderImages as Record<string, string>;
+        const lavenderFolders = (productImages as ProductImagesConfig).lavenderFolders || {};
+        const ciderImages = (productImages as ProductImagesConfig).ciderImages || {};
 
         // Check lavender folders first, then cider images
         let imageUrl = '/images/products/placeholder-lavender.svg';
@@ -153,11 +198,11 @@ export async function GET() {
           description: itemData.description || '',
           price: Number(price), // Convert to number (already in cents)
           image: imageUrl,
-          inStock: variations.some((v: any) =>
+          inStock: variations.some((v: SquareVariation) =>
             v.itemVariationData?.availableForPickup !== false
           ),
           category: categoryName,
-          variations: variations.map((v: any) => ({
+          variations: variations.map((v: SquareVariation) => ({
             id: v.id,
             name: v.itemVariationData?.name || itemData.name,
             price: Number(v.itemVariationData?.priceMoney?.amount || 0),
@@ -168,13 +213,14 @@ export async function GET() {
       .filter(Boolean); // Remove nulls
 
     return NextResponse.json({ success: true, products });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string };
     console.error('Error fetching Square catalog:', error);
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch products',
-        details: error.message,
+        details: err.message,
       },
       { status: 500 }
     );

@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { Order, OrderStatus } from '@/lib/types';
 
 export default function OrderTrackingPage() {
   const params = useParams();
-  const router = useRouter();
   const orderId = params.orderId as string;
 
   const [order, setOrder] = useState<Order | null>(null);
@@ -25,7 +24,7 @@ export default function OrderTrackingPage() {
         } else {
           setError(data.error || 'Order not found');
         }
-      } catch (err) {
+      } catch {
         setError('Failed to load order');
       } finally {
         setLoading(false);
@@ -310,7 +309,7 @@ export default function OrderTrackingPage() {
                 <strong>Location:</strong> Olympic Bluffs Cidery & Lavender Farm
               </p>
               <p className="text-sm text-gray-600">
-                We'll notify you at <strong>{order.customerInfo.email}</strong> when your order is ready for pickup.
+                We&apos;ll notify you at <strong>{order.customerInfo.email}</strong> when your order is ready for pickup.
               </p>
             </div>
           ) : (

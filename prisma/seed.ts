@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -408,10 +408,10 @@ async function main() {
     await prisma.order.create({
       data: {
         id: order.id,
-        items: order.items as any,
-        customerInfo: order.customerInfo as any,
+        items: order.items as unknown as Prisma.InputJsonValue,
+        customerInfo: order.customerInfo as unknown as Prisma.InputJsonValue,
         fulfillmentMethod: order.fulfillmentMethod,
-        shippingAddress: order.shippingAddress as any,
+        shippingAddress: order.shippingAddress as unknown as Prisma.InputJsonValue,
         subtotal: order.subtotal,
         shippingCost: order.shippingCost,
         tax: order.tax,
@@ -419,7 +419,7 @@ async function main() {
         paymentId: order.paymentId,
         status: order.status,
         createdAt: order.createdAt,
-        statusHistory: order.statusHistory as any,
+        statusHistory: order.statusHistory as unknown as Prisma.InputJsonValue,
         trackingNumber: order.trackingNumber,
         adminNotes: order.adminNotes,
         auditLog: {
@@ -429,7 +429,7 @@ async function main() {
             fromStatus: entry.fromStatus,
             toStatus: entry.toStatus,
             note: entry.note,
-            metadata: entry.metadata as any,
+            metadata: entry.metadata as Prisma.InputJsonValue | undefined,
             createdAt: entry.createdAt,
           })),
         },

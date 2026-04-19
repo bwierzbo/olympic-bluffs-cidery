@@ -10,7 +10,7 @@
  * Safe to run multiple times — skips orders that already have audit log entries.
  */
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -85,7 +85,7 @@ async function main() {
         fromStatus: e.fromStatus,
         toStatus: e.toStatus,
         note: e.note,
-        metadata: e.metadata as any,
+        metadata: e.metadata as Prisma.InputJsonValue | undefined,
         createdAt: e.createdAt,
       })),
     });

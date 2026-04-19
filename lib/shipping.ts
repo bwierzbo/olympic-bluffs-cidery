@@ -11,8 +11,14 @@ export const SHIPPING_TIERS = [
   { maxOz: Infinity, label: 'Over 5 lbs', cost: 2000 }, // $20.00
 ];
 
-const DEFAULT_WEIGHT = (productWeights as any)._defaultWeight || 4; // 4 oz default
-const weights = (productWeights as any).weights as Record<string, number>;
+interface ProductWeightsConfig {
+  _defaultWeight?: number;
+  weights: Record<string, number>;
+}
+
+const weightsConfig = productWeights as ProductWeightsConfig;
+const DEFAULT_WEIGHT = weightsConfig._defaultWeight || 4; // 4 oz default
+const weights = weightsConfig.weights;
 
 /**
  * Get the weight of a product in ounces

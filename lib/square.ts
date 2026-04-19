@@ -51,7 +51,7 @@ export function getSquareClient(): SquareClient {
 // For backwards compat — used by process-payment
 export const squareClient = new Proxy({} as SquareClient, {
   get(_target, prop) {
-    return (getSquareClient() as any)[prop];
+    return (getSquareClient() as unknown as Record<string | symbol, unknown>)[prop];
   },
 });
 

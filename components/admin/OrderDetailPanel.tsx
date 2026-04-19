@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { OrderStatus } from '@/lib/types';
 import { useOrderDetail } from '@/lib/hooks/useOrderDetail';
 import { useStatusUpdate } from '@/lib/hooks/useStatusUpdate';

@@ -11,7 +11,7 @@ export default function CartIcon({ vinoShipper = false }: CartIconProps) {
 
   const handleClick = () => {
     if (vinoShipper) {
-      const vs = (window as any).Vinoshipper;
+      const vs = (window as unknown as { Vinoshipper?: { cartOpen?: () => void } }).Vinoshipper;
       if (vs && typeof vs.cartOpen === 'function') {
         vs.cartOpen();
       }
