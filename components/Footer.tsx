@@ -3,7 +3,10 @@ import Image from 'next/image';
 import { getSiteConfig } from '@/lib/site-config';
 
 export default function Footer() {
-  const showShop = getSiteConfig().navigation.showShop;
+  const showShopFlag = getSiteConfig().navigation.showShop;
+  const isDev = process.env.NODE_ENV !== 'production';
+  const showLavender = showShopFlag || isDev;
+  const showCidery = showShopFlag || isDev;
 
   return (
     <footer className="bg-sage-600 text-white">
@@ -50,15 +53,15 @@ export default function Footer() {
           <Link href="/" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             Home
           </Link>
-          {showShop && (
-            <>
-              <Link href="/shop/lavender" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
-                Shop Lavender
-              </Link>
-              <Link href="/shop/cidery" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
-                Shop Cider
-              </Link>
-            </>
+          {showLavender && (
+            <Link href="/shop/lavender" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+              Shop Lavender
+            </Link>
+          )}
+          {showCidery && (
+            <Link href="/shop/cidery" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
+              Shop Cider
+            </Link>
           )}
           <Link href="/about" className="text-white hover:text-sage-100 transition-colors text-sm font-medium">
             More

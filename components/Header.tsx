@@ -16,18 +16,21 @@ type NavigationItem = {
 
 function buildInitialNavigation(): { navigation: NavigationItem[]; showShop: boolean } {
   const config = getSiteConfig();
-  const showShop = config.navigation.showShop;
+  // Both shops are exposed in dev even when the public flag is off, so we can work on them in-flow.
+  const isDev = process.env.NODE_ENV !== 'production';
+  const showLavender = config.navigation.showShop || isDev;
+  const showCidery = config.navigation.showShop || isDev;
+  const showShop = showLavender || showCidery;
   const activeEvent = getActiveEvent();
+
+  const shopChildren = [
+    ...(showLavender ? [{ name: 'Lavender', href: '/shop/lavender' }] : []),
+    ...(showCidery ? [{ name: 'Cidery', href: '/shop/cidery' }] : []),
+  ];
 
   const baseNavigation: NavigationItem[] = [
     { name: 'HOME', href: '/' },
-    ...(showShop ? [{
-      name: 'SHOP',
-      children: [
-        { name: 'Lavender', href: '/shop/lavender' },
-        { name: 'Cidery', href: '/shop/cidery' }
-      ]
-    }] : []),
+    ...(shopChildren.length > 0 ? [{ name: 'SHOP', children: shopChildren }] : []),
     { name: 'HOURS & LOCATION', href: '/contact' },
     { name: 'ON THE FARM', href: '/farm' },
     { name: 'SALT & CEDAR B&B', href: '/salt-cedar-bnb' },
