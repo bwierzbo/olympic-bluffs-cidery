@@ -141,7 +141,7 @@ export default function ProductsPage() {
 
       {/* Products Grid */}
       <section className="py-16 bg-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1800px] px-4 sm:px-6 lg:px-8">
           {/* Loading State */}
           {isLoading && (
             <div className="text-center py-12">
@@ -260,7 +260,7 @@ export default function ProductsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 All Products
               </h2>
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-fr">
                 {filteredProducts.map((product, index) => (
                   <ProductCard key={product.id} product={product} priority={index < 6} />
                 ))}
@@ -274,7 +274,7 @@ export default function ProductsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Search Results
               </h2>
-              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 auto-rows-fr">
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-fr">
                 {filteredProducts.map((product, index) => (
                   <ProductCard key={product.id} product={product} priority={index < 6} />
                 ))}
@@ -297,7 +297,7 @@ export default function ProductsPage() {
                     <h3 className="text-xl font-semibold text-gray-800 mb-4">
                       {category}
                     </h3>
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
                       {categoryProducts.map((product, index) => (
                         <ProductCard key={product.id} product={product} priority={index < 3} />
                       ))}
