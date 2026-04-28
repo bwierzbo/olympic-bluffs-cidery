@@ -21,7 +21,7 @@ export default function ShippingPage() {
           <div className="bg-sage-50 rounded-lg p-6 mb-6">
             <div className="flex justify-between items-center mb-4">
               <span className="text-gray-700 font-medium">Flat Rate Shipping (USPS)</span>
-              <span className="text-sage-700 font-semibold">$20.00</span>
+              <span className="text-sage-700 font-semibold">$9.95</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-gray-700 font-medium">Farm Pickup</span>

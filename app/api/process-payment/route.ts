@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
     const { locationId } = getSquarePublicConfig();
 
     // Calculate amounts
-    const shippingCost = fulfillmentMethod === 'shipping' ? 2000 : 0;
+    const shippingCost = fulfillmentMethod === 'shipping' ? 995 : 0;
     const subtotal = amount - shippingCost;
 
     // 1. Create a Square Order first so it shows as "Online" in dashboard
