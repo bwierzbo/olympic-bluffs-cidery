@@ -429,8 +429,8 @@ export default function CheckoutPage() {
         if (data.success) {
           // Clear cart and redirect to success page
           clearCart();
-          router.push(`/products/success?orderId=${data.orderId}`);
-          // Keep isProcessingPayment.current = true to prevent redirect back to /products
+          router.push(`/shop/success?orderId=${data.orderId}`);
+          // Keep isProcessingPayment.current = true to prevent redirect back to /shop
         } else {
           console.log('Setting error:', data.error);
           setError(data.error || 'Payment failed. Please try again.');
