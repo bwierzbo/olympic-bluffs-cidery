@@ -15,6 +15,7 @@ interface SquareVariation {
     sku?: Nullable<string>;
     priceMoney?: Nullable<{ amount?: Nullable<number | bigint | string> }>;
     availableForPickup?: Nullable<boolean>;
+    imageIds?: Nullable<string[]>;
   }>;
 }
 
@@ -153,11 +154,15 @@ export async function GET() {
       if (pageCount > 20) break;
     } while (cursor);
 
-    // Collect all image IDs upfront
+    // Collect all image IDs upfront (item-level + variation-level)
     const allImageIds: string[] = [];
     for (const item of allItems) {
       const ids = item.itemData?.imageIds || [];
       allImageIds.push(...ids);
+      for (const v of item.itemData?.variations || []) {
+        const variationIds = v.itemVariationData?.imageIds || [];
+        allImageIds.push(...variationIds);
+      }
     }
 
     // Batch fetch all images at once
@@ -205,12 +210,19 @@ export async function GET() {
             (v: SquareVariation) => v.itemVariationData?.availableForPickup !== false
           ),
           category: categoryName,
-          variations: variations.map((v: SquareVariation) => ({
-            id: v.id,
-            name: v.itemVariationData?.name || itemData.name,
-            price: Number(v.itemVariationData?.priceMoney?.amount || 0),
-            sku: v.itemVariationData?.sku,
-          })),
+          variations: variations.map((v: SquareVariation) => {
+            const variationImageIds = v.itemVariationData?.imageIds || [];
+            const variationImage = variationImageIds
+              .map((id) => imageUrlMap.get(id))
+              .find((url): url is string => !!url);
+            return {
+              id: v.id,
+              name: v.itemVariationData?.name || itemData.name,
+              price: Number(v.itemVariationData?.priceMoney?.amount || 0),
+              sku: v.itemVariationData?.sku,
+              image: variationImage,
+            };
+          }),
         };
       })
       .filter(Boolean);

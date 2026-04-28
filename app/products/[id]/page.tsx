@@ -69,6 +69,7 @@ export default function ProductDetailPage() {
   const [error, setError] = useState('');
   const [isAdding, setIsAdding] = useState(false);
   const [multiDimSelections, setMultiDimSelections] = useState<Record<string, string>>({});
+  const [hoveredVariationId, setHoveredVariationId] = useState<string | null>(null);
 
   useEffect(() => {
     async function fetchProduct() {
@@ -142,10 +143,26 @@ export default function ProductDetailPage() {
   };
 
   const getCurrentImage = () => {
+    if (hoveredVariationId) {
+      const hovered = product?.variations?.find((v) => v.id === hoveredVariationId);
+      if (hovered?.image) return hovered.image;
+    }
     if (selectedVariation?.image) {
       return selectedVariation.image;
     }
     return product?.image || '/images/products/placeholder-lavender.svg';
+  };
+
+  const selectVariation = (variation: ProductVariation) => {
+    setSelectedVariation(variation);
+    if (isMultiDimensional()) {
+      const parts = variation.name.split(',').map((p) => p.trim());
+      const next: Record<string, string> = {};
+      parts.forEach((part, index) => {
+        next[index] = part;
+      });
+      setMultiDimSelections(next);
+    }
   };
 
   const hasVariedPrices = () => {
@@ -357,43 +374,107 @@ export default function ProductDetailPage() {
             </div>
           </div>
         ) : (
-          // Lavender Product - Carousel or Single Image with Description Below
+          // Lavender Product - Variation gallery, carousel, or single image
           <div className="max-w-4xl mx-auto mb-12">
-            {/* Use carousel if product has multiple images */}
-            {product.images && product.images.length > 0 ? (
-              <div className="mb-8">
-                <ImageCarousel
-                  images={product.images}
-                  alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
-                />
-                {!product.inStock && (
-                  <div className="text-center mt-4">
-                    <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg inline-block">
-                      Out of Stock
-                    </span>
+            {(() => {
+              const variationsWithImages = (product.variations || []).filter((v) => v.image);
+
+              if (variationsWithImages.length > 0) {
+                return (
+                  <div className="mb-8">
+                    <div className="relative h-[350px] sm:h-[450px]">
+                      <Image
+                        key={getCurrentImage()}
+                        src={getCurrentImage()}
+                        alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
+                        fill
+                        sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
+                        className="object-contain drop-shadow-xl"
+                        priority
+                      />
+                      {!product.inStock && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
+                            Out of Stock
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {/* Variation thumbnail strip */}
+                    <div className="flex justify-center gap-3 mt-6 flex-wrap">
+                      {variationsWithImages.map((variation) => {
+                        const isSelected = selectedVariation?.id === variation.id;
+                        return (
+                          <button
+                            key={variation.id}
+                            type="button"
+                            onMouseEnter={() => setHoveredVariationId(variation.id)}
+                            onMouseLeave={() => setHoveredVariationId(null)}
+                            onFocus={() => setHoveredVariationId(variation.id)}
+                            onBlur={() => setHoveredVariationId(null)}
+                            onClick={() => selectVariation(variation)}
+                            aria-label={`Select ${variation.name}`}
+                            aria-pressed={isSelected}
+                            className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
+                              isSelected
+                                ? 'border-sage-500 ring-2 ring-sage-200'
+                                : 'border-gray-200 hover:border-sage-400'
+                            }`}
+                          >
+                            <Image
+                              src={variation.image!}
+                              alt={variation.name}
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                )}
-              </div>
-            ) : (
-              <div className="relative h-[350px] sm:h-[450px] mb-8">
-                <Image
-                  key={getCurrentImage()}
-                  src={getCurrentImage()}
-                  alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
-                  fill
-                  sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
-                  className="object-contain drop-shadow-xl"
-                  priority
-                />
-                {!product.inStock && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
-                      Out of Stock
-                    </span>
+                );
+              }
+
+              if (product.images && product.images.length > 0) {
+                return (
+                  <div className="mb-8">
+                    <ImageCarousel
+                      images={product.images}
+                      alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
+                    />
+                    {!product.inStock && (
+                      <div className="text-center mt-4">
+                        <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg inline-block">
+                          Out of Stock
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            )}
+                );
+              }
+
+              return (
+                <div className="relative h-[350px] sm:h-[450px] mb-8">
+                  <Image
+                    key={getCurrentImage()}
+                    src={getCurrentImage()}
+                    alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
+                    fill
+                    sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
+                    className="object-contain drop-shadow-xl"
+                    priority
+                  />
+                  {!product.inStock && (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
+                        Out of Stock
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
             {product.description && (
               <p className="text-lg text-gray-700 leading-relaxed text-center max-w-2xl mx-auto">
                 {product.description}
