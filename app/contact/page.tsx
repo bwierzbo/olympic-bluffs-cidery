@@ -24,7 +24,8 @@ export default function Contact() {
                 FARM HOURS
               </h1>
               <p className="text-gray-600 mb-4 leading-relaxed">
-                Open April 24th - Thursday through Sunday, 12 - 5 pm<br />
+                Open April 24th - Friday through Sunday, 12 - 5 pm<br />
+                Closed May 8-10 for a private event<br />
                 Lavender Festival Weekend (July 17-20): 10 am - 5 pm
               </p>
               <p className="text-gray-600 leading-relaxed">
