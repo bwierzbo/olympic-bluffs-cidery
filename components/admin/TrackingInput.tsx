@@ -8,15 +8,47 @@ interface TrackingInputProps {
   updating: boolean;
 }
 
+// Pull a tracking number out of pasted carrier/Pirate Ship tracking URLs.
+// Falls through to the raw input if no known format is detected.
+function extractTrackingNumber(input: string): string {
+  const trimmed = input.trim();
+  if (!/^https?:\/\//i.test(trimmed)) return trimmed;
+
+  try {
+    const url = new URL(trimmed);
+    const params = ['qtc_tLabels1', 'tracknum', 'tracknumbers', 'tracking', 'trackingnumber', 'tracking_number'];
+    for (const p of params) {
+      const v = url.searchParams.get(p);
+      if (v) return v.trim();
+    }
+  } catch {
+    // not a parseable URL — fall through to regex
+  }
+
+  const patterns = [
+    /1Z[A-Z0-9]{16}/i,           // UPS
+    /\b9[24]\d{20}\b/,           // USPS 22-digit
+    /\b\d{20,22}\b/,             // USPS variant
+    /\b\d{12,15}\b/,             // FedEx / others
+  ];
+  for (const re of patterns) {
+    const m = trimmed.match(re);
+    if (m) return m[0];
+  }
+
+  return trimmed;
+}
+
 export default function TrackingInput({ currentTracking, onSubmit, updating }: TrackingInputProps) {
   const [value, setValue] = useState(currentTracking || '');
   const [editing, setEditing] = useState(!currentTracking);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    onSubmit(trimmed);
+    const extracted = extractTrackingNumber(value);
+    if (!extracted) return;
+    onSubmit(extracted);
+    setValue(extracted);
     setEditing(false);
   };
 
@@ -40,7 +72,7 @@ export default function TrackingInput({ currentTracking, onSubmit, updating }: T
         type="text"
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="e.g., 1Z999AA10123456784"
+        placeholder="Tracking number or paste a tracking URL"
         className="flex-1 px-2 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-sage-500"
         disabled={updating}
       />

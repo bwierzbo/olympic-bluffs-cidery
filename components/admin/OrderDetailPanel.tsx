@@ -31,11 +31,32 @@ function formatDate(iso: string): string {
   });
 }
 
+interface ShippingAddressLike {
+  fullName: string;
+  addressLine1: string;
+  addressLine2?: string | null;
+  city: string;
+  state: string;
+  postalCode: string;
+}
+
+function formatAddressForPirateShip(addr: ShippingAddressLike): string {
+  return [
+    addr.fullName,
+    addr.addressLine1,
+    addr.addressLine2 || '',
+    `${addr.city}, ${addr.state} ${addr.postalCode}`,
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+
 export default function OrderDetailPanel({ orderId, onClose, onOrderUpdated }: OrderDetailPanelProps) {
   const { order, auditLog, loading, error, refetch } = useOrderDetail(orderId);
 
   const [transitionTarget, setTransitionTarget] = useState<OrderStatus | null>(null);
   const [auditExpanded, setAuditExpanded] = useState(false);
+  const [addressCopied, setAddressCopied] = useState(false);
 
   const { updating, updateStatus, addTracking, addNote } = useStatusUpdate({
     onSuccess: (id, newStatus) => {
@@ -157,17 +178,45 @@ export default function OrderDetailPanel({ orderId, onClose, onOrderUpdated }: O
                   </span>
 
                   {order.shippingAddress && (
-                    <div className="mt-2 text-gray-600 space-y-0.5">
-                      <p>{order.shippingAddress.fullName}</p>
-                      <p>{order.shippingAddress.addressLine1}</p>
-                      {order.shippingAddress.addressLine2 && (
-                        <p>{order.shippingAddress.addressLine2}</p>
-                      )}
-                      <p>
-                        {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
-                        {order.shippingAddress.postalCode}
-                      </p>
-                    </div>
+                    <>
+                      <div className="mt-2 text-gray-600 space-y-0.5">
+                        <p>{order.shippingAddress.fullName}</p>
+                        <p>{order.shippingAddress.addressLine1}</p>
+                        {order.shippingAddress.addressLine2 && (
+                          <p>{order.shippingAddress.addressLine2}</p>
+                        )}
+                        <p>
+                          {order.shippingAddress.city}, {order.shippingAddress.state}{' '}
+                          {order.shippingAddress.postalCode}
+                        </p>
+                      </div>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await navigator.clipboard.writeText(
+                              formatAddressForPirateShip(order.shippingAddress!)
+                            );
+                            setAddressCopied(true);
+                            setTimeout(() => setAddressCopied(false), 1500);
+                          }}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-sage-700 bg-white border border-sage-300 rounded hover:bg-sage-50"
+                        >
+                          {addressCopied ? 'Copied!' : 'Copy Address'}
+                        </button>
+                        <a
+                          href="https://ship.pirateship.com/ship/single"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-white bg-sage-600 rounded hover:bg-sage-700"
+                        >
+                          Open Pirate Ship
+                          <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                          </svg>
+                        </a>
+                      </div>
+                    </>
                   )}
                 </div>
               </section>
