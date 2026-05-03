@@ -23,7 +23,8 @@
   },
   "navigation": {
     "showEventsTab": true,
-    "showShop": false
+    "showLavender": true,
+    "showCidery": false
   },
   "themeColors": {
     "spring": {

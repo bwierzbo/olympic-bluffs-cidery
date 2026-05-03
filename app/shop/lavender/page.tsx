@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react';
 import ProductCard from '@/components/shop/ProductCard';
 import CategoryNav from '@/components/shop/CategoryNav';
 import { Product } from '@/lib/types';
+import { getSiteConfig } from '@/lib/site-config';
 import Link from 'next/link';
 
 export default function ProductsPage() {
@@ -71,9 +72,9 @@ export default function ProductsPage() {
     new Set(filteredProducts.map((p) => p.category).filter(Boolean))
   );
 
-  // Show "Coming Soon" page in production. NODE_ENV is effectively constant at runtime,
-  // so placing this check after hook calls preserves hook order and behavior.
-  if (process.env.NODE_ENV === 'production') {
+  // Show "Coming Soon" page when the lavender shop is gated off in site-config.
+  // Placed after hook calls so hook order is preserved across renders.
+  if (!getSiteConfig().navigation.showLavender) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-white to-sage-50">
         {/* Hero Section */}
@@ -134,7 +135,7 @@ export default function ProductsPage() {
       <div className="bg-sage-50 border-y border-sage-200">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-3 text-center">
           <p className="text-sage-800 text-sm">
-            Lavender products are purchased through our farm shop. Looking for cider? Visit our <a href="/shop/cidery" className="underline font-medium hover:text-sage-900">Cidery Shop</a> for pickup and shipping.
+            Lavender orders are checked out separately from our cider shop. Looking for cider? Visit our <a href="/shop/cidery" className="underline font-medium hover:text-sage-900">Cidery Shop</a> for pickup and shipping.
           </p>
         </div>
       </div>

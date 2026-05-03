@@ -2,29 +2,14 @@
 
 import { useCart } from './CartProvider';
 
-interface CartIconProps {
-  vinoShipper?: boolean;
-}
-
-export default function CartIcon({ vinoShipper = false }: CartIconProps) {
+export default function CartIcon() {
   const { totalItems, openCart } = useCart();
-
-  const handleClick = () => {
-    if (vinoShipper) {
-      const vs = (window as unknown as { Vinoshipper?: { cartOpen?: () => void } }).Vinoshipper;
-      if (vs && typeof vs.cartOpen === 'function') {
-        vs.cartOpen();
-      }
-    } else {
-      openCart();
-    }
-  };
 
   return (
     <button
-      onClick={handleClick}
+      onClick={openCart}
       className="relative p-2 text-white hover:text-sage-100 transition-colors"
-      aria-label={vinoShipper ? 'Cider cart' : 'Shopping cart'}
+      aria-label="Lavender shop cart"
     >
       {/* Shopping bag icon */}
       <svg
@@ -41,8 +26,7 @@ export default function CartIcon({ vinoShipper = false }: CartIconProps) {
         />
       </svg>
 
-      {/* Item count badge - only show for lavender cart */}
-      {!vinoShipper && totalItems > 0 && (
+      {totalItems > 0 && (
         <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
           {totalItems > 99 ? '99+' : totalItems}
         </span>

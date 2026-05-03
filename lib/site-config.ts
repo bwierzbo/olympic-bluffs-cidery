@@ -27,7 +27,8 @@ export interface SiteConfig {
   };
   navigation: {
     showEventsTab: boolean;
-    showShop: boolean;
+    showLavender: boolean;
+    showCidery: boolean;
   };
   themeColors: {
     spring: { primary: string; accent: string };

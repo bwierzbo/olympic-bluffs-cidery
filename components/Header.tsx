@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import CartIcon from './shop/CartIcon';
+import CiderCartIcon from './shop/CiderCartIcon';
 import Cart from './shop/Cart';
 import { getSiteConfig, getActiveEvent } from '@/lib/site-config';
 
@@ -14,13 +15,16 @@ type NavigationItem = {
   children?: { name: string; href: string }[];
 };
 
-function buildInitialNavigation(): { navigation: NavigationItem[]; showShop: boolean } {
+function buildInitialNavigation(): {
+  navigation: NavigationItem[];
+  showLavender: boolean;
+  showCidery: boolean;
+} {
   const config = getSiteConfig();
-  // Both shops are exposed in dev even when the public flag is off, so we can work on them in-flow.
+  // Each shop is exposed in dev even when the public flag is off, so we can work on them in-flow.
   const isDev = process.env.NODE_ENV !== 'production';
-  const showLavender = config.navigation.showShop || isDev;
-  const showCidery = config.navigation.showShop || isDev;
-  const showShop = showLavender || showCidery;
+  const showLavender = config.navigation.showLavender || isDev;
+  const showCidery = config.navigation.showCidery || isDev;
   const activeEvent = getActiveEvent();
 
   const shopChildren = [
@@ -58,7 +62,7 @@ function buildInitialNavigation(): { navigation: NavigationItem[]; showShop: boo
     }
   }
 
-  return { navigation: baseNavigation, showShop };
+  return { navigation: baseNavigation, showLavender, showCidery };
 }
 
 export default function Header() {
@@ -68,7 +72,7 @@ export default function Header() {
   const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
   // Compute navigation state via lazy initializer so we don't need a setState-in-effect.
   // Site config is derived from a static JSON file, so the value is stable across renders.
-  const [{ navigation, showShop }] = useState(() => buildInitialNavigation());
+  const [{ navigation, showLavender, showCidery }] = useState(() => buildInitialNavigation());
   const pathname = usePathname();
 
   const handleMouseEnter = () => {
@@ -163,10 +167,13 @@ export default function Header() {
               )
             ))}
           </div>
-          {/* Cart Icon - Desktop only, far right */}
-          {showShop && (
-            <div className="ml-4">
-              <CartIcon vinoShipper={pathname.startsWith('/shop/cidery')} />
+          {/* Cart Icons - Desktop only, far right. Two separate icons so the
+              two storefronts (Square lavender + VinoShipper cider) are clearly
+              distinct — a customer buying both will check out twice. */}
+          {(showLavender || showCidery) && (
+            <div className="ml-4 flex items-center gap-1">
+              {showCidery && <CiderCartIcon />}
+              {showLavender && <CartIcon />}
             </div>
           )}
         </div>
@@ -188,8 +195,9 @@ export default function Header() {
 
           {/* Mobile menu and cart buttons */}
           <div className="flex items-center gap-2 lg:hidden">
-            {/* Cart Icon - Mobile only */}
-            {showShop && <CartIcon vinoShipper={pathname.startsWith('/shop/cidery')} />}
+            {/* Cart Icons - Mobile */}
+            {showCidery && <CiderCartIcon />}
+            {showLavender && <CartIcon />}
 
             {/* Mobile menu button */}
             <button
