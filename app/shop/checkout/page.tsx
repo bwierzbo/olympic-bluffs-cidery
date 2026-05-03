@@ -75,8 +75,14 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Generate a unique mount key to force remount on each checkout visit
-  const [mountKey] = useState(() => Date.now());
+  // Force a fresh mount on each checkout visit (Square SDK doesn't reset
+  // cleanly otherwise). Start at 0 so SSR and the first client render match,
+  // then bump in an effect after mount — bumping causes the div with this key
+  // to remount, which is the desired effect.
+  const [mountKey, setMountKey] = useState(0);
+  useEffect(() => {
+    setMountKey(Date.now());
+  }, []);
 
   // Customer Info
   const [email, setEmail] = useState('');
