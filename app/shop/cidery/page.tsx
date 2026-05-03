@@ -1,9 +1,17 @@
 'use client';
 
 import { useEffect } from 'react';
+import FeaturedCiderShowcase from '@/components/shop/FeaturedCiderShowcase';
+
+interface VinoshipperInitOptions {
+  cartPosition: string;
+  cartButton: boolean;
+  primaryColor?: string;
+  secondaryColor?: string;
+}
 
 interface VinoshipperApi {
-  init: (id: number, options: { cartPosition: string; cartButton: boolean }) => void;
+  init: (id: number, options: VinoshipperInitOptions) => void;
   cartOpen?: () => void;
 }
 
@@ -16,6 +24,8 @@ export default function CideryShopPage() {
         vs.init(5980, {
           cartPosition: 'end',
           cartButton: false,
+          primaryColor: '#565d52',   // sage-600
+          secondaryColor: '#474c44', // sage-700
         });
       }
     };
@@ -82,9 +92,26 @@ export default function CideryShopPage() {
         </div>
       </div>
 
+      {/* Featured cider gallery — editorial showcase above the catalog */}
+      <FeaturedCiderShowcase />
+
       {/* VinoShipper Product Catalog */}
-      <section className="py-16 bg-gradient-to-b from-white to-sage-50/30">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      <section
+        id="cider-catalog"
+        className="py-16 bg-gradient-to-b from-sage-50/40 to-white scroll-mt-24"
+      >
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10">
+            <p className="text-xs font-semibold tracking-[0.2em] uppercase text-sage-600 mb-3">
+              Full Catalog
+            </p>
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Shop All Ciders
+            </h2>
+            <div className="flex justify-center">
+              <div className="w-20 h-0.5 bg-sage-400 rounded-full" />
+            </div>
+          </div>
           <div className="vs-products" data-vs-cards="true"></div>
         </div>
       </section>
