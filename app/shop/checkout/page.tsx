@@ -106,7 +106,7 @@ export default function CheckoutPage() {
   const isProcessingPayment = useRef(false);
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  const shippingCost = fulfillmentMethod === 'shipping' ? 995 : 0; // $9.95 flat rate shipping
+  const shippingCost = fulfillmentMethod === 'shipping' ? 1995 : 0; // $19.95 flat rate shipping
   const total = totalAmount + shippingCost;
 
   // Redirect if cart is empty (but not during payment processing)
