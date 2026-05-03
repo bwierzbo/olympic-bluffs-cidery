@@ -18,28 +18,33 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-// Read initial cart from localStorage. SSR-safe: returns [] when window is undefined.
-function loadInitialCart(): CartItem[] {
-  if (typeof window === 'undefined') return [];
-  try {
-    const savedCart = window.localStorage.getItem('olympicBluffsCart');
-    if (!savedCart) return [];
-    return JSON.parse(savedCart) as CartItem[];
-  } catch (error) {
-    console.error('Error loading cart:', error);
-    return [];
-  }
-}
-
 export function CartProvider({ children }: { children: React.ReactNode }) {
-  // Lazy initializer reads localStorage once instead of triggering setState-in-effect.
-  const [items, setItems] = useState<CartItem[]>(() => loadInitialCart());
+  const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
 
-  // Save cart to localStorage whenever it changes
+  // Load saved cart on mount — done in an effect (not a useState initializer)
+  // so the server-rendered HTML and the first client render both show an empty
+  // cart. Reading localStorage during render causes React #418 hydration errors
+  // in production whenever the saved cart isn't empty.
   useEffect(() => {
+    try {
+      const savedCart = window.localStorage.getItem('olympicBluffsCart');
+      if (savedCart) {
+        setItems(JSON.parse(savedCart) as CartItem[]);
+      }
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    }
+    setHasHydrated(true);
+  }, []);
+
+  // Persist on change, but only after the initial load — otherwise the empty
+  // initial state would clobber the saved cart on first mount.
+  useEffect(() => {
+    if (!hasHydrated) return;
     localStorage.setItem('olympicBluffsCart', JSON.stringify(items));
-  }, [items]);
+  }, [items, hasHydrated]);
 
   const addToCart = (product: Product, quantity: number = 1, variation?: ProductVariation) => {
     setItems((currentItems) => {
