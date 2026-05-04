@@ -5,6 +5,47 @@ import { Order } from './types';
  * Email notification helper using Gmail SMTP
  */
 
+// Farm is in Port Angeles, WA — Pacific time year-round.
+const FARM_TIME_ZONE = 'America/Los_Angeles';
+
+// Map US state codes to IANA time zones. State-level granularity only —
+// covers the ~99% case for direct-to-consumer shipping. Falls back to
+// Pacific when state is missing or unrecognized (e.g. pickup orders).
+const STATE_TIME_ZONES: Record<string, string> = {
+  // Pacific
+  WA: 'America/Los_Angeles', OR: 'America/Los_Angeles',
+  CA: 'America/Los_Angeles', NV: 'America/Los_Angeles',
+  // Mountain (MST/MDT)
+  MT: 'America/Denver', WY: 'America/Denver', UT: 'America/Denver',
+  CO: 'America/Denver', NM: 'America/Denver', ID: 'America/Denver',
+  // Arizona — MST year-round, no DST
+  AZ: 'America/Phoenix',
+  // Central
+  TX: 'America/Chicago', OK: 'America/Chicago', KS: 'America/Chicago',
+  NE: 'America/Chicago', SD: 'America/Chicago', ND: 'America/Chicago',
+  MN: 'America/Chicago', IA: 'America/Chicago', MO: 'America/Chicago',
+  AR: 'America/Chicago', LA: 'America/Chicago', MS: 'America/Chicago',
+  AL: 'America/Chicago', WI: 'America/Chicago', IL: 'America/Chicago',
+  // Eastern
+  NY: 'America/New_York', NJ: 'America/New_York', CT: 'America/New_York',
+  RI: 'America/New_York', MA: 'America/New_York', NH: 'America/New_York',
+  VT: 'America/New_York', ME: 'America/New_York', PA: 'America/New_York',
+  MD: 'America/New_York', DC: 'America/New_York', DE: 'America/New_York',
+  VA: 'America/New_York', WV: 'America/New_York', NC: 'America/New_York',
+  SC: 'America/New_York', GA: 'America/New_York', FL: 'America/New_York',
+  OH: 'America/New_York', MI: 'America/New_York', IN: 'America/New_York',
+  KY: 'America/New_York', TN: 'America/New_York',
+  // Outside the lower 48
+  AK: 'America/Anchorage',
+  HI: 'Pacific/Honolulu',
+};
+
+function getCustomerTimeZone(order: Order): string {
+  const state = order.shippingAddress?.state?.toUpperCase();
+  if (!state) return FARM_TIME_ZONE; // Pickup or missing → show farm-local
+  return STATE_TIME_ZONES[state] ?? FARM_TIME_ZONE;
+}
+
 export interface EmailTemplate {
   to: string;
   subject: string;
@@ -62,6 +103,7 @@ export function generateOrderConfirmationEmail(order: Order): EmailTemplate {
     .join('\n');
 
   const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
+  const customerTz = getCustomerTimeZone(order);
 
   const text = `
 Olympic Bluffs Cidery & Lavender Farm
@@ -72,7 +114,7 @@ Hi ${order.customerInfo.firstName},
 Thank you for your order! We're so glad you chose Olympic Bluffs.
 
 Order Number: ${order.id}
-Order Date: ${new Date(order.createdAt).toLocaleDateString()}
+Order Date: ${new Date(order.createdAt).toLocaleDateString('en-US', { timeZone: customerTz })}
 
 ITEMS:
 ${itemsList}
@@ -127,7 +169,7 @@ Thank you for supporting our family farm!
                 </td>
                 <td align="right">
                   <span style="font-size: 12px; color: #999; text-transform: uppercase; letter-spacing: 1px;">Date</span><br>
-                  <span style="font-size: 14px; color: #3a3a3a;">${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                  <span style="font-size: 14px; color: #3a3a3a;">${new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric', timeZone: customerTz })}</span>
                 </td>
               </tr>
             </table>
@@ -262,7 +304,9 @@ Order Details:
 Order ID: ${order.id}
 Date: ${new Date(order.createdAt).toLocaleString('en-US', {
   dateStyle: 'long',
-  timeStyle: 'short'
+  timeStyle: 'short',
+  timeZone: FARM_TIME_ZONE,
+  timeZoneName: 'short',
 })}
 
 Customer Information:
@@ -309,7 +353,7 @@ Manage orders: ${adminUrl}
     <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
       <p style="margin: 0; color: #666; font-size: 14px;">Order Number</p>
       <p style="margin: 5px 0 0 0; font-family: monospace; font-size: 18px; font-weight: bold;">${order.id}</p>
-      <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">${new Date(order.createdAt).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short' })}</p>
+      <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">${new Date(order.createdAt).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short', timeZone: FARM_TIME_ZONE, timeZoneName: 'short' })}</p>
     </div>
 
     <h2 style="font-size: 18px; margin: 30px 0 15px 0; color: #6b7566;">Customer Information</h2>
