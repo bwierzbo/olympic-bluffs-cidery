@@ -9,7 +9,7 @@
     "homePageMessage": "The farm opens April 24th! Join us Friday through Sunday, 12 - 5 pm.",
     "farmStatus": {
       "isOpen": true,
-      "customMessage": "The farm, gift shop, and cidery are open Friday - Sunday, 12 - 5 pm. Closed May 8-10 for a private event. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm."
+      "customMessage": "The farm, gift shop, and cidery are open Friday - Sunday, 12 - 5 pm. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm."
     }
   },
   "events": {

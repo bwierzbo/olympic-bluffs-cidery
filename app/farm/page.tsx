@@ -88,7 +88,7 @@ export default function Farm() {
         </svg>
       ),
       question: 'IS THE FARM OPEN ALL YEAR?',
-      answer: 'For 2026, the farm, gift shop, and cidery open April 24th. Friday - Sunday: 12 - 5 pm. Closed May 8-10 for a private event. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm.',
+      answer: 'For 2026, the farm, gift shop, and cidery open April 24th. Friday - Sunday: 12 - 5 pm. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm.',
     },
   ];
 
