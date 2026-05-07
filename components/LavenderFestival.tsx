@@ -3,6 +3,7 @@ import Image from 'next/image';
 const schedule = {
   friday: {
     day: 'FRIDAY',
+    date: 'JULY 17',
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
@@ -11,6 +12,7 @@ const schedule = {
   },
   saturday: {
     day: 'SATURDAY',
+    date: 'JULY 18',
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
@@ -19,6 +21,7 @@ const schedule = {
   },
   sunday: {
     day: 'SUNDAY',
+    date: 'JULY 19',
     events: [
       '10 - 5 pm Artisan Vendor Market & Food Trucks',
       '1-3 pm Kite Flying\n(First 50 kites are free!)',
@@ -101,9 +104,12 @@ export default function LavenderFestival() {
                   key={day.day}
                   className="bg-white/85 backdrop-blur-sm px-6 py-8 text-center"
                 >
-                  <h3 className="text-lg font-bold text-lavender-600 tracking-[0.15em] mb-6">
+                  <h3 className="text-lg font-bold text-lavender-600 tracking-[0.15em] mb-1">
                     {day.day}
                   </h3>
+                  <p className="text-sm font-semibold text-lavender-500 tracking-[0.1em] mb-6">
+                    {day.date}
+                  </p>
                   <div className="space-y-5">
                     {day.events.map((event, i) => (
                       <p
