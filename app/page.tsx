@@ -35,11 +35,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Lavender Festival overview — links to the full schedule. The full
-          embed lives at /events/lavender-festival so visitors don't mistake
-          festival-weekend programming for regular farm hours. */}
-      {config.events.active && <LavenderFestivalOverview />}
-
       {/* Seasonal Banner - Controlled by config */}
       <SeasonalBanner />
 
@@ -77,6 +72,11 @@ export default function Home() {
 
       {/* Meet Scott & Ginger Section */}
       <MeetOwners />
+
+      {/* Lavender Festival overview — kept toward the bottom so it reads as a
+          save-the-date for July rather than a main feature. The full schedule
+          lives at /events/lavender-festival. */}
+      {config.events.active && <LavenderFestivalOverview />}
     </>
   );
 }
