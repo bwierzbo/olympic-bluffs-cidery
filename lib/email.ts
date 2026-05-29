@@ -303,8 +303,12 @@ Order Details:
 ━━━━━━━━━━━━━━━━━━━━━━
 Order ID: ${order.id}
 Date: ${new Date(order.createdAt).toLocaleString('en-US', {
-  dateStyle: 'long',
-  timeStyle: 'short',
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: '2-digit',
+  hour12: true,
   timeZone: FARM_TIME_ZONE,
   timeZoneName: 'short',
 })}
@@ -353,7 +357,7 @@ Manage orders: ${adminUrl}
     <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
       <p style="margin: 0; color: #666; font-size: 14px;">Order Number</p>
       <p style="margin: 5px 0 0 0; font-family: monospace; font-size: 18px; font-weight: bold;">${order.id}</p>
-      <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">${new Date(order.createdAt).toLocaleString('en-US', { dateStyle: 'long', timeStyle: 'short', timeZone: FARM_TIME_ZONE, timeZoneName: 'short' })}</p>
+      <p style="margin: 10px 0 0 0; color: #666; font-size: 14px;">${new Date(order.createdAt).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true, timeZone: FARM_TIME_ZONE, timeZoneName: 'short' })}</p>
     </div>
 
     <h2 style="font-size: 18px; margin: 30px 0 15px 0; color: #6b7566;">Customer Information</h2>
