@@ -12,14 +12,19 @@ interface VinoshipperInitOptions {
 
 interface VinoshipperApi {
   init: (id: number, options: VinoshipperInitOptions) => void;
+  render?: () => void;
   cartOpen?: () => void;
+}
+
+function getVinoshipper(): VinoshipperApi | undefined {
+  return (window as unknown as { Vinoshipper?: VinoshipperApi }).Vinoshipper;
 }
 
 export default function CideryShopClient() {
   useEffect(() => {
     // Initialize VinoShipper injector
     const handleLoaded = () => {
-      const vs = (window as unknown as { Vinoshipper?: VinoshipperApi }).Vinoshipper;
+      const vs = getVinoshipper();
       if (vs) {
         vs.init(5980, {
           cartPosition: 'end',
@@ -30,19 +35,38 @@ export default function CideryShopClient() {
       }
     };
 
-    document.addEventListener('vinoshipper:loaded', handleLoaded, false);
+    const vs = getVinoshipper();
+    if (vs) {
+      // Script already loaded from a previous visit — `vinoshipper:loaded`
+      // is a one-shot event tied to script load and won't re-fire on
+      // client-side navigation, so the listener path below would never run
+      // and the product grid would stay empty. React recreated the
+      // .vs-products div on this mount; render() re-scans the DOM and only
+      // touches elements not yet rendered, so it's safe to call again.
+      if (typeof vs.render === 'function') {
+        vs.render();
+      } else {
+        handleLoaded();
+      }
+      // Un-hide cart UI hidden by a previous unmount's cleanup
+      document
+        .querySelectorAll<HTMLElement>('[class*="vs-cart"], [class*="vs-button"], .vs-cart-button')
+        .forEach(el => (el.style.display = ''));
+    } else {
+      document.addEventListener('vinoshipper:loaded', handleLoaded, false);
 
-    // Load VinoShipper script if not already present
-    if (!document.querySelector('script[src*="vinoshipper.com/injector"]')) {
-      const script = document.createElement('script');
-      script.src = 'https://vinoshipper.com/injector/index.js';
-      script.async = true;
-      document.body.appendChild(script);
+      // Load VinoShipper script if not already present
+      if (!document.querySelector('script[src*="vinoshipper.com/injector"]')) {
+        const script = document.createElement('script');
+        script.src = 'https://vinoshipper.com/injector/index.js';
+        script.async = true;
+        document.body.appendChild(script);
+      }
     }
 
     return () => {
       document.removeEventListener('vinoshipper:loaded', handleLoaded);
-      // Hide VinoShipper cart button when leaving the cidery page
+      // Hide VinoShipper cart UI when leaving the cidery page (undone on re-entry above)
       const vsElements = document.querySelectorAll('[class*="vs-cart"], [class*="vs-button"], .vs-cart-button');
       vsElements.forEach(el => (el as HTMLElement).style.display = 'none');
     };
