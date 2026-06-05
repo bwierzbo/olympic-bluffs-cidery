@@ -4,19 +4,33 @@ import { useRouter, usePathname } from 'next/navigation';
 
 // Cider orders go through VinoShipper, which is only loaded on /shop/cidery.
 // Off that page the icon is a deep link to the cidery shop; on the page it
-// pops VinoShipper's own cart. We can't read the VS cart count from outside
-// the page, so this icon never shows a badge.
+// pops VinoShipper's own cart, falling back to scrolling the catalog into
+// view — VS's focus-trap throws when the cart is empty, and there's no way
+// to query cart count from outside the page to decide ahead of time.
+// The icon never shows a badge for the same reason.
 export default function CiderCartIcon() {
   const router = useRouter();
   const pathname = usePathname();
+
+  const scrollToCatalog = () => {
+    document
+      .getElementById('cider-catalog')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const handleClick = () => {
     if (pathname.startsWith('/shop/cidery')) {
       const vs = (window as unknown as { Vinoshipper?: { cartOpen?: () => void } }).Vinoshipper;
       if (vs && typeof vs.cartOpen === 'function') {
-        vs.cartOpen();
-        return;
+        try {
+          vs.cartOpen();
+          return;
+        } catch {
+          // empty cart -> focus-trap throws; fall through to scroll
+        }
       }
+      scrollToCatalog();
+      return;
     }
     router.push('/shop/cidery');
   };
