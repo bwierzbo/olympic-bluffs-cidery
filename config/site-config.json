@@ -24,7 +24,7 @@
   "navigation": {
     "showEventsTab": true,
     "showLavender": true,
-    "showCidery": false
+    "showCidery": true
   },
   "themeColors": {
     "spring": {
