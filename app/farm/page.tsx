@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import FarmMedia from '@/components/FarmMedia';
 
 export default function Farm() {
   const farmSections = [
@@ -110,6 +111,9 @@ export default function Farm() {
           </h1>
         </div>
       </section>
+
+      {/* Follow Along — Instagram feed + video highlights */}
+      <FarmMedia />
 
       {/* Farm Sections Grid */}
       <section className="py-16 bg-white">
