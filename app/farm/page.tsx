@@ -62,7 +62,7 @@ export default function Farm() {
         </svg>
       ),
       question: 'ARE DOGS ALLOWED ON THE FARM?',
-      answer: 'Leashed dogs are welcome! We just ask that you clean up after them and respect others space.',
+      answer: 'Leashed dogs are welcome! We just ask that you clean up after them and respect other guest\'s space.',
     },
     {
       icon: (
