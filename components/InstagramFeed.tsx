@@ -7,8 +7,10 @@ import type { FC } from 'react';
 // Typed loosely because it's a web component, not a React component.
 const BeholdWidget = 'behold-widget' as unknown as FC<{ 'feed-id': string }>;
 
-// Set NEXT_PUBLIC_BEHOLD_FEED_ID in .env.local once the Behold feed is created.
-const FEED_ID = process.env.NEXT_PUBLIC_BEHOLD_FEED_ID;
+// Public Behold feed ID (safe to commit — it's exposed in the rendered page).
+// NEXT_PUBLIC_BEHOLD_FEED_ID can override it to swap feeds without a code change.
+const FEED_ID =
+  process.env.NEXT_PUBLIC_BEHOLD_FEED_ID ?? 'dpdpmRHvW6FFeGdan6wE';
 const INSTAGRAM_URL = 'https://www.instagram.com/olympicbluffscideryandlavender/';
 
 export default function InstagramFeed() {
