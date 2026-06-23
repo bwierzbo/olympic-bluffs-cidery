@@ -424,7 +424,15 @@ export default function CheckoutPage() {
               productId: item.product.id,
               name: item.product.name,
               quantity: item.quantity,
-              price: item.product.price,
+              price: item.selectedVariation?.price ?? item.product.price,
+              ...(item.selectedVariation
+                ? {
+                    variation: {
+                      id: item.selectedVariation.id,
+                      name: item.selectedVariation.name,
+                    },
+                  }
+                : {}),
             })),
           }),
         });
