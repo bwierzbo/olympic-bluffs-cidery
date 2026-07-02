@@ -35,7 +35,7 @@ export default function Contact() {
                 </p>
                 <p className="text-gray-600 leading-relaxed">
                   Extended hours: 12 - 7 pm<br />
-                  Live music with Salty, 4:30 - 6:30 pm
+                  Live music by Salty All Day, 4:30 - 6:30 pm
                 </p>
               </div>
 
