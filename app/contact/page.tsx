@@ -24,9 +24,21 @@ export default function Contact() {
                 FARM HOURS
               </h1>
               <p className="text-gray-600 mb-4 leading-relaxed">
-                Open April 24th - Friday through Sunday, 12 - 5 pm<br />
+                Open April 24th - Thursday through Sunday, 12 - 5 pm<br />
                 Lavender Festival Weekend (July 17-20): 10 am - 5 pm
               </p>
+
+              {/* Fourth of July special hours callout */}
+              <div className="mb-6 rounded-lg border border-sage-200 bg-sage-50 p-4 text-left">
+                <p className="font-semibold text-sage-800">
+                  4th of July — Saturday, July 4th
+                </p>
+                <p className="text-gray-600 leading-relaxed">
+                  Extended hours: 12 - 7 pm<br />
+                  Live music with Salty, 4:30 - 6:30 pm
+                </p>
+              </div>
+
               <p className="text-gray-600 leading-relaxed">
                 Please call us <strong>(571) 439-1311</strong> or email us at{' '}
                 <a href="mailto:info@olympicbluffs.com" className="text-sage-700 underline">info@olympicbluffs.com</a>{' '}
