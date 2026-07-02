@@ -2,6 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // Allow the shop to request lighter, right-sized images (cards don't need q75).
+    qualities: [65, 75],
     remotePatterns: [
       {
         protocol: 'https',

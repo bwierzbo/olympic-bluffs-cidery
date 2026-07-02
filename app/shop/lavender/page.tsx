@@ -67,11 +67,6 @@ export default function ProductsPage() {
     return filtered;
   }, [searchTerm, products, activeCategory]);
 
-  // Group filtered products by category for display
-  const categories = Array.from(
-    new Set(filteredProducts.map((p) => p.category).filter(Boolean))
-  );
-
   // Show "Coming Soon" page when the lavender shop is gated off in site-config.
   // Placed after hook calls so hook order is preserved across renders.
   if (!getSiteConfig().navigation.showLavender) {
@@ -259,7 +254,7 @@ export default function ProductsPage() {
           {filteredProducts.length > 0 && !searchTerm && (
             <div className="mb-12">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                All Products
+                {activeCategory || 'All Products'}
               </h2>
               <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 auto-rows-fr">
                 {filteredProducts.map((product, index) => (
@@ -283,31 +278,6 @@ export default function ProductsPage() {
             </div>
           )}
 
-          {/* Products by Category */}
-          {categories.length > 0 && !searchTerm && !activeCategory && (
-            <div className="mt-16">
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">
-                Shop by Category
-              </h2>
-              {categories.map((category) => {
-                const categoryProducts = filteredProducts.filter(
-                  (p) => p.category === category
-                );
-                return (
-                  <div key={category} className="mb-12">
-                    <h3 className="text-xl font-semibold text-gray-800 mb-4">
-                      {category}
-                    </h3>
-                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                      {categoryProducts.map((product, index) => (
-                        <ProductCard key={product.id} product={product} priority={index < 3} />
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
               </div>
             </div>
           )}

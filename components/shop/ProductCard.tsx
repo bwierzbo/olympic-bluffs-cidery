@@ -11,10 +11,20 @@ interface ProductCardProps {
   priority?: boolean;
 }
 
+const PLACEHOLDER_IMAGE = '/images/products/placeholder-lavender.svg';
+
+// Card images render at ~25vw on large screens (4-col grid) down to full width on
+// mobile. Telling next/image the true display size stops it fetching oversized files.
+const CARD_SIZES = '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw';
+
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
+  // Track main-image load so we can show a shimmer while it arrives and fall back
+  // to the placeholder if it fails, instead of leaving a permanently blank card.
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageSrc, setImageSrc] = useState(product.image || PLACEHOLDER_IMAGE);
 
   const formatPrice = (cents: number) => {
     return `$${(cents / 100).toFixed(2)}`;
@@ -64,15 +74,32 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
       >
         {/* Product Image - Square with hover crossfade */}
         <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100">
+          {/* Loading shimmer - shown until the main image finishes loading */}
+          {!imageLoaded && (
+            <div className="absolute inset-0 animate-pulse bg-gray-200" aria-hidden="true" />
+          )}
+
           {/* Main Image */}
           <Image
-            src={product.image || '/images/products/placeholder-lavender.svg'}
+            src={imageSrc}
             alt={product.name}
             fill
-            sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+            sizes={CARD_SIZES}
+            quality={65}
             priority={priority}
+            onLoad={() => setImageLoaded(true)}
+            onError={() => {
+              // Fall back to the placeholder if the real image fails to load.
+              if (imageSrc !== PLACEHOLDER_IMAGE) {
+                setImageSrc(PLACEHOLDER_IMAGE);
+              } else {
+                setImageLoaded(true);
+              }
+            }}
             className={`object-cover transition-all duration-300 ${
-              isHovered && product.hoverImage ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+              imageLoaded ? 'opacity-100' : 'opacity-0'
+            } ${
+              isHovered && product.hoverImage ? '!opacity-0 scale-105' : 'scale-100'
             } ${isHovered && !product.hoverImage ? 'scale-105' : ''}`}
           />
 
@@ -82,7 +109,8 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
               src={product.hoverImage}
               alt={`${product.name} - in use`}
               fill
-              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+              sizes={CARD_SIZES}
+              quality={65}
               className={`absolute inset-0 object-cover transition-all duration-300 ${
                 isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
               }`}
