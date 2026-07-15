@@ -87,10 +87,19 @@ export default function Footer() {
           </Link>
         </nav>
 
-        {/* Address */}
+        {/* Address & Contact */}
         <div className="text-center mb-4">
           <p className="text-white text-sm">
             1025 Finn Hall Road, Port Angeles, WA 98362
+          </p>
+          <p className="text-white text-sm mt-1">
+            <a href="tel:+15714391311" className="hover:text-sage-100 transition-colors">
+              (571) 439-1311
+            </a>
+            <span className="text-sage-300 mx-2">|</span>
+            <a href="mailto:info@olympicbluffs.com" className="hover:text-sage-100 transition-colors">
+              info@olympicbluffs.com
+            </a>
           </p>
         </div>
 
