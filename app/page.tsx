@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import SeasonalBanner from '@/components/SeasonalBanner';
-import LavenderFestivalOverview from '@/components/LavenderFestivalOverview';
 import MeetOwners from '@/components/MeetOwners';
 import { getSiteConfig } from '@/lib/site-config';
 
@@ -72,11 +71,6 @@ export default function Home() {
 
       {/* Meet Scott & Ginger Section */}
       <MeetOwners />
-
-      {/* Lavender Festival overview — kept toward the bottom so it reads as a
-          save-the-date for July rather than a main feature. The full schedule
-          lives at /events/lavender-festival. */}
-      {config.events.active && <LavenderFestivalOverview />}
     </>
   );
 }
