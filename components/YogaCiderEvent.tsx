@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 // Home page announcement for the Yoga + Cider mornings hosted with
 // Rebelution Yoga + Wellness. Ticketing is handled on their site, so the
 // CTA links out rather than to an internal event page.
@@ -7,42 +5,33 @@ const TICKETS_URL = 'https://rebelutionyoga.com/event/yoga-cider-at-olympic-bluf
 
 export default function YogaCiderEvent() {
   return (
-    <section className="relative overflow-hidden">
-      <Image
-        src="/images/farm/lavender-banner.jpg"
-        alt="Lavender fields at Olympic Bluffs"
-        fill
-        className="object-cover"
-      />
-      <div className="absolute inset-0 bg-sage-700/60" />
+    <section className="bg-white py-16 md:py-20">
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+        <div className="w-14 h-0.5 bg-lavender-400 mx-auto mb-7" />
 
-      <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-20 md:py-24 text-center">
-        <p className="text-xs font-semibold tracking-[0.25em] uppercase text-white/85 mb-3">
-          Special Event · Two Saturday Mornings
+        <p className="text-xs font-bold tracking-[0.25em] uppercase text-sage-500 mb-5">
+          Special Event
         </p>
-        <h2 className="text-3xl md:text-5xl font-bold tracking-[0.15em] text-white mb-3">
-          YOGA + CIDER
+
+        <h2 className="text-2xl md:text-4xl font-light leading-snug text-gray-900 max-w-2xl mx-auto mb-6">
+          A morning of <span className="font-semibold">yoga in the lavender</span>,
+          and a glass of <span className="font-semibold">cider</span> after.
         </h2>
-        <p className="text-lg md:text-2xl font-bold tracking-[0.15em] text-white mb-6">
-          SEPT 19 &amp; OCT 17 · 10:30 AM
-        </p>
 
-        <p className="max-w-2xl mx-auto text-base md:text-lg leading-relaxed text-white/95 mb-3">
-          An all-levels outdoor flow with the Olympics behind you and the
-          Strait beyond the lavender rows — then a glass of our cider when
-          you roll up your mat.
+        <p className="text-base md:text-lg font-semibold text-gray-900 tracking-wide mb-1">
+          Saturday, Sept 19 &nbsp;·&nbsp; Saturday, Oct 17
         </p>
-        <p className="max-w-2xl mx-auto text-sm md:text-base text-white/80 mb-10">
-          $33 · Hosted with Rebelution Yoga + Wellness · All levels welcome
+        <p className="text-sm md:text-base text-sage-500 mb-7">
+          10:30 am – 12:30 pm · $33 · all levels · with Rebelution Yoga + Wellness
         </p>
 
         <a
           href={TICKETS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block bg-white text-sage-700 px-8 py-3 rounded-md font-semibold hover:bg-sage-50 transition-colors"
+          className="text-lavender-700 font-semibold underline underline-offset-4 hover:text-lavender-800 transition-colors"
         >
-          Get Tickets
+          Reserve your mat →
         </a>
       </div>
     </section>
