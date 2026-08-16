@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import SeasonalBanner from '@/components/SeasonalBanner';
 import MeetOwners from '@/components/MeetOwners';
+import YogaCiderEvent from '@/components/YogaCiderEvent';
 import { getSiteConfig } from '@/lib/site-config';
 
 export default function Home() {
@@ -71,6 +72,10 @@ export default function Home() {
 
       {/* Meet Scott & Ginger Section */}
       <MeetOwners />
+
+      {/* Yoga + Cider special event — ticketing lives on Rebelution Yoga's
+          site, so this banner links out rather than to an internal page. */}
+      <YogaCiderEvent />
     </>
   );
 }
