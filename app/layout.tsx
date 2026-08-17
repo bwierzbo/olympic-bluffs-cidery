@@ -4,6 +4,7 @@ import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import YogaCiderBanner from "@/components/YogaCiderBanner";
 import { CartProvider } from "@/components/shop/CartProvider";
 
 const openSans = Open_Sans({
@@ -37,6 +38,7 @@ export default function RootLayout({
         className={`${openSans.variable} antialiased font-sans`}
       >
         <CartProvider>
+          <YogaCiderBanner />
           <Header />
           <main className="min-h-screen">{children}</main>
           <Footer />
