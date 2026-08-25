@@ -5,7 +5,6 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import YogaCiderBanner from "@/components/YogaCiderBanner";
-import ClosureBanner from "@/components/ClosureBanner";
 import { CartProvider } from "@/components/shop/CartProvider";
 
 const openSans = Open_Sans({
@@ -39,7 +38,6 @@ export default function RootLayout({
         className={`${openSans.variable} antialiased font-sans`}
       >
         <CartProvider>
-          <ClosureBanner />
           <YogaCiderBanner />
           <Header />
           <main className="min-h-screen">{children}</main>
