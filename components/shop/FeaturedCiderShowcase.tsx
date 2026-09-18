@@ -19,8 +19,8 @@ type FeaturedCider = {
 // Edit story/tasting notes/photos here without touching the slider code.
 const FEATURED: FeaturedCider[] = [
   {
-    slug: 'forest-king',
-    name: 'Forest King',
+    slug: 'soundwave',
+    name: 'Soundwave',
     tagline: 'A Pacific Northwest signature',
     story:
       'Born right here on our farm, where rows of fragrant lavender grow alongside our orchards. We harvest both at their peak, creating a cider that captures the unique terroir of Olympic Bluffs.',
