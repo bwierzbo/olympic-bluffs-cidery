@@ -4,11 +4,11 @@
     {
       "slug": "gail-harper",
       "name": "Gail Harper",
-      "craft": "Ceramics",
-      "craftDetail": "Pottery ring dishes and lavender wall hangers",
+      "craft": "Watercolor",
+      "craftDetail": "Landscape watercolors, plus pottery ring dishes and lavender hangers in the boutique",
       "hometown": "Portland, OR",
-      "bio": "Gail Harper is Ginger’s sister, and her small pieces of pottery have a permanent spot on the boutique shelves: ring dishes for the nightstand and little lavender ornaments to hang in a window. Each one is made by hand, so no two are quite the same.",
-      "portrait": "https://items-images-production.s3.us-west-2.amazonaws.com/files/79007139dede4bfbb6db787d4d85e915a94d3d74/original.jpeg",
+      "bio": "Gail has always been drawn to art, but she didn’t take it seriously until later in life. After a move and a career change she taught herself to draw, then started watercolor classes at a local studio. Retirement brought her back to it for good, and she has been painting ever since. Landscapes are her favorite subject, especially the way watercolor catches light and weather. One year she challenged herself to paint a hundred small four-by-four-inch pieces, and that practice still shows in her work. She is also Ginger’s sister, and her handmade ring dishes and lavender hangers have a permanent spot on the boutique shelves.",
+      "portrait": "/images/makers/gail-harper.jpg",
       "gallery": [],
       "website": null,
       "instagram": null,
@@ -22,7 +22,8 @@
       ],
       "featured": true,
       "placeholder": false,
-      "portraitAlt": "A pottery ring dish handmade by Gail Harper"
+      "portraitAlt": "Gail Harper in an Olympic Bluffs Cidery hoodie at a glacier lagoon in Iceland",
+      "portraitPosition": "50% 45%"
     },
     {
       "slug": "rebelution-yoga",
