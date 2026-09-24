@@ -36,6 +36,23 @@ export interface SiteConfig {
     fall: { primary: string; accent: string };
     winter: { primary: string; accent: string };
   };
+  hours?: {
+    seasonStart?: string;
+    seasonEnd?: string;
+    weekly: Partial<Record<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat', [string, string]>>;
+    note?: string;
+  };
+  contact: {
+    address1: string;
+    city: string;
+    state: string;
+    zip: string;
+    phone: string;
+    email: string;
+    instagram: string;
+    facebook: string;
+    mapsUrl: string;
+  };
 }
 
 /**
@@ -43,7 +60,7 @@ export interface SiteConfig {
  * This can be called from Server Components or API routes
  */
 export function getSiteConfig(): SiteConfig {
-  return siteConfigData as SiteConfig;
+  return siteConfigData as unknown as SiteConfig;
 }
 
 /**

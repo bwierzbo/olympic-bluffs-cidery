@@ -1,83 +1,74 @@
 'use client';
 
-import { useCart } from './CartProvider';
 import Image from 'next/image';
+import { useCart } from './CartProvider';
 
 interface OrderSummaryProps {
   shippingCost?: number;
 }
 
+const PLACEHOLDER_IMAGE = '/images/products/placeholder-lavender.svg';
+
+function formatPrice(cents: number) {
+  return `$${(cents / 100).toFixed(2)}`;
+}
+
 export default function OrderSummary({ shippingCost = 0 }: OrderSummaryProps) {
   const { items, totalAmount } = useCart();
-
-  const formatPrice = (cents: number) => {
-    return `$${(cents / 100).toFixed(2)}`;
-  };
 
   const tax = 0; // Calculate tax if needed
   const total = totalAmount + shippingCost + tax;
 
   return (
-    <div className="bg-gray-50 rounded-lg p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Order Summary</h2>
+    <div className="border border-line bg-paper p-6">
+      <h2 className="font-serif text-2xl leading-none">Order summary</h2>
+      <p className="mt-1.5 text-xs text-ink-3">Lavender only. Cider checks out separately through VinoShipper.</p>
 
-      {/* Items List */}
-      <div className="space-y-4 mb-6">
-        {items.map((item) => (
-          <div key={item.product.id} className="flex gap-3">
-            <div className="relative h-16 w-16 flex-shrink-0 bg-white rounded">
-              <Image
-                src={item.product.image || '/images/products/placeholder-lavender.svg'}
-                alt={item.product.name}
-                fill
-                className="object-cover rounded"
-              />
-            </div>
-            <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-medium text-gray-900 truncate">
-                {item.product.name}
-              </h3>
-              <p className="text-sm text-gray-600">
-                Qty: {item.quantity} × {formatPrice(item.product.price)}
-              </p>
-            </div>
-            <div className="text-sm font-medium text-gray-900">
-              {formatPrice(item.product.price * item.quantity)}
-            </div>
-          </div>
-        ))}
-      </div>
+      <ul className="mt-5 divide-y divide-line border-y border-line">
+        {items.map((item) => {
+          const unitPrice = item.selectedVariation?.price ?? item.product.price;
+          const image = item.selectedVariation?.image || item.product.image || PLACEHOLDER_IMAGE;
+          const key = `${item.product.id}-${item.selectedVariation?.id || 'default'}`;
+          return (
+            <li key={key} className="flex gap-3 py-3">
+              <div className="relative h-14 w-14 flex-shrink-0 bg-ground-2">
+                <Image src={image} alt={item.product.name} fill sizes="56px" className="object-cover" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-medium">{item.product.name}</p>
+                {item.selectedVariation && <p className="text-xs text-ink-3">{item.selectedVariation.name}</p>}
+                <p className="text-xs text-ink-3">
+                  {item.quantity} × {formatPrice(unitPrice)}
+                </p>
+              </div>
+              <div className="text-sm tabular-nums">{formatPrice(unitPrice * item.quantity)}</div>
+            </li>
+          );
+        })}
+      </ul>
 
-      {/* Pricing Breakdown */}
-      <div className="border-t border-gray-200 pt-4 space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Subtotal</span>
-          <span className="font-medium text-gray-900">
-            {formatPrice(totalAmount)}
-          </span>
+      <dl className="mt-4 space-y-2 text-sm">
+        <div className="flex justify-between">
+          <dt className="text-ink-2">Subtotal</dt>
+          <dd className="tabular-nums">{formatPrice(totalAmount)}</dd>
         </div>
-
         {shippingCost > 0 && (
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Shipping</span>
-            <span className="font-medium text-gray-900">
-              {formatPrice(shippingCost)}
-            </span>
+          <div className="flex justify-between">
+            <dt className="text-ink-2">Shipping</dt>
+            <dd className="tabular-nums">{formatPrice(shippingCost)}</dd>
           </div>
         )}
-
         {tax > 0 && (
-          <div className="flex justify-between text-sm">
-            <span className="text-gray-600">Tax</span>
-            <span className="font-medium text-gray-900">{formatPrice(tax)}</span>
+          <div className="flex justify-between">
+            <dt className="text-ink-2">Tax</dt>
+            <dd className="tabular-nums">{formatPrice(tax)}</dd>
           </div>
         )}
-
-        <div className="flex justify-between text-lg font-bold border-t border-gray-200 pt-2 mt-2">
-          <span>Total</span>
-          <span>{formatPrice(total)}</span>
+        <div className="flex items-baseline justify-between border-t border-line pt-3">
+          <dt className="font-medium">Total</dt>
+          <dd className="font-serif text-2xl tabular-nums">{formatPrice(total)}</dd>
         </div>
-      </div>
+      </dl>
     </div>
   );
 }

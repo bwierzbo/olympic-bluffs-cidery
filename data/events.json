@@ -1,0 +1,50 @@
+{
+  "_comment": "Public events list. `kind`: 'festival' | 'class' | 'tasting' | 'external'. `registration`: 'none' (info only), 'external' (ticketUrl on another site), 'internal' (reserved for the on-site registration system, Phase 6; not active yet). Dates are Pacific time. Past events stay listed and are shown greyed out.",
+  "events": [
+    {
+      "slug": "lavender-festival-2026",
+      "title": "Lavender Festival",
+      "kind": "festival",
+      "startsAt": "2026-07-17T10:00:00-07:00",
+      "endsAt": "2026-07-20T17:00:00-07:00",
+      "timeLabel": "10 am – 5 pm each day",
+      "location": "The whole farm",
+      "summary": "Artisan vendors, food trucks, kite flying and live music in the lavender fields. Our biggest weekend of the year.",
+      "image": "/images/home-lavender-hero.jpg",
+      "price": null,
+      "registration": "none",
+      "href": "/events/lavender-festival",
+      "ticketUrl": null
+    },
+    {
+      "slug": "yoga-cider-2026-09-19",
+      "title": "Yoga + Cider",
+      "kind": "external",
+      "startsAt": "2026-09-19T10:30:00-07:00",
+      "endsAt": "2026-09-19T12:00:00-07:00",
+      "timeLabel": "10:30 am",
+      "location": "The fields",
+      "summary": "A morning flow in the lavender with Rebelution Yoga + Wellness, followed by a glass of cider. Tickets through the studio.",
+      "image": "/images/farm/the-fields.jpeg",
+      "price": 3300,
+      "registration": "external",
+      "href": null,
+      "ticketUrl": "https://rebelutionyoga.com/event/yoga-cider-at-olympic-bluffs/"
+    },
+    {
+      "slug": "yoga-cider-2026-10-17",
+      "title": "Yoga + Cider",
+      "kind": "external",
+      "startsAt": "2026-10-17T10:30:00-07:00",
+      "endsAt": "2026-10-17T12:00:00-07:00",
+      "timeLabel": "10:30 am",
+      "location": "The fields",
+      "summary": "A morning flow in the lavender with Rebelution Yoga + Wellness, followed by a glass of cider. Tickets through the studio.",
+      "image": "/images/farm/the-fields.jpeg",
+      "price": 3300,
+      "registration": "external",
+      "href": null,
+      "ticketUrl": "https://rebelutionyoga.com/event/yoga-cider-at-olympic-bluffs/"
+    }
+  ]
+}

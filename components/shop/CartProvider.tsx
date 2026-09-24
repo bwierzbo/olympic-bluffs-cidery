@@ -27,16 +27,22 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // so the server-rendered HTML and the first client render both show an empty
   // cart. Reading localStorage during render causes React #418 hydration errors
   // in production whenever the saved cart isn't empty.
+  // Deferred by a tick so the load runs as a callback rather than synchronously
+  // inside the effect body (react-hooks/set-state-in-effect).
   useEffect(() => {
-    try {
-      const savedCart = window.localStorage.getItem('olympicBluffsCart');
-      if (savedCart) {
-        setItems(JSON.parse(savedCart) as CartItem[]);
+    const load = () => {
+      try {
+        const savedCart = window.localStorage.getItem('olympicBluffsCart');
+        if (savedCart) {
+          setItems(JSON.parse(savedCart) as CartItem[]);
+        }
+      } catch (error) {
+        console.error('Error loading cart:', error);
       }
-    } catch (error) {
-      console.error('Error loading cart:', error);
-    }
-    setHasHydrated(true);
+      setHasHydrated(true);
+    };
+    const id = window.setTimeout(load, 0);
+    return () => window.clearTimeout(id);
   }, []);
 
   // Persist on change, but only after the initial load — otherwise the empty

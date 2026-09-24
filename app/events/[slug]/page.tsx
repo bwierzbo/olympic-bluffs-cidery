@@ -1,6 +1,13 @@
-import { getSiteConfig } from '@/lib/site-config';
+import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
+import { toPublicDTOs } from '@/lib/events/service';
+import EventDetail from '@/components/events/EventDetail';
+import type { PublicEventDTO } from '@/lib/events/types';
+import { getSiteConfig } from '@/lib/site-config';
 import LavenderFestival from '@/components/LavenderFestival';
+import { Eyebrow, Section, SectionTitle } from '@/components/site/Section';
 
 interface EventPageProps {
   params: Promise<{
@@ -8,43 +15,66 @@ interface EventPageProps {
   }>;
 }
 
+export const dynamic = 'force-dynamic';
+
+/** A published or cancelled ticketed event from the admin (drafts stay hidden). */
+async function findTicketedEvent(slug: string): Promise<PublicEventDTO | null> {
+  const row = await prisma.event.findUnique({ where: { slug } }).catch(() => null);
+  if (!row || row.status === 'draft') return null;
+  return (await toPublicDTOs([row]))[0] ?? null;
+}
+
+export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const config = getSiteConfig();
+  if (config.events.active && config.events.slug === slug) return { title: `${config.events.name} · Olympic Bluffs` };
+  const event = await findTicketedEvent(slug);
+  if (!event) return { title: 'Event · Olympic Bluffs' };
+  const summary = event.description.split(/\n\s*\n/)[0]?.slice(0, 160);
+  return {
+    title: `${event.title} · Olympic Bluffs`,
+    description: summary || undefined,
+    openGraph: event.image ? { images: [event.image] } : undefined,
+  };
+}
+
+/**
+ * /events/[slug] serves two kinds of page:
+ *  - the Lavender Festival's annual page (site-config `events`; schedule and
+ *    FAQ in components/LavenderFestival*.tsx), and
+ *  - ticketed events created in the admin, with registration.
+ */
 export default async function EventPage({ params }: EventPageProps) {
   const { slug } = await params;
   const config = getSiteConfig();
   const event = config.events;
 
-  // Check if event exists and matches slug
   if (!event.active || event.slug !== slug) {
-    notFound();
+    const ticketed = await findTicketedEvent(slug);
+    if (!ticketed) notFound();
+    return <EventDetail event={ticketed} />;
   }
 
   return (
     <>
       <LavenderFestival />
 
-      {/* Call to Action Section */}
-      <section className="py-16 bg-sage-500">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Plan Your Visit</h2>
-          <p className="text-white text-lg mb-8">
-            Mark your calendar and come experience the magic of Olympic Bluffs!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/contact"
-              className="bg-white text-sage-700 px-8 py-3 rounded-md font-semibold hover:bg-sage-50 transition-colors"
-            >
-              Get Directions
-            </a>
-            <a
-              href="/shop/lavender"
-              className="bg-sage-700 text-white px-8 py-3 rounded-md font-semibold hover:bg-sage-800 transition-colors"
-            >
-              Shop Now
-            </a>
-          </div>
+      <Section tone="alt">
+        <Eyebrow>Plan your visit</Eyebrow>
+        <SectionTitle className="max-w-[22ch]">Mark the weekend and come see the fields in bloom</SectionTitle>
+        <p className="mt-4 max-w-[56ch] leading-relaxed text-ink-2">
+          Hours, directions and what to expect are on the visit page. The boutique is stocked for the weekend, and
+          everything we make from the harvest is in the lavender shop.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Link href="/visit" className="btn btn-primary">
+            Plan your visit
+          </Link>
+          <Link href="/lavender" className="btn btn-secondary">
+            The lavender shop
+          </Link>
         </div>
-      </section>
+      </Section>
     </>
   );
 }

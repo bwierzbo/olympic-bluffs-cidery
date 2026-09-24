@@ -48,10 +48,9 @@ Two-part architecture:
 
 ### Products Data Structure
 
-Products defined in `/data/products.json`:
-- 11 lavender products across 7 categories
-- Prices stored in cents (e.g., 1500 = $15.00)
-- Categories: Body Care, Essential Oils, For the Home, Pantry, Roller Ball, Souvenirs, Tea Towels
+- **Lavender products** come live from the Square catalog (`lib/lavender-products.ts`), limited to items in the "Online Sales | Lavender Shop" category. That category is a flag for what sells online and never shows as a shop category.
+- **Ciders and packs** come live from VinoShipper's public feed (`lib/ciders.ts`). Descriptions, tasting notes (the "winemaker note", comma-separated), prices, ABV, stock and packs are edited in VinoShipper. `data/ciders.json` holds only presentation overrides (swatch, local bottle render, featured).
+- Prices are stored in cents in the app.
 
 ## Critical Configuration
 
@@ -71,6 +70,14 @@ SQUARE_ENVIRONMENT=sandbox  # or 'production'
 
 # Optional
 NEXT_PUBLIC_SHIPPING_RATE=1000  # Shipping cost in cents ($10.00)
+
+# Newsletter (admin dashboard → Newsletter)
+RESEND_API_KEY=re_...                 # sending; without it drafts/previews still work
+NEWSLETTER_FROM="Olympic Bluffs <news@olympicbluffs.com>"   # optional override
+NEWSLETTER_AI_MODEL=anthropic/claude-sonnet-5              # optional; via Vercel AI Gateway
+NEWSLETTER_AI_FALLBACK_MODEL=openai/gpt-5.2                # used if the main model is refused
+# AI Gateway auth is automatic on Vercel (OIDC). Locally, .env.development.local
+# holds VERCEL_OIDC_TOKEN from `vercel env pull` (expires ~12h).
 ```
 
 **Current setup**: Using Square sandbox credentials. Switch to production credentials when ready to accept real payments.
@@ -97,9 +104,7 @@ Custom theme defined inline in `app/globals.css`:
 - Handles Square API communication
 - Returns orderId on success
 
-**Product Catalog**: `data/products.json`
-- Static product data
-- Edit this file to add/remove/modify products
+**Product Catalog**: Square (lavender) and VinoShipper (cider), read live. See "Products Data Structure" above.
 
 ## Component Patterns
 

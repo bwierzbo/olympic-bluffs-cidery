@@ -17,7 +17,27 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'img.youtube.com',
       },
+      {
+        // Photos uploaded in the admin (Vercel Blob)
+        protocol: 'https',
+        hostname: '*.public.blob.vercel-storage.com',
+      },
+      {
+        // VinoShipper label art for ciders without a local render
+        protocol: 'https',
+        hostname: 'img-production-vinoshipper.s3.amazonaws.com',
+      },
     ],
+  },
+  // Old URLs from the pre-redesign site. Permanent so search engines follow.
+  async redirects() {
+    return [
+      { source: '/shop/cidery', destination: '/cider', permanent: true },
+      { source: '/shop/lavender', destination: '/lavender', permanent: true },
+      { source: '/contact', destination: '/visit', permanent: true },
+      { source: '/salt-cedar-bnb', destination: '/stay', permanent: true },
+      { source: '/products', destination: '/lavender', permanent: true },
+    ];
   },
 };
 

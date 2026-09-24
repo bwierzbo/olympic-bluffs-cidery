@@ -1,0 +1,111 @@
+{
+  "_comment": "One entry per maker or partner. `where`: 'boutique' (sold in the lavender boutique now), 'festival' (Lavender Festival market; add `festivalDays`), 'collaborator' (works with the farm: events, weddings, grain, a cider). `placeholder: true` shows a 'Placeholder' chip and keeps the page out of the sitemap; use it for entries not yet approved. `productIds` are Square item ids of their pieces in the shop. `featured` picks the homepage spotlight. `portrait` is an image the farm owns (its own photos or Square product photos); until a maker sends a real portrait it shows their work or a place connected to them, described by `portraitAlt`. Never use photos copied from a maker's own site or social accounts without their permission.",
+  "makers": [
+    {
+      "slug": "gail-harper",
+      "name": "Gail Harper",
+      "craft": "Ceramics",
+      "craftDetail": "Pottery ring dishes and lavender wall hangers",
+      "hometown": "Portland, OR",
+      "bio": "Gail Harper is Ginger’s sister, and her small pieces of pottery have a permanent spot on the boutique shelves: ring dishes for the nightstand and little lavender ornaments to hang in a window. Each one is made by hand, so no two are quite the same.",
+      "portrait": "https://items-images-production.s3.us-west-2.amazonaws.com/files/79007139dede4bfbb6db787d4d85e915a94d3d74/original.jpeg",
+      "gallery": [],
+      "website": null,
+      "instagram": null,
+      "where": [
+        "boutique"
+      ],
+      "festivalDays": [],
+      "productIds": [
+        "TS6NUZRYGI4LLQSXSO7NTPR7",
+        "NHNGALH2CQ376PNULP7HCUPB"
+      ],
+      "featured": true,
+      "placeholder": false,
+      "portraitAlt": "A pottery ring dish handmade by Gail Harper"
+    },
+    {
+      "slug": "rebelution-yoga",
+      "name": "Rebelution Yoga + Wellness",
+      "craft": "Yoga & wellness",
+      "craftDetail": "Yoga + Cider mornings in the lavender fields",
+      "hometown": "Port Angeles, WA",
+      "bio": "A Port Angeles studio offering yoga, meditation, breathwork and retreats that are trauma-informed and LGBTQIA2S+ affirming. They lead our Yoga + Cider mornings: a flow in the fields, then a glass of cider.",
+      "portrait": "/images/makers/rebelution-yoga.jpg",
+      "gallery": [],
+      "website": "https://rebelutionyoga.com",
+      "instagram": "https://www.instagram.com/rebelution.yoga/",
+      "where": [
+        "collaborator"
+      ],
+      "festivalDays": [],
+      "productIds": [],
+      "featured": false,
+      "placeholder": false,
+      "portraitAlt": "A yoga mat, a bundle of lavender and a glass of cider beside the lavender fields",
+      "portraitPosition": "45% 70%"
+    },
+    {
+      "slug": "the-goat-and-the-radish",
+      "name": "The Goat & The Radish",
+      "craft": "Café & catering",
+      "craftDetail": "Farm-to-table catering for weddings at Salt & Cedar",
+      "hometown": "Carlsborg, WA",
+      "bio": "A family-run café and co-op market on Highway 101 between Sequim and Port Angeles, known for crepes, seasonal specials and charcuterie boxes to go. They cater weddings and events at Salt & Cedar Bed and Breakfast.",
+      "portrait": "/images/makers/goat-and-radish.jpg",
+      "gallery": [],
+      "website": "https://goatandradish.com",
+      "instagram": null,
+      "where": [
+        "collaborator"
+      ],
+      "festivalDays": [],
+      "productIds": [],
+      "featured": false,
+      "placeholder": false,
+      "portraitAlt": "A Goat & The Radish charcuterie board with their catering menu",
+      "portraitPosition": "45% 60%"
+    },
+    {
+      "slug": "jean-lenke-music",
+      "name": "Jean Lenke Music",
+      "craft": "Live music",
+      "craftDetail": "Jazz-folk music for ceremonies and dinners",
+      "hometown": "Olympic Peninsula, WA",
+      "bio": "Jean Lenke is a crossover jazz-folk vocalist and bandleader who moved to the Olympic Peninsula after years performing in Philadelphia. She plays weddings and events at Salt & Cedar, from ceremony music to a full evening set.",
+      "portrait": "/images/makers/jean-lenke.jpg",
+      "gallery": [],
+      "website": "https://www.jeantherapymusic.com",
+      "instagram": null,
+      "where": [
+        "collaborator"
+      ],
+      "festivalDays": [],
+      "productIds": [],
+      "featured": false,
+      "placeholder": false,
+      "portraitAlt": "Jean Lenke",
+      "portraitPosition": "62% 40%"
+    },
+    {
+      "slug": "wsu-breadlab",
+      "name": "WSU Breadlab",
+      "craft": "Grain research",
+      "craftDetail": "Heritage wheat and rye for our acre of ancient grains",
+      "hometown": "Burlington, WA",
+      "bio": "Washington State University’s Breadlab breeds and studies grains for flavor, nutrition and regional farming. We grow an acre of their heritage wheat and rye and mill it into flour on the farm.",
+      "portrait": "/images/makers/wsu-breadlab.jpg",
+      "gallery": [],
+      "website": "https://breadlab.wsu.edu",
+      "instagram": null,
+      "where": [
+        "collaborator"
+      ],
+      "festivalDays": [],
+      "productIds": [],
+      "featured": false,
+      "placeholder": false,
+      "portraitAlt": "Wheat and a seeded loaf from the WSU Breadlab"
+    }
+  ]
+}

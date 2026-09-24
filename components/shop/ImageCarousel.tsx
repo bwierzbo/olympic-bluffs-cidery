@@ -45,7 +45,7 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
   return (
     <div className="w-full max-w-lg mx-auto">
       {/* Main Image */}
-      <div className="relative aspect-square mb-4 bg-gray-50 rounded-lg overflow-hidden">
+      <div className="relative aspect-square mb-4 bg-ground-2 overflow-hidden">
         <Image
           src={images[currentIndex]}
           alt={`${alt} - Image ${currentIndex + 1}`}
@@ -58,11 +58,11 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
         {/* Navigation Arrows */}
         <button
           onClick={goToPrevious}
-          className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
+          className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full transition-colors"
           aria-label="Previous image"
         >
           <svg
-            className="w-5 h-5 text-gray-800"
+            className="w-5 h-5 text-ink"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="2"
@@ -74,11 +74,11 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
 
         <button
           onClick={goToNext}
-          className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/80 hover:bg-white rounded-full shadow-lg transition-all"
+          className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center bg-white/90 hover:bg-white rounded-full transition-colors"
           aria-label="Next image"
         >
           <svg
-            className="w-5 h-5 text-gray-800"
+            className="w-5 h-5 text-ink"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="2"
@@ -89,7 +89,7 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
         </button>
 
         {/* Image Counter */}
-        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-black/50 text-white text-sm rounded-full">
+        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 bg-ink/70 text-white text-xs rounded-full">
           {currentIndex + 1} / {images.length}
         </div>
       </div>
@@ -100,10 +100,10 @@ export default function ImageCarousel({ images, alt }: ImageCarouselProps) {
           <button
             key={idx}
             onClick={() => goToIndex(idx)}
-            className={`relative w-16 h-16 rounded-md overflow-hidden border-2 transition-all ${
+            className={`relative w-16 h-16 overflow-hidden border transition-colors ${
               idx === currentIndex
-                ? 'border-sage-500 ring-2 ring-sage-200'
-                : 'border-transparent hover:border-gray-300'
+                ? 'border-ink'
+                : 'border-line hover:border-ink-3'
             }`}
             aria-label={`View image ${idx + 1}`}
           >

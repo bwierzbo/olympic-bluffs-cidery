@@ -49,6 +49,37 @@
     "seasonal.theme": "Options: spring, summer, fall, winter",
     "events.active": "Set to true to display the event, false to hide",
     "events.insertAfter": "Navigation item after which to insert event tab (e.g., 'HOME', 'SHOP')",
-    "navigation.showEventsTab": "Master toggle for showing/hiding event navigation tab"
+    "navigation.showEventsTab": "Master toggle for showing/hiding event navigation tab",
+    "hours": "Weekly open/close in 24h Pacific time; remove a day to mark it closed. seasonStart / seasonEnd are ISO dates (e.g. \"2026-10-31\"). Add seasonEnd and the header, status strip and Visit page switch to 'Closed for the season' the day after, with no deploy needed beyond this file.",
+    "contact": "Address, phone, email and social links used by the header, footer and Visit page."
+  },
+  "hours": {
+    "seasonStart": "2026-04-24",
+    "weekly": {
+      "fri": [
+        "12:00",
+        "17:00"
+      ],
+      "sat": [
+        "12:00",
+        "17:00"
+      ],
+      "sun": [
+        "12:00",
+        "17:00"
+      ]
+    },
+    "note": "Outside these hours, call (571) 439-1311 or email info@olympicbluffs.com. Groups of ten or more, please give us a day's notice."
+  },
+  "contact": {
+    "address1": "1025 Finn Hall Road",
+    "city": "Port Angeles",
+    "state": "WA",
+    "zip": "98362",
+    "phone": "(571) 439-1311",
+    "email": "info@olympicbluffs.com",
+    "instagram": "https://www.instagram.com/olympicbluffscideryandlavender/",
+    "facebook": "https://www.facebook.com/olympicbluffscidery",
+    "mapsUrl": "https://maps.google.com/?q=1025+Finn+Hall+Road,+Port+Angeles,+WA+98362"
   }
 }

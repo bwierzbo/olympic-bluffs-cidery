@@ -1,0 +1,53 @@
+{
+  "_comment": "The stops on a walk around the farm, in the order a visitor meets them. Used by The Farm page and the homepage.",
+  "stops": [
+    {
+      "slug": "apiary",
+      "title": "The apiary",
+      "image": "/images/farm/apiary.jpg",
+      "description": "Our apiary is an essential part of the farm, supporting the health of the orchard and lavender fields through natural pollination. Home to thriving colonies of Italian honeybees, known for their gentle nature and strong honey production, the hives sit near our century-old apple tree and are the first thing you see as you drive in."
+    },
+    {
+      "slug": "orchard",
+      "title": "The orchard",
+      "image": "/images/farm/orchard.jpeg",
+      "description": "Our orchard is home to 480 semi-dwarf cider apple trees, planted for the rich, complex flavors that define our ciders. As the orchard matures it continues to shape the character of each bottle, reflecting the terroir of the farm and the maritime climate of the Olympic Peninsula."
+    },
+    {
+      "slug": "fields",
+      "title": "The fields",
+      "image": "/images/farm/the-fields.jpeg",
+      "description": "The fields come to life from mid-June through August, when 3,400 lavender plants burst into bloom and paint the landscape in shades of purple, pink and white. Come to take in the color, the scent, or a bundle to take home."
+    },
+    {
+      "slug": "bluffs",
+      "title": "The bluffs",
+      "image": "/images/farm/bluffs.jpeg",
+      "description": "The high bluffs offer 360-degree views of the Strait of Juan de Fuca, the Olympic Mountains and the farm. The view changes with the seasons, from golden summer sunsets over the water to misty mountain mornings in the fall."
+    },
+    {
+      "slug": "cidery",
+      "title": "The cidery",
+      "image": "/images/farm/keg.jpeg",
+      "description": "We craft small-batch ciders from our orchard-grown apples. Pressing, fermenting, aging and bottling all happen here on site, and the tasting room pours whatever is ready."
+    },
+    {
+      "slug": "boutique",
+      "title": "The lavender boutique",
+      "image": "/images/farm/lavender-boutique.jpeg",
+      "description": "Step inside and the scent of lavender meets you at the door. Pure essential oils, bath goods, culinary lavender and gifts, most of it made here from our own harvest, alongside work from the makers we partner with."
+    },
+    {
+      "slug": "grains",
+      "title": "Ancient grains",
+      "image": "/images/farm/ancient-grains.jpeg",
+      "description": "Partnering with the WSU Breadlab, a leader in grain research, we grow an acre of heritage wheat and rye and mill it into flour. It is part of a bigger conversation about where food comes from and how it is grown."
+    },
+    {
+      "slug": "stay",
+      "title": "Salt & Cedar Bed and Breakfast",
+      "image": "/images/farm/salt-cedar-bnb.jpeg",
+      "description": "Salt and Cedar sits atop the bluffs overlooking the Strait, with water and mountain views from every window. A quiet retreat next door to the orchard and the fields."
+    }
+  ]
+}

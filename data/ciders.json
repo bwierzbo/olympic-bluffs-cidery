@@ -1,0 +1,57 @@
+{
+  "_comment": "Presentation-only settings for ciders, keyed by VinoShipper product id. All content (name, description, tasting notes, ABV, price, image, inventory, awards, packs, ship-to states) is read live from VinoShipper; edit those there. A cider not listed here still shows up, using `defaults`. `image` overrides VinoShipper's label art with one of our transparent bottle renders (public/images/shop/cider/trans-*.png). `featured` picks the homepage's 'Now pouring' cider (first match wins). `swatch` is the color bar on the card.",
+  "defaults": {
+    "swatch": "#5e6b5a"
+  },
+  "overrides": {
+    "202230": {
+      "swatch": "#6b4a75",
+      "image": "/images/shop/cider/trans-lavender-black-currant.png",
+      "featured": true
+    },
+    "193565": {
+      "swatch": "#c9646f",
+      "image": "/images/shop/cider/trans-strawberry-rhubarb.png"
+    },
+    "189234": {
+      "swatch": "#3f4c3c",
+      "image": "/images/shop/cider/trans-lavender-salal.png"
+    },
+    "189235": {
+      "swatch": "#5a2a3a"
+    },
+    "188893": {
+      "swatch": "#4a2b5a"
+    },
+    "189232": {
+      "swatch": "#b8353d"
+    },
+    "193564": {
+      "swatch": "#8a9a3a"
+    },
+    "189236": {
+      "swatch": "#c9922f"
+    },
+    "202341": {
+      "swatch": "#5e6b5a"
+    },
+    "202343": {
+      "swatch": "#a8863f"
+    },
+    "202353": {
+      "swatch": "#6f8a4a"
+    },
+    "202348": {
+      "swatch": "#b23a3a"
+    },
+    "202351": {
+      "swatch": "#8a6a3a"
+    },
+    "202350": {
+      "swatch": "#8c5a2a"
+    },
+    "202346": {
+      "swatch": "#c9c26a"
+    }
+  }
+}

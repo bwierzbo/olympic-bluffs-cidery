@@ -761,7 +761,7 @@ We'd love to hear about your experience! If you have a moment, please consider:
 • Leaving a review on our website
 • Telling your friends about us
 
-Shop again: ${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/shop/lavender
+Shop again: ${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/lavender
 
 Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
 We hope to see you again soon.
@@ -807,7 +807,7 @@ We hope to see you again soon.
         </ul>
 
         <p>
-          <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/shop/lavender" class="button">
+          <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/lavender" class="button">
             Shop Again
           </a>
         </p>

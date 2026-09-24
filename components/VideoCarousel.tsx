@@ -19,15 +19,18 @@ interface VideoCarouselProps {
 }
 
 /**
- * One-at-a-time video carousel matching the site's ImageCarousel styling
- * (sage arrows, counter pill, dot navigation). VideoEmbed is keyed by id so
- * moving to another slide resets it back to the click-to-play thumbnail.
+ * One-at-a-time video carousel: hairline pill arrows, serif caption, ink dot
+ * navigation. VideoEmbed is keyed by id so moving to another slide resets it
+ * back to the click-to-play thumbnail.
  */
 export default function VideoCarousel({ videos, onDark = false }: VideoCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const titleColor = onDark ? 'text-white' : 'text-gray-900';
-  const descColor = onDark ? 'text-sage-50' : 'text-gray-600';
+  const titleColor = onDark ? 'text-white' : 'text-ink';
+  const descColor = onDark ? 'text-white/75' : 'text-ink-2';
+  const arrowClass = onDark
+    ? 'border-white/40 text-white hover:border-white hover:bg-white/10'
+    : 'border-line bg-paper text-ink hover:border-ink';
 
   const goToPrevious = useCallback(() => {
     setCurrentIndex((prev) => (prev === 0 ? videos.length - 1 : prev - 1));
@@ -55,7 +58,7 @@ export default function VideoCarousel({ videos, onDark = false }: VideoCarouselP
       {(current.title || current.description) && (
         <div className="mt-4 text-center">
           {current.title && (
-            <h3 className={`text-lg font-semibold ${titleColor}`}>
+            <h3 className={`font-serif text-xl ${titleColor}`}>
               {current.title}
             </h3>
           )}
@@ -80,11 +83,11 @@ export default function VideoCarousel({ videos, onDark = false }: VideoCarouselP
       <div className="flex items-center justify-center gap-3 sm:gap-6">
         <button
           onClick={goToPrevious}
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:bg-sage-50"
+          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage ${arrowClass}`}
           aria-label="Previous video"
         >
           <svg
-            className="h-5 w-5 text-gray-800"
+            className="h-5 w-5"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="2"
@@ -97,18 +100,18 @@ export default function VideoCarousel({ videos, onDark = false }: VideoCarouselP
         <div className={`relative w-full ${frameWidth}`}>
           {slide}
           {/* Counter pill */}
-          <div className="pointer-events-none absolute right-2 top-2 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+          <div className="pointer-events-none absolute right-2 top-2 rounded-full bg-ink/70 px-3 py-1 text-xs font-semibold tabular-nums text-white">
             {currentIndex + 1} / {videos.length}
           </div>
         </div>
 
         <button
           onClick={goToNext}
-          className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-white shadow-lg transition-all hover:bg-sage-50"
+          className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage ${arrowClass}`}
           aria-label="Next video"
         >
           <svg
-            className="h-5 w-5 text-gray-800"
+            className="h-5 w-5"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth="2"
@@ -125,14 +128,10 @@ export default function VideoCarousel({ videos, onDark = false }: VideoCarouselP
           <button
             key={video.youtubeId}
             onClick={() => setCurrentIndex(idx)}
-            className={`h-2.5 w-2.5 rounded-full transition-all ${
+            className={`h-2 rounded-full transition-all ${
               idx === currentIndex
-                ? onDark
-                  ? 'bg-white ring-2 ring-white/40'
-                  : 'bg-sage-500 ring-2 ring-sage-200'
-                : onDark
-                  ? 'bg-white/40 hover:bg-white/70'
-                  : 'bg-gray-300 hover:bg-gray-400'
+                ? `w-6 ${onDark ? 'bg-white' : 'bg-ink'}`
+                : `w-2 ${onDark ? 'bg-white/40 hover:bg-white/70' : 'bg-ink/20 hover:bg-ink/40'}`
             }`}
             aria-label={`Go to video ${idx + 1}`}
             aria-current={idx === currentIndex}

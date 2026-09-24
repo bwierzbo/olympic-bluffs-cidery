@@ -10,11 +10,16 @@
   },
   "dependencies": {
     "@vercel/analytics": "^1.6.1",
+    "@vercel/blob": "^2.8.0",
+    "ai": "^7.0.113",
+    "marked": "^18.0.14",
     "next": "^16.1.0",
     "nodemailer": "^7.0.12",
     "react": "19.2.0",
     "react-dom": "19.2.0",
-    "square": "^43.2.0"
+    "resend": "^6.28.1",
+    "square": "^43.2.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@prisma/client": "^5.22.0",

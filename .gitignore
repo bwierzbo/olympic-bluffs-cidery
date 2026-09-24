@@ -43,3 +43,6 @@ next-env.d.ts
 # local tooling
 .claude/
 .planning/
+
+# Browser automation screenshots/logs
+/.playwright-mcp/

@@ -18,13 +18,13 @@ export default function InstagramFeed() {
   // looks finished and points visitors to Instagram in the meantime.
   if (!FEED_ID) {
     return (
-      <div className="mx-auto max-w-2xl rounded-lg border-2 border-dashed border-white/40 px-6 py-10 text-center">
-        <p className="font-medium text-white">Our Instagram feed will appear here soon.</p>
+      <div className="mx-auto max-w-2xl border border-dashed border-line px-6 py-10 text-center">
+        <p className="font-serif text-lg italic text-ink-2">Our Instagram feed will appear here soon.</p>
         <a
           href={INSTAGRAM_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-3 inline-block text-sage-50 underline underline-offset-4 hover:text-white"
+          className="mt-3 inline-block text-ink underline underline-offset-4 hover:text-ink-2"
         >
           Follow @olympicbluffscideryandlavender
         </a>

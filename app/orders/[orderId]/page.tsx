@@ -114,7 +114,7 @@ export default function OrderTrackingPage() {
             <h1 className="text-2xl font-bold text-gray-900 mb-2">Order Not Found</h1>
             <p className="text-gray-600 mb-6">{error}</p>
             <Link
-              href="/shop/lavender"
+              href="/lavender"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-sage-500 hover:bg-sage-600"
             >
               Return to Shop
@@ -335,7 +335,7 @@ export default function OrderTrackingPage() {
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
             Questions about your order?{' '}
-            <Link href="/contact" className="text-sage-600 hover:text-sage-700 font-medium">
+            <Link href="/visit" className="text-sage-600 hover:text-sage-700 font-medium">
               Contact us
             </Link>
           </p>

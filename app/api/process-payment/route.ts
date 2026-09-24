@@ -4,6 +4,7 @@ import { createOrder } from '@/lib/orders';
 import { OrderItem } from '@/lib/types';
 import { randomUUID } from 'crypto';
 import { sendOrderConfirmation, sendFarmNotification } from '@/lib/email';
+import { chargeCard, describeDecline, SquareApiError } from '@/lib/payments';
 
 // Shape of an item from the checkout request body
 interface CheckoutItem {
@@ -12,12 +13,6 @@ interface CheckoutItem {
   quantity: number;
   price: number;
   variation?: { id: string; name: string };
-}
-
-// Partial shape of Square SDK error objects we read from
-interface SquareApiError {
-  body?: { payment?: { status?: string } };
-  errors?: Array<{ code?: string; detail?: string }>;
 }
 
 export async function POST(request: NextRequest) {
@@ -72,23 +67,17 @@ export async function POST(request: NextRequest) {
 
     const squareOrderId = squareOrderResult.order?.id;
 
-    // 2. Create payment attached to the Square Order
-    const result = await client.payments.create({
+    // 2. Charge the card, attached to the Square Order (shared helper, also
+    //    used by event registrations).
+    const payment = await chargeCard({
       sourceId,
-      idempotencyKey: randomUUID(),
-      amountMoney: {
-        amount: BigInt(Math.round(amount)),
-        currency: 'USD',
-      },
-      locationId,
-      orderId: squareOrderId,
-      ...(customerInfo && {
-        buyerEmailAddress: customerInfo.email,
-      }),
+      amountCents: amount,
+      squareOrderId,
+      buyerEmail: customerInfo?.email,
     });
 
-    if (result.payment) {
-      const paymentId = result.payment.id || randomUUID();
+    {
+      const paymentId = payment.paymentId;
       const orderId = squareOrderResult.order?.referenceId || `OB-${Date.now()}-${randomUUID().substring(0, 8)}`;
 
       // Transform cart items to order items
@@ -135,46 +124,20 @@ export async function POST(request: NextRequest) {
         success: true,
         orderId,
         payment: {
-          id: result.payment.id,
-          status: result.payment.status,
-          receiptUrl: result.payment.receiptUrl,
+          id: payment.paymentId,
+          status: payment.status,
+          receiptUrl: payment.receiptUrl,
         },
       });
-    } else {
-      return NextResponse.json(
-        {
-          success: false,
-          error: result.errors?.[0]?.detail || 'Payment was not successful',
-        },
-        { status: 400 }
-      );
     }
   } catch (error: unknown) {
     const err = error as SquareApiError;
     console.error('Payment processing error:', error);
 
-    // Check if this is a declined payment (has payment object with FAILED status)
-    if (err.body && err.body.payment && err.body.payment.status === 'FAILED') {
-      // Payment was declined but processed - return as failed with user-friendly message
-      const errorCode = err.errors?.[0]?.code;
-      let userMessage = 'Your card was declined. Please try a different payment method.';
-
-      // Customize message based on error code
-      if (errorCode === 'INSUFFICIENT_FUNDS') {
-        userMessage = 'Insufficient funds. Please try a different card.';
-      } else if (errorCode === 'CVV_FAILURE') {
-        userMessage = 'Invalid CVV. Please check your card details.';
-      } else if (errorCode === 'INVALID_EXPIRATION') {
-        userMessage = 'Invalid expiration date. Please check your card details.';
-      }
-
-      return NextResponse.json(
-        {
-          success: false,
-          error: userMessage,
-        },
-        { status: 400 }
-      );
+    // Declined card: return a user-friendly message
+    const decline = describeDecline(error);
+    if (decline) {
+      return NextResponse.json({ success: false, error: decline }, { status: 400 });
     }
 
     // Extract error message from Square API error

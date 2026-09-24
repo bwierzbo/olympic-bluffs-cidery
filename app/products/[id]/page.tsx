@@ -3,59 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Product, ProductVariation } from '@/lib/types';
 import { useCart } from '@/components/shop/CartProvider';
 import ImageCarousel from '@/components/shop/ImageCarousel';
 
-// Cider descriptions - same as FeaturedCiderSection
-const ciderDescriptions: Record<string, { left: string; right: string }> = {
-  'strawberry-rhubarb': {
-    left: 'Born from the vibrant gardens of the Olympic Peninsula, this cider celebrates the classic pairing of sun-ripened strawberries and garden-fresh rhubarb. Each batch is crafted during peak harvest season to capture the essence of a Pacific Northwest summer.',
-    right: 'Light and refreshing with a beautiful blush color. Sweet strawberry notes dance with tart rhubarb on the palate, finishing crisp and clean. Perfect chilled on a warm afternoon or paired with light desserts.',
-  },
-  'salish': {
-    left: 'Named after the Salish Sea that shapes our coastal landscape, this traditional cider honors the heritage of the Olympic Peninsula. We blend heirloom apple varieties grown in our region for generations, connecting each sip to the land and its history.',
-    right: 'A complex, balanced character with subtle earthy notes and hints of wild honey. Medium-bodied with gentle tannins and a long, satisfying finish. Pairs beautifully with aged cheeses and roasted meats.',
-  },
-  'lavender-black-currant': {
-    left: 'An enchanting fusion born right here on our farm, where rows of fragrant lavender grow alongside our orchards. We harvest both at their peak, creating a cider that captures the unique terroir of Olympic Bluffs.',
-    right: 'Floral lavender aromatics meet deep, jammy black currant on the nose. The palate reveals layers of berry sweetness balanced by the calming essence of lavender. A truly unique Pacific Northwest creation.',
-  },
-  'lavender-salal': {
-    left: 'Wild salal berries have sustained the people of this region for thousands of years. We forage these native berries from the forests surrounding our farm and marry them with our signature lavender for a distinctly local experience.',
-    right: 'Deep purple hue with aromas of wild berries and gentle floral notes. Earthy and slightly sweet with a subtle herbaceous quality. A taste of the Olympic Peninsula\'s diverse flora in every sip.',
-  },
-  'ginger-quince': {
-    left: 'Inspired by the orchards of old, where quince trees stood alongside apples. We source aromatic quince from heritage trees and add warming ginger root, creating an autumn-inspired cider perfect for cooler days.',
-    right: 'Golden amber color with spicy ginger on the nose and honeyed quince underneath. Warming and complex on the palate with a pleasantly dry finish. Ideal served slightly warm or at cellar temperature.',
-  },
-  'ashmeads-kernel': {
-    left: 'The legendary Ashmead\'s Kernel apple, first cultivated in 1700s Gloucestershire, produces one of the world\'s finest single-varietal ciders. We tend these heritage trees with care, honoring centuries of cidermaking tradition.',
-    right: 'Nutty and sharp with remarkable complexity. Notes of honeyed fruit and subtle tropical hints give way to a long, bone-dry finish. A sophisticated cider for those who appreciate depth and character.',
-  },
-  'kingston-black': {
-    left: 'The Kingston Black is revered as the "king of cider apples" - one of the rare varieties that can produce exceptional cider entirely on its own. Our trees thrive in the maritime climate of the Olympic Peninsula.',
-    right: 'Full-bodied with firm tannic structure and deep apple character. Bittersweet notes mingle with hints of smoke and earth. A traditional English-style cider offering depth, sophistication, and excellent aging potential.',
-  },
-};
+const PLACEHOLDER_IMAGE = '/images/products/placeholder-lavender.svg';
 
-// Get descriptions by matching product name
-const getDescriptions = (productName: string): { left: string; right: string } | null => {
-  // Normalize: lowercase and remove apostrophes/special chars
-  const nameLower = productName.toLowerCase().replace(/['']/g, '');
-
-  for (const [key, descriptions] of Object.entries(ciderDescriptions)) {
-    const keyWithSpaces = key.replace(/-/g, ' ');
-    const keyNoSpaces = key.replace(/-/g, '');
-
-    if (nameLower.includes(keyWithSpaces) || nameLower.includes(keyNoSpaces)) {
-      return descriptions;
-    }
-  }
-
-  // Return null for non-cider products (will use different layout)
-  return null;
-};
+function formatPrice(cents: number) {
+  return cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`;
+}
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -74,51 +31,41 @@ export default function ProductDetailPage() {
   useEffect(() => {
     async function fetchProduct() {
       try {
-        const [lavenderResponse, cideryResponse] = await Promise.all([
-          fetch('/api/products/lavender'),
-          fetch('/api/products/cidery'),
-        ]);
-
+        // Lavender products only. Ciders live on VinoShipper and have their
+        // own pages under /cider.
+        const lavenderResponse = await fetch('/api/products/lavender');
         const lavenderData = await lavenderResponse.json();
-        const cideryData = await cideryResponse.json();
+        const lavenderProducts: Product[] = lavenderData.success ? lavenderData.products : [];
+        const foundProduct = lavenderProducts.find((p) => p.id === params.id);
 
-        const allProducts = [
-          ...(lavenderData.success ? lavenderData.products : []),
-          ...(cideryData.success ? cideryData.products : []),
-        ];
-
-        const foundProduct = allProducts.find((p: Product) => p.id === params.id);
-
-        if (foundProduct) {
-          setProduct(foundProduct);
-          if (foundProduct.variations && foundProduct.variations.length > 0) {
-            setSelectedVariation(foundProduct.variations[0]);
-
-            const hasMultiDim = foundProduct.variations.some((v: ProductVariation) => v.name.includes(','));
-            if (hasMultiDim) {
-              const dimensionsMap: Record<number, Set<string>> = {};
-              foundProduct.variations.forEach((variation: ProductVariation) => {
-                const parts = variation.name.split(',').map((p: string) => p.trim());
-                parts.forEach((part: string, index: number) => {
-                  if (!dimensionsMap[index]) {
-                    dimensionsMap[index] = new Set();
-                  }
-                  dimensionsMap[index].add(part);
-                });
-              });
-
-              const initialSelections: Record<string, string> = {};
-              Object.keys(dimensionsMap).forEach((key: string) => {
-                const index = parseInt(key);
-                const options = Array.from(dimensionsMap[index]).sort();
-                initialSelections[index] = options[0];
-              });
-
-              setMultiDimSelections(initialSelections);
-            }
-          }
-        } else {
+        if (!foundProduct) {
           setError('Product not found');
+          return;
+        }
+
+        setProduct(foundProduct);
+        if (foundProduct.variations && foundProduct.variations.length > 0) {
+          setSelectedVariation(foundProduct.variations[0]);
+
+          const hasMultiDim = foundProduct.variations.some((v) => v.name.includes(','));
+          if (hasMultiDim) {
+            const dimensionsMap: Record<number, Set<string>> = {};
+            foundProduct.variations.forEach((variation) => {
+              const parts = variation.name.split(',').map((p) => p.trim());
+              parts.forEach((part, index) => {
+                if (!dimensionsMap[index]) dimensionsMap[index] = new Set();
+                dimensionsMap[index].add(part);
+              });
+            });
+
+            const initialSelections: Record<string, string> = {};
+            Object.keys(dimensionsMap).forEach((key) => {
+              const index = parseInt(key);
+              const options = Array.from(dimensionsMap[index]).sort();
+              initialSelections[index] = options[0];
+            });
+            setMultiDimSelections(initialSelections);
+          }
         }
       } catch (err) {
         console.error('Error fetching product:', err);
@@ -129,28 +76,22 @@ export default function ProductDetailPage() {
     }
 
     fetchProduct();
-  }, [params.id]);
+  }, [params.id, router]);
 
-  const formatPrice = (cents: number) => {
-    return `$${(cents / 100).toFixed(2)}`;
-  };
-
-  const getCurrentPrice = () => {
-    if (selectedVariation) {
-      return selectedVariation.price;
-    }
-    return product?.price || 0;
-  };
+  const getCurrentPrice = () => selectedVariation?.price ?? product?.price ?? 0;
 
   const getCurrentImage = () => {
     if (hoveredVariationId) {
       const hovered = product?.variations?.find((v) => v.id === hoveredVariationId);
       if (hovered?.image) return hovered.image;
     }
-    if (selectedVariation?.image) {
-      return selectedVariation.image;
-    }
-    return product?.image || '/images/products/placeholder-lavender.svg';
+    if (selectedVariation?.image) return selectedVariation.image;
+    return product?.image || PLACEHOLDER_IMAGE;
+  };
+
+  const isMultiDimensional = () => {
+    if (!product?.variations || product.variations.length <= 1) return false;
+    return product.variations.some((v) => v.name.includes(','));
   };
 
   const selectVariation = (variation: ProductVariation) => {
@@ -166,465 +107,253 @@ export default function ProductDetailPage() {
   };
 
   const hasVariedPrices = () => {
-    if (!product?.variations || product.variations.length <= 1) {
-      return false;
-    }
-    const prices = product.variations.map((v: ProductVariation) => v.price);
-    return new Set(prices).size > 1;
-  };
-
-  const isMultiDimensional = () => {
-    if (!product?.variations || product.variations.length <= 1) {
-      return false;
-    }
-    return product.variations.some((v: ProductVariation) => v.name.includes(','));
+    if (!product?.variations || product.variations.length <= 1) return false;
+    return new Set(product.variations.map((v) => v.price)).size > 1;
   };
 
   const getVariationDimensions = () => {
     if (!product?.variations) return [];
-
     const dimensionsMap: Record<number, Set<string>> = {};
-
-    product.variations.forEach((variation: ProductVariation) => {
-      const parts = variation.name.split(',').map((p: string) => p.trim());
-      parts.forEach((part: string, index: number) => {
-        if (!dimensionsMap[index]) {
-          dimensionsMap[index] = new Set();
-        }
+    product.variations.forEach((variation) => {
+      const parts = variation.name.split(',').map((p) => p.trim());
+      parts.forEach((part, index) => {
+        if (!dimensionsMap[index]) dimensionsMap[index] = new Set();
         dimensionsMap[index].add(part);
       });
     });
-
-    return Object.values(dimensionsMap).map((set: Set<string>) => Array.from(set).sort());
+    return Object.values(dimensionsMap).map((set) => Array.from(set).sort());
   };
 
   const findMatchingVariation = (selections: Record<string, string>) => {
     if (!product?.variations) return null;
-
     const selectionValues = Object.values(selections);
-    if (selectionValues.some((v: string) => !v)) return null;
-
+    if (selectionValues.some((v) => !v)) return null;
     const searchName = selectionValues.join(', ');
-    return product.variations.find((v: ProductVariation) => v.name === searchName) || null;
+    return product.variations.find((v) => v.name === searchName) || null;
   };
 
   const handleMultiDimChange = (dimensionIndex: number, value: string) => {
     const newSelections = { ...multiDimSelections, [dimensionIndex]: value };
     setMultiDimSelections(newSelections);
-
     const matchingVariation = findMatchingVariation(newSelections);
-    if (matchingVariation) {
-      setSelectedVariation(matchingVariation);
-    }
+    if (matchingVariation) setSelectedVariation(matchingVariation);
   };
 
   const handleAddToCart = () => {
     if (!product) return;
-
     setIsAdding(true);
     addToCart(product, quantity, selectedVariation || undefined);
-
-    setTimeout(() => {
-      setIsAdding(false);
-    }, 1000);
+    setTimeout(() => setIsAdding(false), 1000);
   };
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-sage-50/30">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-sage-600 border-r-transparent"></div>
-          <p className="mt-4 text-gray-600">Loading product...</p>
-        </div>
-      </div>
+      <section className="bg-ground py-24">
+        <p className="text-center text-ink-3" role="status">
+          Loading…
+        </p>
+      </section>
     );
   }
 
   if (error || !product) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-sage-50/30">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            {error || 'Product not found'}
-          </h1>
-          <button
-            onClick={() => router.push('/shop/lavender')}
-            className="px-6 py-3 bg-sage-500 text-white rounded-md hover:bg-sage-600"
-          >
-            Back to Shop
-          </button>
+      <section className="bg-ground py-24">
+        <div className="container-x text-center">
+          <h1 className="font-serif text-[clamp(28px,4vw,44px)]">{error || 'Product not found'}</h1>
+          <Link href="/lavender" className="btn btn-primary mt-6">
+            Back to the shop
+          </Link>
         </div>
-      </div>
+      </section>
     );
   }
 
-  // Check if this is a cider product with custom descriptions
-  const descriptions = getDescriptions(product.name);
-  const isCiderProduct = descriptions !== null;
+  const variationsWithImages = (product.variations || []).filter((v) => v.image);
+  const imageAlt = selectedVariation ? `${product.name}, ${selectedVariation.name}` : product.name;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-white via-sage-50/30 to-sage-50/50">
-      {/* Breadcrumbs */}
-      <div className="bg-white/80 backdrop-blur-sm border-b">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-          <nav className="flex items-center space-x-2 text-sm">
-            <button
-              onClick={() => router.push('/')}
-              className="text-sage-600 hover:text-sage-700"
-            >
-              Home
-            </button>
-            <span className="text-gray-400">/</span>
-            <button
-              onClick={() => router.back()}
-              className="text-sage-600 hover:text-sage-700"
-            >
-              Shop
-            </button>
-            <span className="text-gray-400">/</span>
-            <span className="text-gray-900">{product.name}</span>
-          </nav>
-        </div>
-      </div>
+    <section className="bg-ground py-12 sm:py-16">
+      <div className="container-x">
+        <nav className="mb-8 text-sm text-ink-3" aria-label="Breadcrumb">
+          <Link href="/lavender" className="hover:text-ink">
+            Lavender shop
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-ink-2">{product.name}</span>
+        </nav>
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        {/* Product Title - Centered */}
-        <div className="text-center mb-8 lg:mb-12">
-          {product.category && (
-            <div className="mb-3">
-              <span className="text-sm text-sage-600 font-medium uppercase tracking-wide">
-                {product.category}
-              </span>
-            </div>
-          )}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-4">
-            {product.name}
-          </h1>
-          <div className="flex justify-center">
-            <div className="w-24 h-0.5 bg-sage-400 rounded-full" />
-          </div>
-        </div>
-
-        {/* Three Column Layout for Cider / Centered for Lavender */}
-        {isCiderProduct ? (
-          // Cider Product - Three Column Layout
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center mb-12">
-            {/* Left - Generated Description */}
-            <div className="order-2 lg:order-1 text-center lg:text-right">
-              <p className="text-lg text-gray-700 leading-relaxed">
-                {descriptions.left}
-              </p>
-              <p className="text-lg text-gray-700 leading-relaxed mt-4">
-                {descriptions.right}
-              </p>
-            </div>
-
-            {/* Center - Product Image */}
-            <div className="order-1 lg:order-2 relative h-[400px] sm:h-[500px] lg:h-[550px]">
-              <Image
-                key={getCurrentImage()}
-                src={getCurrentImage()}
-                alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
-                fill
-                sizes="(min-width: 1024px) 400px, (min-width: 640px) 350px, 280px"
-                className="object-contain drop-shadow-2xl"
-                priority
-              />
-              {!product.inStock && (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
-                    Out of Stock
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Right - Square Product Info */}
-            <div className="order-3 text-center lg:text-left space-y-6">
-              {/* Product Details from Square */}
-              <div className="space-y-4">
-                {product.volume && (
-                  <div>
-                    <span className="text-sm text-gray-500 uppercase tracking-wide">Volume</span>
-                    <p className="text-xl font-semibold text-gray-900">{product.volume}</p>
-                  </div>
-                )}
-                {product.abv && (
-                  <div>
-                    <span className="text-sm text-gray-500 uppercase tracking-wide">ABV</span>
-                    <p className="text-xl font-semibold text-gray-900">{product.abv}</p>
-                  </div>
-                )}
-                {product.ciderType && (
-                  <div>
-                    <span className="text-sm text-gray-500 uppercase tracking-wide">Style</span>
-                    <p className="text-xl font-semibold text-gray-900">{product.ciderType}</p>
-                  </div>
-                )}
-              </div>
-              {/* Original Square Description */}
-              {product.description && (
-                <div>
-                  <span className="text-sm text-gray-500 uppercase tracking-wide">From the Maker</span>
-                  <p className="text-base text-gray-600 leading-relaxed mt-1">
-                    {product.description}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        ) : (
-          // Lavender Product - Variation gallery, carousel, or single image
-          <div className="max-w-4xl mx-auto mb-12">
-            {(() => {
-              const variationsWithImages = (product.variations || []).filter((v) => v.image);
-
-              if (variationsWithImages.length > 0) {
-                return (
-                  <div className="mb-8">
-                    <div className="relative h-[350px] sm:h-[450px]">
-                      <Image
-                        key={getCurrentImage()}
-                        src={getCurrentImage()}
-                        alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
-                        fill
-                        sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
-                        className="object-contain drop-shadow-xl"
-                        priority
-                      />
-                      {!product.inStock && (
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
-                            Out of Stock
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                    {/* Variation thumbnail strip */}
-                    <div className="flex justify-center gap-3 mt-6 flex-wrap">
-                      {variationsWithImages.map((variation) => {
-                        const isSelected = selectedVariation?.id === variation.id;
-                        return (
-                          <button
-                            key={variation.id}
-                            type="button"
-                            onMouseEnter={() => setHoveredVariationId(variation.id)}
-                            onMouseLeave={() => setHoveredVariationId(null)}
-                            onFocus={() => setHoveredVariationId(variation.id)}
-                            onBlur={() => setHoveredVariationId(null)}
-                            onClick={() => selectVariation(variation)}
-                            aria-label={`Select ${variation.name}`}
-                            aria-pressed={isSelected}
-                            className={`relative w-20 h-20 rounded-md overflow-hidden border-2 transition-all ${
-                              isSelected
-                                ? 'border-sage-500 ring-2 ring-sage-200'
-                                : 'border-gray-200 hover:border-sage-400'
-                            }`}
-                          >
-                            <Image
-                              src={variation.image!}
-                              alt={variation.name}
-                              fill
-                              sizes="80px"
-                              className="object-cover"
-                            />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              }
-
-              if (product.images && product.images.length > 0) {
-                return (
-                  <div className="mb-8">
-                    <ImageCarousel
-                      images={product.images}
-                      alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
-                    />
-                    {!product.inStock && (
-                      <div className="text-center mt-4">
-                        <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg inline-block">
-                          Out of Stock
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                );
-              }
-
-              return (
-                <div className="relative h-[350px] sm:h-[450px] mb-8">
+        <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
+          {/* Photos: variation gallery, carousel, or a single image */}
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            {variationsWithImages.length > 0 ? (
+              <div>
+                <div className="relative aspect-square bg-ground-2">
                   <Image
                     key={getCurrentImage()}
                     src={getCurrentImage()}
-                    alt={selectedVariation ? `${product.name} - ${selectedVariation.name}` : product.name}
+                    alt={imageAlt}
                     fill
-                    sizes="(min-width: 1024px) 500px, (min-width: 640px) 400px, 300px"
-                    className="object-contain drop-shadow-xl"
+                    sizes="(min-width: 1024px) 45vw, 100vw"
+                    className="object-contain p-6"
                     priority
                   />
-                  {!product.inStock && (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="bg-red-600 text-white px-6 py-3 rounded-md font-semibold text-lg">
-                        Out of Stock
-                      </span>
-                    </div>
-                  )}
                 </div>
-              );
-            })()}
-            {product.description && (
-              <p className="text-lg text-gray-700 leading-relaxed text-center max-w-2xl mx-auto">
-                {product.description}
-              </p>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {variationsWithImages.map((variation) => {
+                    const isSelected = selectedVariation?.id === variation.id;
+                    return (
+                      <button
+                        key={variation.id}
+                        type="button"
+                        onMouseEnter={() => setHoveredVariationId(variation.id)}
+                        onMouseLeave={() => setHoveredVariationId(null)}
+                        onFocus={() => setHoveredVariationId(variation.id)}
+                        onBlur={() => setHoveredVariationId(null)}
+                        onClick={() => selectVariation(variation)}
+                        aria-label={`Select ${variation.name}`}
+                        aria-pressed={isSelected}
+                        className={`relative h-16 w-16 overflow-hidden border transition-colors ${
+                          isSelected ? 'border-ink' : 'border-line hover:border-ink-3'
+                        }`}
+                      >
+                        <Image src={variation.image!} alt={variation.name} fill sizes="64px" className="object-cover" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ) : product.images && product.images.length > 0 ? (
+              <ImageCarousel images={product.images} alt={imageAlt} />
+            ) : (
+              <div className="relative aspect-square bg-ground-2">
+                <Image
+                  key={getCurrentImage()}
+                  src={getCurrentImage()}
+                  alt={imageAlt}
+                  fill
+                  sizes="(min-width: 1024px) 45vw, 100vw"
+                  className="object-contain p-6"
+                  priority
+                />
+              </div>
             )}
           </div>
-        )}
 
-        {/* Bottom Section - Centered */}
-        <div className="max-w-xl mx-auto text-center">
-          {/* Price */}
-          <div className="text-4xl sm:text-5xl font-bold text-sage-600 mb-8">
-            {formatPrice(getCurrentPrice())}
-          </div>
+          {/* Details */}
+          <div>
+            {product.category && <p className="eyebrow text-lav">{product.category}</p>}
+            <h1 className="mt-2 font-serif text-[clamp(32px,4.5vw,52px)] leading-[1.02]">{product.name}</h1>
+            <p className="mt-3 font-serif text-2xl">{formatPrice(getCurrentPrice())}</p>
+            {!product.inStock && <p className="mt-1 text-sm text-ink-3">Sold out for now</p>}
 
-          {/* Variations */}
-          {product.variations && product.variations.length > 1 && (
-            <div className="mb-8">
-              {isMultiDimensional() ? (
-                <div className="space-y-4">
-                  {getVariationDimensions().map((options: string[], dimensionIndex: number) => (
+            {product.description && (
+              <p className="mt-6 text-[16px] leading-relaxed text-ink-2">{product.description}</p>
+            )}
+            {product.longDescription && (
+              <p className="mt-3 text-[15px] leading-relaxed text-ink-2">{product.longDescription}</p>
+            )}
+
+            {product.variations && product.variations.length > 1 && (
+              <div className="mt-8 space-y-5">
+                {isMultiDimensional() ? (
+                  getVariationDimensions().map((options, dimensionIndex) => (
                     <div key={dimensionIndex}>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {dimensionIndex === 0 ? 'Select Scent' : 'Select Design'}
+                      <label htmlFor={`dimension-${dimensionIndex}`} className="eyebrow block">
+                        {dimensionIndex === 0 ? 'Scent' : 'Design'}
                       </label>
                       <select
+                        id={`dimension-${dimensionIndex}`}
                         value={multiDimSelections[dimensionIndex] || ''}
                         onChange={(e) => handleMultiDimChange(dimensionIndex, e.target.value)}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-sage-500 focus:ring-2 focus:ring-sage-200 transition-all"
+                        className="mt-2 w-full rounded-md border border-line bg-paper px-3 py-2.5 text-[15px] focus:border-ink focus:outline-none"
                       >
-                        {options.map((option: string) => (
+                        {options.map((option) => (
                           <option key={option} value={option}>
                             {option}
                           </option>
                         ))}
                       </select>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Select Option
-                  </label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {product.variations.map((variation: ProductVariation) => (
-                      <button
-                        key={variation.id}
-                        onClick={() => setSelectedVariation(variation)}
-                        className={`p-4 border-2 rounded-lg text-center transition-all ${
-                          selectedVariation?.id === variation.id
-                            ? 'border-sage-500 bg-sage-50'
-                            : 'border-gray-200 hover:border-sage-300'
-                        }`}
-                      >
-                        <div className="font-medium text-gray-900">{variation.name}</div>
-                        {hasVariedPrices() && (
-                          <div className="text-sm text-gray-600 mt-1">
-                            {formatPrice(variation.price)}
-                          </div>
-                        )}
-                      </button>
-                    ))}
+                  ))
+                ) : (
+                  <div>
+                    <p className="eyebrow">Options</p>
+                    <div className="mt-2 flex flex-wrap gap-2" role="group" aria-label="Options">
+                      {product.variations.map((variation) => {
+                        const active = selectedVariation?.id === variation.id;
+                        return (
+                          <button
+                            key={variation.id}
+                            type="button"
+                            onClick={() => setSelectedVariation(variation)}
+                            aria-pressed={active}
+                            className={`rounded-full border px-4 py-2 text-sm transition-colors ${
+                              active ? 'border-ink bg-ink text-white' : 'border-line text-ink-2 hover:border-ink hover:text-ink'
+                            }`}
+                          >
+                            {variation.name}
+                            {hasVariedPrices() && <span className="ml-1.5 opacity-70">{formatPrice(variation.price)}</span>}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </>
-              )}
-            </div>
-          )}
-
-          {/* Quantity */}
-          <div className="mb-8">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Quantity
-            </label>
-            <div className="flex items-center justify-center gap-3">
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                className="w-12 h-12 rounded-md border-2 border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
-                disabled={quantity <= 1}
-              >
-                <span className="text-xl">−</span>
-              </button>
-              <input
-                type="number"
-                min="1"
-                value={quantity}
-                onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                className="w-20 h-12 text-center text-lg font-medium border-2 border-gray-200 rounded-md"
-              />
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                className="w-12 h-12 rounded-md border-2 border-gray-200 flex items-center justify-center hover:bg-gray-50 transition-colors"
-              >
-                <span className="text-xl">+</span>
-              </button>
-            </div>
-          </div>
-
-          {/* Add to Cart Button */}
-          <button
-            onClick={handleAddToCart}
-            disabled={!product.inStock || isAdding}
-            className={`w-full max-w-sm mx-auto py-4 px-8 rounded-md font-semibold text-lg shadow-lg transition-all duration-300 ${
-              product.inStock
-                ? isAdding
-                  ? 'bg-green-500 text-white scale-105'
-                  : 'bg-sage-600 text-white hover:bg-sage-700 hover:shadow-xl hover:scale-105'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            {isAdding ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg
-                  className="animate-spin h-5 w-5"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  ></circle>
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-                Added to Cart!
-              </span>
-            ) : product.inStock ? (
-              'Add to Cart'
-            ) : (
-              'Out of Stock'
+                )}
+              </div>
             )}
-          </button>
 
-          {/* Continue Shopping Link */}
-          <button
-            onClick={() => router.back()}
-            className="w-full max-w-sm mx-auto mt-4 py-3 px-6 rounded-md font-medium text-sage-600 border-2 border-sage-500 hover:bg-sage-50 transition-colors"
-          >
-            Continue Shopping
-          </button>
+                          <div className="mt-8">
+                <p className="eyebrow">Quantity</p>
+                <div className="mt-2 inline-flex items-center rounded-full border border-line bg-paper">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    disabled={quantity <= 1}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-ground hover:text-ink disabled:opacity-40"
+                    aria-label="Decrease quantity"
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    min="1"
+                    value={quantity}
+                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    aria-label="Quantity"
+                    className="w-12 bg-transparent text-center text-[15px] tabular-nums focus:outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="flex h-10 w-10 items-center justify-center rounded-full text-ink-2 transition-colors hover:bg-ground hover:text-ink"
+                    aria-label="Increase quantity"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={!product.inStock || isAdding}
+                className="btn btn-primary min-w-[10rem]"
+              >
+                {isAdding ? 'Added to cart' : product.inStock ? 'Add to cart' : 'Sold out'}
+              </button>
+              <Link href="/lavender" className="btn btn-secondary">
+                Keep browsing
+              </Link>
+            </div>
+
+                          <p className="mt-4 text-xs text-ink-3">
+                Pickup at the farm is free. Shipping is added at checkout through Square.
+              </p>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }

@@ -53,3 +53,124 @@ model OrderAuditLog {
   @@index([action])
   @@map("order_audit_log")
 }
+
+// ---------------------------------------------------------------------------
+// Events and classes with registration (reserved in Phase 1, used in Phase 6).
+// Ticketed events the owners run themselves: limited seats, paid up front,
+// confirmation by email. Seat capacity is enforced in a transaction before
+// the card is charged.
+// ---------------------------------------------------------------------------
+
+model Event {
+  id                   String   @id @default(uuid())
+  slug                 String   @unique
+  title                String
+  description          String
+  image                String?
+  startsAt             DateTime
+  endsAt               DateTime
+  location             String   // where on the farm to meet
+  capacity             Int      // total seats
+  pricePerSeat         Int      // in cents; 0 = free / RSVP only
+  maxSeatsPerOrder     Int      @default(4)
+  requires21           Boolean  @default(false)
+  waitlistEnabled      Boolean  @default(false)
+  registrationClosesAt DateTime?
+  refundPolicy         String?
+  imageAlt             String?
+  status               String   @default("draft") // draft | published | cancelled
+  cancelledAt          DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  registrations        EventRegistration[]
+
+  @@index([status])
+  @@index([startsAt])
+  @@map("events")
+}
+
+model EventRegistration {
+  id          String    @id @default(uuid())
+  eventId     String
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name        String
+  email       String
+  phone       String?
+  dateOfBirth DateTime? // only collected for 21+ events
+  seats       Int
+  amountPaid  Int       // in cents
+  paymentId   String?   // Square payment id (null for free events / waitlist)
+  status      String    @default("confirmed") // pending | confirmed | waitlist | cancelled | refunded
+  // While status is pending: seats are held until this time, then released.
+  holdExpiresAt  DateTime?
+  refundId       String?   // Square refund id
+  reminderSentAt DateTime?
+  cancelledAt    DateTime?
+  checkedInAt DateTime?
+  adminNotes  String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([eventId])
+  @@index([email])
+  @@index([status])
+  @@map("event_registrations")
+}
+
+// ---------------------------------------------------------------------------
+// Newsletter, sent from the admin dashboard through Resend.
+// ---------------------------------------------------------------------------
+
+model NewsletterSubscriber {
+  id               String    @id @default(uuid())
+  email            String    @unique
+  status           String    @default("subscribed") // subscribed | unsubscribed
+  source           String?   // footer | cider | admin | import
+  unsubscribeToken String    @unique @default(uuid())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  unsubscribedAt   DateTime?
+  deliveries       NewsletterDelivery[]
+
+  @@index([status])
+  @@map("newsletter_subscribers")
+}
+
+model NewsletterCampaign {
+  id             String    @id @default(uuid())
+  subject        String    @default("")
+  previewText    String    @default("") // inbox preview line
+  body           String    @default("") // Markdown
+  status         String    @default("draft") // draft | sending | sent | paused
+  recipientCount Int       @default(0)
+  sentCount      Int       @default(0)
+  failedCount    Int       @default(0)
+  lastError      String?
+  aiBrief        String?   // last brief given to the drafting agent
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  sentAt         DateTime?
+  deliveries     NewsletterDelivery[]
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("newsletter_campaigns")
+}
+
+model NewsletterDelivery {
+  id           String               @id @default(uuid())
+  campaignId   String
+  campaign     NewsletterCampaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  subscriberId String
+  subscriber   NewsletterSubscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  email        String
+  status       String               @default("pending") // pending | sent | failed
+  resendId     String?
+  error        String?
+  sentAt       DateTime?
+  createdAt    DateTime             @default(now())
+
+  @@unique([campaignId, subscriberId])
+  @@index([campaignId, status])
+  @@map("newsletter_deliveries")
+}

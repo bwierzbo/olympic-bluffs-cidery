@@ -2,9 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Product } from '@/lib/types';
 import { useCart } from './CartProvider';
-import { useState } from 'react';
 
 interface ProductCardProps {
   product: Product;
@@ -13,168 +13,115 @@ interface ProductCardProps {
 
 const PLACEHOLDER_IMAGE = '/images/products/placeholder-lavender.svg';
 
-// Card images render at ~25vw on large screens (4-col grid) down to full width on
-// mobile. Telling next/image the true display size stops it fetching oversized files.
-const CARD_SIZES = '(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw';
+// Card images render at ~25vw on large screens (4-col grid) down to half
+// width on mobile. Telling next/image the true display size stops it fetching
+// oversized files.
+const CARD_SIZES = '(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw';
+
+function formatPrice(cents: number) {
+  return cents % 100 === 0 ? `$${cents / 100}` : `$${(cents / 100).toFixed(2)}`;
+}
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
   const [isHovered, setIsHovered] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  // Track main-image load so we can show a shimmer while it arrives and fall back
-  // to the placeholder if it fails, instead of leaving a permanently blank card.
+  // Track main-image load so we can show a shimmer while it arrives and fall
+  // back to the placeholder if it fails, instead of leaving a blank card.
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageSrc, setImageSrc] = useState(product.image || PLACEHOLDER_IMAGE);
 
-  const formatPrice = (cents: number) => {
-    return `$${(cents / 100).toFixed(2)}`;
-  };
+  const hasMultipleVariations = Boolean(product.variations && product.variations.length > 1);
 
-  const hasMultipleVariations = product.variations && product.variations.length > 1;
-
-  const getPriceDisplay = () => {
-    if (!hasMultipleVariations) {
-      return formatPrice(product.price);
-    }
-
-    // If variations have different prices, show range
-    const prices = product.variations!.map(v => v.price);
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
-
-    if (minPrice === maxPrice) {
-      return formatPrice(minPrice);
-    }
-
-    return `${formatPrice(minPrice)} - ${formatPrice(maxPrice)}`;
-  };
+  const priceDisplay = (() => {
+    if (!hasMultipleVariations) return formatPrice(product.price);
+    const prices = product.variations!.map((v) => v.price);
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+    return min === max ? formatPrice(min) : `${formatPrice(min)}–${formatPrice(max)}`;
+  })();
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     setIsAdding(true);
-
-    const variationToAdd = product.variations && product.variations.length === 1
-      ? product.variations[0]
-      : undefined;
-
+    const variationToAdd =
+      product.variations && product.variations.length === 1 ? product.variations[0] : undefined;
     addToCart(product, 1, variationToAdd);
-
-    setTimeout(() => {
-      setIsAdding(false);
-    }, 1000);
+    setTimeout(() => setIsAdding(false), 1000);
   };
 
   return (
-    <Link href={`/products/${product.id}`} className="block group text-center">
-      <div
-        className="cursor-pointer"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        {/* Product Image - Square with hover crossfade */}
-        <div className="relative aspect-square mb-4 overflow-hidden rounded-lg bg-gray-100">
-          {/* Loading shimmer - shown until the main image finishes loading */}
-          {!imageLoaded && (
-            <div className="absolute inset-0 animate-pulse bg-gray-200" aria-hidden="true" />
-          )}
+    <Link
+      href={`/products/${product.id}`}
+      className="group block"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {/* Square photo with hover crossfade */}
+      <div className="relative aspect-square overflow-hidden bg-ground-2">
+        {!imageLoaded && <div className="absolute inset-0 animate-pulse bg-ground-2" aria-hidden="true" />}
 
-          {/* Main Image */}
+        <Image
+          src={imageSrc}
+          alt={product.name}
+          fill
+          sizes={CARD_SIZES}
+          quality={65}
+          priority={priority}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            if (imageSrc !== PLACEHOLDER_IMAGE) {
+              setImageSrc(PLACEHOLDER_IMAGE);
+            } else {
+              setImageLoaded(true);
+            }
+          }}
+          className={`object-cover transition-all duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'} ${
+            isHovered && product.hoverImage ? '!opacity-0 scale-105' : 'scale-100'
+          } ${isHovered && !product.hoverImage ? 'scale-[1.03]' : ''}`}
+        />
+
+        {product.hoverImage && (
           <Image
-            src={imageSrc}
-            alt={product.name}
+            src={product.hoverImage}
+            alt={`${product.name} in use`}
             fill
             sizes={CARD_SIZES}
             quality={65}
-            priority={priority}
-            onLoad={() => setImageLoaded(true)}
-            onError={() => {
-              // Fall back to the placeholder if the real image fails to load.
-              if (imageSrc !== PLACEHOLDER_IMAGE) {
-                setImageSrc(PLACEHOLDER_IMAGE);
-              } else {
-                setImageLoaded(true);
-              }
-            }}
-            className={`object-cover transition-all duration-300 ${
-              imageLoaded ? 'opacity-100' : 'opacity-0'
-            } ${
-              isHovered && product.hoverImage ? '!opacity-0 scale-105' : 'scale-100'
-            } ${isHovered && !product.hoverImage ? 'scale-105' : ''}`}
+            className={`absolute inset-0 object-cover transition-all duration-300 ${
+              isHovered ? 'scale-100 opacity-100' : 'scale-105 opacity-0'
+            }`}
           />
+        )}
 
-          {/* Hover Image (if exists) - crossfade effect */}
-          {product.hoverImage && (
-            <Image
-              src={product.hoverImage}
-              alt={`${product.name} - in use`}
-              fill
-              sizes={CARD_SIZES}
-              quality={65}
-              className={`absolute inset-0 object-cover transition-all duration-300 ${
-                isHovered ? 'opacity-100 scale-100' : 'opacity-0 scale-105'
-              }`}
-            />
-          )}
+        {product.inStock && (
+          <div
+            className={`absolute inset-x-0 bottom-0 flex justify-center pb-4 transition-opacity duration-200 ${
+              isHovered ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <button
+              type="button"
+              onClick={hasMultipleVariations ? undefined : handleAddToCart}
+              tabIndex={-1}
+              className="btn btn-onphoto shadow-sm"
+            >
+              {isAdding ? 'Added' : hasMultipleVariations ? 'Customize' : 'Add to cart'}
+            </button>
+          </div>
+        )}
+      </div>
 
-          {/* Hover Overlay Button */}
-          {product.inStock && isHovered && (
-            <div className="absolute inset-0 flex items-end justify-center pb-4 transition-opacity duration-300">
-              <button
-                onClick={hasMultipleVariations ? undefined : handleAddToCart}
-                className="px-6 py-3 bg-white text-gray-900 font-semibold text-lg rounded-md shadow-lg transition-all duration-300 hover:bg-gray-100"
-              >
-                {isAdding ? (
-                  <span className="flex items-center gap-2">
-                    <svg
-                      className="animate-spin h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Added!
-                  </span>
-                ) : hasMultipleVariations ? (
-                  'Customize'
-                ) : (
-                  'Add to Cart'
-                )}
-              </button>
-            </div>
-          )}
-
-          {!product.inStock && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20">
-              <span className="bg-red-600 text-white px-4 py-2 rounded-md font-semibold">
-                SOLD OUT
-              </span>
-            </div>
-          )}
+      <div className="mt-3">
+        <h3 className="font-serif text-lg leading-snug">{product.name}</h3>
+        <div className="mt-1 flex items-baseline justify-between gap-3">
+          <p className="text-sm text-ink-2">{priceDisplay}</p>
+          {!product.inStock && <p className="text-xs text-ink-3">Sold out</p>}
         </div>
-
-        {/* Product Name */}
-        <h3 className="text-base font-semibold text-gray-900 mb-2 line-clamp-2">
-          {product.name}
-        </h3>
-
-        {/* Price */}
-        <p className="text-lg text-gray-700">
-          {getPriceDisplay()}
-        </p>
+        {product.category && (
+          <p className="mt-1 text-[11px] uppercase tracking-[0.12em] text-ink-3">{product.category}</p>
+        )}
       </div>
     </Link>
   );

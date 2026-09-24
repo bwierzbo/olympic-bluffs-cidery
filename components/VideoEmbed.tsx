@@ -28,7 +28,7 @@ export default function VideoEmbed({
 
   if (playing) {
     return (
-      <div className={`relative ${aspectClass} w-full overflow-hidden rounded-lg bg-black`}>
+      <div className={`relative ${aspectClass} w-full overflow-hidden bg-black`}>
         <iframe
           className="absolute inset-0 h-full w-full"
           src={`https://www.youtube-nocookie.com/embed/${youtubeId}?autoplay=1&rel=0`}
@@ -45,7 +45,7 @@ export default function VideoEmbed({
       type="button"
       onClick={() => setPlaying(true)}
       aria-label={`Play video: ${title}`}
-      className={`group relative block ${aspectClass} w-full overflow-hidden rounded-lg bg-black focus:outline-none focus:ring-4 focus:ring-sage-400`}
+      className={`group relative block ${aspectClass} w-full overflow-hidden bg-black focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sage`}
     >
       <Image
         src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
@@ -58,9 +58,9 @@ export default function VideoEmbed({
       <span className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-black/30" />
       {/* Play button */}
       <span className="absolute inset-0 flex items-center justify-center">
-        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 shadow-lg transition-transform group-hover:scale-110 md:h-20 md:w-20">
+        <span className="flex h-16 w-16 items-center justify-center rounded-full bg-white/90 transition-transform motion-safe:group-hover:scale-110 md:h-20 md:w-20">
           <svg
-            className="ml-1 h-7 w-7 text-sage-600 md:h-9 md:w-9"
+            className="ml-1 h-7 w-7 text-ink md:h-9 md:w-9"
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
