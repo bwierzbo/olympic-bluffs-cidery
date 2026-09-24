@@ -4,8 +4,9 @@ import { getNextEventAll } from '@/lib/events/listing';
 import { getSiteConfig } from '@/lib/site-config';
 
 /**
- * Dark strip under the homepage hero: open status, today's hours, the next
- * event, and a link to the season calendar. Replaces the old seasonal banner.
+ * Dark strip under the homepage hero: today's open/closed status (same
+ * logic as the header pill), the next event, and a link to the season
+ * calendar. Replaces the old seasonal banner.
  * Everything here comes from site-config.json and data/events.json.
  */
 export default async function StatusStrip() {
@@ -19,16 +20,21 @@ export default async function StatusStrip() {
       <div className="container-x flex flex-wrap items-center gap-x-8 gap-y-2 py-3.5 text-[13px]">
         <span className="inline-flex items-center gap-2">
           <span
-            className={`h-2 w-2 rounded-full ${today.inSeason ? 'bg-[#8fd0a5]' : 'bg-white/40'}`}
+            className={`h-2 w-2 rounded-full ${today.todayLabel ? 'bg-[#8fd0a5]' : 'bg-white/40'}`}
             aria-hidden="true"
           />
-          {today.inSeason ? (
+          {!today.inSeason ? (
+            <b className="font-semibold">Closed for the season</b>
+          ) : today.todayLabel ? (
             <>
-              <b className="font-semibold">Open</b>
-              <span className="opacity-90">· {today.weekSummary}</span>
+              <b className="font-semibold">Open today</b>
+              <span className="opacity-90">· {today.todayLabel}</span>
             </>
           ) : (
-            <b className="font-semibold">Closed for the season</b>
+            <>
+              <b className="font-semibold">Closed today</b>
+              <span className="opacity-90">· Open {today.weekSummary}</span>
+            </>
           )}
         </span>
         {next && (
