@@ -58,15 +58,15 @@ Two-part architecture:
 
 Required variables:
 ```bash
-# Public (exposed to browser - prefixed with NEXT_PUBLIC_)
-NEXT_PUBLIC_SQUARE_APPLICATION_ID=sandbox-sq0idb-...
-NEXT_PUBLIC_SQUARE_LOCATION_ID=L82TK15T35V4H
-
-# Private (server-side only)
-SQUARE_ACCESS_TOKEN=EAAAl5puE3tcgrvcy3K-uYTpZ3a9jjYEeoyv9S91Kxt4RZxlKXtBwIrT2r-CjnMx
-
-# Environment
-SQUARE_ENVIRONMENT=sandbox  # or 'production'
+# Square: both credential sets live side by side; SQUARE_ENVIRONMENT picks one
+# (lib/square.ts). Values are in Vercel and .env.local, never in this file.
+SQUARE_ENVIRONMENT=production  # or 'sandbox'
+SQUARE_PROD_APPLICATION_ID=sq0idp-...
+SQUARE_PROD_ACCESS_TOKEN=...
+SQUARE_PROD_LOCATION_ID=...
+SQUARE_SANDBOX_APPLICATION_ID=sandbox-sq0idb-...
+SQUARE_SANDBOX_ACCESS_TOKEN=...
+SQUARE_SANDBOX_LOCATION_ID=...
 
 # Optional
 NEXT_PUBLIC_SHIPPING_RATE=1000  # Shipping cost in cents ($10.00)
@@ -80,7 +80,9 @@ NEWSLETTER_AI_FALLBACK_MODEL=openai/gpt-5.2                # used if the main mo
 # holds VERCEL_OIDC_TOKEN from `vercel env pull` (expires ~12h).
 ```
 
-**Current setup**: Using Square sandbox credentials. Switch to production credentials when ready to accept real payments.
+**Current setup**: `SQUARE_ENVIRONMENT=production` on Vercel. Get local values with `vercel env pull .env.local`.
+
+**TODO: rotate the Square sandbox access token.** An earlier version of this file committed it to the public repo (it's still in git history). Replace it in the Square Developer Dashboard (app → Sandbox → Credentials), then update `SQUARE_SANDBOX_ACCESS_TOKEN` in Vercel (all environments) and `.env.local`. Sandbox only, so no real money is exposed.
 
 ### Tailwind CSS v4 Configuration
 
