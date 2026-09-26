@@ -50,6 +50,19 @@ export interface SiteEvent {
   /** Ticketed events created in the admin (registration: 'internal') */
   seatsLeft?: number | null;
   soldOut?: boolean;
+  /** Present on a headline event: it takes over the homepage hero until its day passes. */
+  feature?: EventFeature;
+}
+
+export interface EventFeature {
+  /** "5th annual" */
+  edition?: string;
+  /** One line under the title */
+  tagline: string;
+  highlights: Array<{ title: string; text: string }>;
+  /** The full poster, shown whole (never cropped) */
+  flyer?: string;
+  flyerAlt?: string;
 }
 
 export interface FarmStop {
@@ -126,6 +139,27 @@ export function formatEventDateRange(event: SiteEvent): string {
   const fmt = (d: Date, o: Intl.DateTimeFormatOptions) =>
     new Intl.DateTimeFormat('en-US', { timeZone: 'America/Los_Angeles', ...o }).format(d);
   return `${fmt(start, { month: 'short', day: 'numeric' })}–${fmt(end, { day: 'numeric' })}`;
+}
+
+/** Calendar date in farm time, "YYYY-MM-DD". */
+function farmDate(d: Date): string {
+  return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Los_Angeles' }).format(d);
+}
+
+/**
+ * The headline event for the homepage hero: the next event with a `feature`
+ * block, kept up through the end of its last day in farm time (not just
+ * until it closes).
+ */
+export function getFeaturedEvent(now: Date = new Date()): SiteEvent | null {
+  const today = farmDate(now);
+  return getEvents().find((e) => e.feature && farmDate(new Date(e.endsAt)) >= today) ?? null;
+}
+
+/** Whole days from today (farm time) to the event's start date. */
+export function daysUntil(event: SiteEvent, now: Date = new Date()): number {
+  const day = (iso: string) => new Date(`${iso}T00:00:00Z`).getTime();
+  return Math.round((day(farmDate(new Date(event.startsAt))) - day(farmDate(now))) / 86_400_000);
 }
 
 export interface NextEvent {

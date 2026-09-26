@@ -6,7 +6,8 @@ import ExperienceGrid from '@/components/site/ExperienceGrid';
 import FeaturedCider from '@/components/site/FeaturedCider';
 import MakerSpotlight from '@/components/site/MakerSpotlight';
 import { Eyebrow, Section, SectionTitle } from '@/components/site/Section';
-import { getFeaturedMaker } from '@/lib/content';
+import { getFeaturedEvent, getFeaturedMaker } from '@/lib/content';
+import { FeaturedEventHero, isFeatured } from '@/components/events/FeaturedEvent';
 import { getFeaturedCider } from '@/lib/ciders';
 import { getLavenderProducts } from '@/lib/lavender-products';
 import { Product } from '@/lib/types';
@@ -104,20 +105,26 @@ export default async function Home() {
     return [] as Product[];
   });
   const teaser = live.length >= 4 ? teaserFromProducts(live) : LAVENDER_STAND_INS;
+  // A headline event (events.json `feature`) replaces the photo hero through the end of its day.
+  const headline = getFeaturedEvent();
 
   return (
     <>
-      <PhotoHero
-        size="full"
-        image="/images/farm/bluffs.jpeg"
-        alt="The bluffs above the Strait of Juan de Fuca"
-        title="Between the Strait and the Olympics."
-        text="Twenty-one acres of cider apples, lavender, grain and bees on the high bluffs outside Port Angeles. Come for a glass, a bundle of lavender, or the weekend."
-        ctas={[
-          { label: 'Plan a visit', href: '/visit' },
-          { label: 'Shop the farm', href: '/lavender', variant: 'ghost' },
-        ]}
-      />
+      {isFeatured(headline) ? (
+        <FeaturedEventHero event={headline} />
+      ) : (
+        <PhotoHero
+          size="full"
+          image="/images/farm/bluffs.jpeg"
+          alt="The bluffs above the Strait of Juan de Fuca"
+          title="Between the Strait and the Olympics."
+          text="Twenty-one acres of cider apples, lavender, grain and bees on the high bluffs outside Port Angeles. Come for a glass, a bundle of lavender, or the weekend."
+          ctas={[
+            { label: 'Plan a visit', href: '/visit' },
+            { label: 'Shop the farm', href: '/lavender', variant: 'ghost' },
+          ]}
+        />
+      )}
 
       <StatusStrip />
 

@@ -8,6 +8,8 @@ import type { PublicEventDTO } from '@/lib/events/types';
 import { getSiteConfig } from '@/lib/site-config';
 import LavenderFestival from '@/components/LavenderFestival';
 import { Eyebrow, Section, SectionTitle } from '@/components/site/Section';
+import { getEvent } from '@/lib/content';
+import { FeaturedEventPage, isFeatured } from '@/components/events/FeaturedEvent';
 
 interface EventPageProps {
   params: Promise<{
@@ -28,6 +30,14 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
   const { slug } = await params;
   const config = getSiteConfig();
   if (config.events.active && config.events.slug === slug) return { title: `${config.events.name} · Olympic Bluffs` };
+  const headline = getEvent(slug);
+  if (isFeatured(headline)) {
+    return {
+      title: `${headline.feature.edition ? `${headline.feature.edition[0].toUpperCase()}${headline.feature.edition.slice(1)} ` : ''}${headline.title} · Olympic Bluffs`,
+      description: headline.summary,
+      openGraph: headline.feature.flyer ? { images: [headline.feature.flyer] } : undefined,
+    };
+  }
   const event = await findTicketedEvent(slug);
   if (!event) return { title: 'Event · Olympic Bluffs' };
   const summary = event.description.split(/\n\s*\n/)[0]?.slice(0, 160);
@@ -42,6 +52,7 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
  * /events/[slug] serves two kinds of page:
  *  - the Lavender Festival's annual page (site-config `events`; schedule and
  *    FAQ in components/LavenderFestival*.tsx), and
+ *  - headline events from data/events.json with a `feature` block, and
  *  - ticketed events created in the admin, with registration.
  */
 export default async function EventPage({ params }: EventPageProps) {
@@ -50,6 +61,8 @@ export default async function EventPage({ params }: EventPageProps) {
   const event = config.events;
 
   if (!event.active || event.slug !== slug) {
+    const headline = getEvent(slug);
+    if (isFeatured(headline)) return <FeaturedEventPage event={headline} />;
     const ticketed = await findTicketedEvent(slug);
     if (!ticketed) notFound();
     return <EventDetail event={ticketed} />;

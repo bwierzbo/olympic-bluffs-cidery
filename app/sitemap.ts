@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site-url';
 import { getAllProducts } from '@/lib/ciders';
-import { getMakers } from '@/lib/content';
+import { getEvents, getMakers } from '@/lib/content';
 import { getLavenderProducts } from '@/lib/lavender-products';
 import { getSiteConfig } from '@/lib/site-config';
 
@@ -34,6 +34,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   if (config.events.active) entries.push(page(config.events.href, 0.7));
+  for (const e of getEvents()) {
+    if (e.feature && e.href?.startsWith('/') && !entries.some((x) => x.url === `${SITE_URL}${e.href}`)) {
+      entries.push(page(e.href, 0.8, 'daily'));
+    }
+  }
 
   // The shop pages are only listed while they are switched on in site-config.
   if (config.navigation.showCidery) {

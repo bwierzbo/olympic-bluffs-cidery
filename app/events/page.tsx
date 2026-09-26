@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { Eyebrow, Section, SectionTitle } from '@/components/site/Section';
 import EventCard from '@/components/site/EventCard';
 import { getAllPastEvents, getAllUpcomingEvents } from '@/lib/events/listing';
+import { getFeaturedEvent } from '@/lib/content';
+import { FeaturedEventBanner, isFeatured } from '@/components/events/FeaturedEvent';
 
 // Events and seat counts come from the database; refreshed on every change
 // (lib/events/revalidate.ts) and at least every 5 minutes.
@@ -14,7 +16,9 @@ export const metadata: Metadata = {
 };
 
 export default async function EventsPage() {
-  const [upcoming, past] = await Promise.all([getAllUpcomingEvents(), getAllPastEvents()]);
+  const [all, past] = await Promise.all([getAllUpcomingEvents(), getAllPastEvents()]);
+  const headline = getFeaturedEvent();
+  const upcoming = isFeatured(headline) ? all.filter((e) => e.slug !== headline.slug) : all;
 
   return (
     <>
@@ -24,6 +28,8 @@ export default async function EventsPage() {
           Things to do on the farm this season
         </SectionTitle>
 
+        {isFeatured(headline) && <FeaturedEventBanner event={headline} />}
+
         {upcoming.length > 0 ? (
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {upcoming.map((event, i) => (
@@ -32,7 +38,7 @@ export default async function EventsPage() {
               </li>
             ))}
           </ul>
-        ) : (
+        ) : isFeatured(headline) ? null : (
           <div className="mt-10 max-w-[56ch] border-t border-line pt-6">
             <p className="font-serif text-xl italic text-ink-2">Nothing on the calendar right now.</p>
             <p className="mt-2 text-[14.5px] leading-relaxed text-ink-2">

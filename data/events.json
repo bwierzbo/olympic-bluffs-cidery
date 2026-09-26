@@ -1,5 +1,5 @@
 {
-  "_comment": "Public events list. `kind`: 'festival' | 'class' | 'tasting' | 'external'. `registration`: 'none' (info only), 'external' (ticketUrl on another site), 'internal' (reserved for the on-site registration system, Phase 6; not active yet). Dates are Pacific time. Past events stay listed and are shown greyed out.",
+  "_comment": "Public events list. `kind`: 'festival' | 'class' | 'tasting' | 'external'. `registration`: 'none' (info only), 'external' (ticketUrl on another site), 'internal' (reserved for the on-site registration system, Phase 6; not active yet). Dates are Pacific time. Past events stay listed and are shown greyed out. An event with a `feature` block takes over the homepage hero (and gets a full page at its href) from now through the end of its last day.",
   "events": [
     {
       "slug": "lavender-festival-2026",
@@ -15,6 +15,45 @@
       "registration": "none",
       "href": "/events/lavender-festival",
       "ticketUrl": null
+    },
+    {
+      "slug": "apple-press",
+      "title": "Apple Press",
+      "kind": "festival",
+      "startsAt": "2026-10-04T12:00:00-07:00",
+      "endsAt": "2026-10-04T17:00:00-07:00",
+      "timeLabel": "12–5 pm",
+      "location": "The cidery",
+      "summary": "Our 5th annual Apple Press. Bring apples to press for yourself or donate them to next year’s cider. Music by Bread & Gravy, food and lawn games.",
+      "image": "/images/events/apple-press-2026.jpg",
+      "price": null,
+      "registration": "none",
+      "href": "/events/apple-press",
+      "ticketUrl": null,
+      "feature": {
+        "edition": "5th annual",
+        "tagline": "Bring your apples. We’ll bring the press.",
+        "highlights": [
+          {
+            "title": "Press your own",
+            "text": "Bring apples from your trees and run them through the press for your own juice."
+          },
+          {
+            "title": "Or donate them",
+            "text": "Leave your apples with us and they go into next year’s cider."
+          },
+          {
+            "title": "Music by Bread & Gravy",
+            "text": "Live music from Bread & Gravy through the afternoon."
+          },
+          {
+            "title": "Food and lawn games",
+            "text": "Food, lawn games, and the tasting room pouring all day."
+          }
+        ],
+        "flyer": "/images/events/apple-press-2026.jpg",
+        "flyerAlt": "Olympic Bluffs Cidery 5th Annual Apple Press flyer: 1025 Finn Hall Rd, Sunday October 4th, 12–5 PM. Bring apples for personal pressing or donate to next year’s cider. Music by Bread & Gravy, food, lawn games."
+      }
     },
     {
       "slug": "yoga-cider-2026-09-19",
