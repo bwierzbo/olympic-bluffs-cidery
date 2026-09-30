@@ -24,7 +24,7 @@
       "endsAt": "2026-10-04T17:00:00-07:00",
       "timeLabel": "12–5 pm",
       "location": "The cidery",
-      "summary": "Our 5th annual Apple Press. Bring apples to press for yourself or donate them to next year’s cider. Music by Bread & Gravy, food and lawn games.",
+      "summary": "Our 5th annual Apple Press. Bring apples to press for yourself or donate them to next year’s cider. Music by Bread & Gravy, hot dogs from Underdogs, and lawn games.",
       "image": "/images/events/apple-press-2026.jpg",
       "price": null,
       "registration": "none",
@@ -47,12 +47,21 @@
             "text": "Live music from Bread & Gravy through the afternoon."
           },
           {
-            "title": "Food and lawn games",
-            "text": "Food, lawn games, and the tasting room pouring all day."
+            "title": "Hot dogs and lawn games",
+            "text": "Hot dogs from Underdogs, lawn games, and the tasting room pouring all day."
           }
         ],
         "flyer": "/images/events/apple-press-2026.jpg",
-        "flyerAlt": "Olympic Bluffs Cidery 5th Annual Apple Press flyer: 1025 Finn Hall Rd, Sunday October 4th, 12–5 PM. Bring apples for personal pressing or donate to next year’s cider. Music by Bread & Gravy, food, lawn games."
+        "flyerAlt": "Olympic Bluffs Cidery 5th Annual Apple Press flyer: 1025 Finn Hall Rd, Sunday October 4th, 12–5 PM. Bring apples for personal pressing or donate to next year’s cider. Music by Bread & Gravy, food, lawn games.",
+        "vendors": [
+          {
+            "name": "Underdogs",
+            "tagline": "Down right good dogs",
+            "role": "Hot dogs",
+            "logo": "/images/events/underdogs-logo.jpg",
+            "text": "Underdogs is bringing the hot dogs to the press this year. Grab one between pressings and pair it with a pour from the tasting room."
+          }
+        ]
       }
     },
     {

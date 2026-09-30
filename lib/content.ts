@@ -60,6 +60,8 @@ export interface EventFeature {
   /** One line under the title */
   tagline: string;
   highlights: Array<{ title: string; text: string }>;
+  /** Food trucks and vendors at the event, shown with their logos */
+  vendors?: Array<{ name: string; tagline?: string; role: string; logo: string; text: string }>;
   /** The full poster, shown whole (never cropped) */
   flyer?: string;
   flyerAlt?: string;

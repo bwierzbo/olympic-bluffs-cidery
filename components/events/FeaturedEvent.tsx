@@ -172,6 +172,18 @@ export function FeaturedEventHero({ event, variant = 'home' }: { event: Featured
               </a>
             </div>
           )}
+
+          {feature.vendors?.map((v) => (
+            <div key={v.name} className="mt-8 flex items-center gap-4">
+              <span className="relative h-16 w-16 shrink-0 -rotate-6 overflow-hidden rounded-full bg-white ring-4 ring-cream/30">
+                <Image src={v.logo} alt={`${v.name} logo`} fill sizes="64px" className="object-contain p-0.5" />
+              </span>
+              <p className="text-[15px] leading-snug text-cream/90">
+                {v.role} by <b className="font-semibold text-cream">{v.name}</b>
+                {v.tagline && <span className="block text-[13px] italic text-cream/70">{v.tagline}</span>}
+              </p>
+            </div>
+          ))}
         </div>
 
         <Flyer event={event} priority />
@@ -237,6 +249,39 @@ export function FeaturedEventBanner({ event }: { event: Featured }) {
   );
 }
 
+type Vendor = NonNullable<Featured['feature']['vendors']>[number];
+
+/** A food vendor at the event: logo as a big sticker, a bold one-liner, a short note. */
+function VendorSpotlight({ vendor }: { vendor: Vendor }) {
+  return (
+    <section
+      className="relative overflow-hidden bg-strait-2 py-16 sm:py-20"
+      style={{ backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,.85), transparent 45%)' }}
+    >
+      <div className="container-x grid items-center gap-10 md:grid-cols-[minmax(0,420px)_1fr] md:gap-16">
+        <div className="relative mx-auto aspect-square w-full max-w-[340px] -rotate-6 overflow-hidden rounded-full bg-white shadow-[0_24px_60px_-24px_rgba(31,42,34,.45)] ring-[10px] ring-white/60 transition-transform duration-500 motion-safe:hover:rotate-0 md:max-w-none">
+          <Image
+            src={vendor.logo}
+            alt={`${vendor.name} logo: ${vendor.tagline ?? vendor.role}`}
+            fill
+            sizes="(max-width: 768px) 340px, 420px"
+            className="object-contain p-[7%]"
+          />
+        </div>
+        <div>
+          <p className="eyebrow text-apple">{vendor.role} at the press</p>
+          <h2 className="mt-1.5 font-serif text-[clamp(40px,6vw,72px)] leading-[0.95] text-ink">Come hungry.</h2>
+          <p className="mt-4 text-[clamp(18px,2vw,22px)] font-semibold">
+            {vendor.name}
+            {vendor.tagline && <span className="font-normal italic text-ink-2"> · {vendor.tagline}</span>}
+          </p>
+          <p className="mt-4 max-w-[48ch] text-[16px] leading-relaxed text-ink-2">{vendor.text}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /** The event's own page: hero, what's happening, the flyer and practical details. */
 export function FeaturedEventPage({ event }: { event: Featured }) {
   const { feature } = event;
@@ -261,6 +306,8 @@ export function FeaturedEventPage({ event }: { event: Featured }) {
           </ul>
         </div>
       </section>
+
+      {feature.vendors?.map((v) => <VendorSpotlight key={v.name} vendor={v} />)}
 
       <section className="bg-ground py-16 sm:py-20">
         <div className="container-x grid items-start gap-12 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
