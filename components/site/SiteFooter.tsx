@@ -73,7 +73,7 @@ export default function SiteFooter() {
 
       <div className="border-t border-white/15">
         <div className="container-x flex flex-wrap items-center justify-between gap-2 py-4 text-[11.5px] opacity-60">
-          <span>© {year} Olympic Bluffs Cidery &amp; Lavender Farm</span>
+          <span>© {year} Olympic Bluffs Cidery &amp; Lavender Farm. All rights reserved.</span>
           <span className="flex flex-wrap gap-x-3">
             <Link href="/policies/privacy" className="hover:underline">Privacy</Link>
             <Link href="/policies/terms" className="hover:underline">Terms</Link>
