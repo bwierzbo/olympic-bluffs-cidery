@@ -286,7 +286,17 @@ Thank you for supporting our family farm!
 /**
  * Generate farm notification email
  */
-export function generateFarmNotificationEmail(order: Order): EmailTemplate {
+export function generateFarmNotificationEmail(order: Order, options: { notSaved?: boolean } = {}): EmailTemplate {
+  // Card was charged but the order could not be written to the database, so
+  // it is missing from the admin dashboard. This email is the only record
+  // outside the Square dashboard.
+  const notSavedText = options.notSaved
+    ? `WARNING: This order was paid but could NOT be saved to the dashboard (database error). It will not appear in /admin/orders. Fulfil it from this email or the Square dashboard (payment ${order.paymentId}).\n\n`
+    : '';
+  const notSavedHtml = options.notSaved
+    ? `<div style="background-color: #fdecea; border: 1px solid #f5c2c0; color: #8a1c17; padding: 14px 16px; border-radius: 6px; margin-bottom: 24px;"><strong>Paid but NOT saved to the dashboard.</strong> A database error kept this order out of /admin/orders. Fulfil it from this email or the Square dashboard (payment ${order.paymentId}).</div>`
+    : '';
+
   const itemsList = order.items
     .map(
       item =>
@@ -297,7 +307,7 @@ export function generateFarmNotificationEmail(order: Order): EmailTemplate {
   const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/admin/orders`;
 
   const text = `
-NEW ORDER RECEIVED
+${notSavedText}NEW ORDER RECEIVED
 
 Order Details:
 ━━━━━━━━━━━━━━━━━━━━━━
@@ -353,6 +363,7 @@ Manage orders: ${adminUrl}
     <div style="background-color: #6b7566; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; margin: -30px -30px 30px -30px;">
       <h1 style="margin: 0; font-size: 24px;">🎉 NEW ORDER</h1>
     </div>
+    ${notSavedHtml}
 
     <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
       <p style="margin: 0; color: #666; font-size: 14px;">Order Number</p>
@@ -425,7 +436,7 @@ Manage orders: ${adminUrl}
 
   return {
     to: process.env.GMAIL_USER || 'info@olympicbluffs.com',
-    subject: `NEW ORDER - ${order.id}`,
+    subject: `${options.notSaved ? 'ACTION NEEDED: NOT IN DASHBOARD - ' : ''}NEW ORDER - ${order.id}`,
     html,
     text,
   };
@@ -442,8 +453,8 @@ export async function sendOrderConfirmation(order: Order): Promise<boolean> {
 /**
  * Send order notification to farm
  */
-export async function sendFarmNotification(order: Order): Promise<boolean> {
-  const email = generateFarmNotificationEmail(order);
+export async function sendFarmNotification(order: Order, options: { notSaved?: boolean } = {}): Promise<boolean> {
+  const email = generateFarmNotificationEmail(order, options);
   return await sendEmail(email);
 }
 

@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { prisma } from '@/lib/prisma';
 import {
   getEvents,
@@ -7,6 +8,7 @@ import {
   type SiteEvent,
 } from '@/lib/content';
 import { formatTimeRange, toPublicDTOs } from './service';
+import { TICKETED_EVENTS_TAG } from './cache-tags';
 
 /**
  * Every event the public site lists: the hand-edited ones in
@@ -22,8 +24,13 @@ function firstParagraph(text: string): string {
   return p.length > 200 ? `${p.slice(0, 197).trimEnd()}…` : p;
 }
 
-async function ticketedSiteEvents(): Promise<SiteEvent[]> {
-  try {
+// The root layout (header pill, status strip) reads this on every render,
+// so it must not hit the database each time: that kept Neon awake around the
+// clock and exhausted its compute quota. Cached under a tag that
+// refreshPublicEventPages() expires after any event change, with an hourly
+// backstop so seats freed by expired holds show up eventually.
+const loadTicketedSiteEvents = unstable_cache(
+  async (): Promise<SiteEvent[]> => {
     const events = await prisma.event.findMany({ where: { status: 'published' }, orderBy: { startsAt: 'asc' } });
     const dtos = await toPublicDTOs(events);
     return dtos.map((e) => ({
@@ -43,6 +50,16 @@ async function ticketedSiteEvents(): Promise<SiteEvent[]> {
       seatsLeft: e.seatsLeft,
       soldOut: e.registration === 'sold_out',
     }));
+  },
+  ['ticketed-site-events'],
+  { tags: [TICKETED_EVENTS_TAG], revalidate: 3600 },
+);
+
+async function ticketedSiteEvents(): Promise<SiteEvent[]> {
+  // Errors are thrown out of the cached function, so a database outage is
+  // never cached as "no events".
+  try {
+    return await loadTicketedSiteEvents();
   } catch (error) {
     console.error('Ticketed events unavailable:', error);
     return [];

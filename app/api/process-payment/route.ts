@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSquareClient, getSquarePublicConfig } from '@/lib/square';
 import { createOrder } from '@/lib/orders';
-import { OrderItem } from '@/lib/types';
+import { Order, OrderItem } from '@/lib/types';
 import { randomUUID } from 'crypto';
 import { sendOrderConfirmation, sendFarmNotification } from '@/lib/email';
 import { chargeCard, describeDecline, SquareApiError } from '@/lib/payments';
@@ -89,35 +89,48 @@ export async function POST(request: NextRequest) {
         variation: item.variation,
       }));
 
-      // Save order to our database
+      // Save order to our database. The card is already charged, so a
+      // failure here must not lose the order: fall back to the in-memory copy
+      // and tell the farm it is missing from the dashboard.
+      const orderData = {
+        id: orderId,
+        items: orderItems,
+        customerInfo,
+        fulfillmentMethod,
+        shippingAddress,
+        subtotal,
+        shippingCost,
+        tax: 0,
+        total: amount,
+        paymentId,
+      };
+      let order: Order;
+      let notSaved = false;
       try {
-        const order = await createOrder({
-          id: orderId,
-          items: orderItems,
-          customerInfo,
-          fulfillmentMethod,
-          shippingAddress,
-          subtotal,
-          shippingCost,
-          tax: 0,
-          total: amount,
-          paymentId,
-        });
-
+        order = await createOrder(orderData);
         console.log('Order created successfully:', orderId);
-
-        // Send email notifications
-        try {
-          await Promise.all([
-            sendOrderConfirmation(order),
-            sendFarmNotification(order),
-          ]);
-          console.log('Email notifications sent successfully');
-        } catch (emailError) {
-          console.error('Failed to send email notifications:', emailError);
-        }
       } catch (orderError) {
-        console.error('Failed to save order:', orderError);
+        notSaved = true;
+        console.error(`PAID ORDER NOT SAVED: ${orderId} (payment ${paymentId})`, orderError);
+        const now = new Date().toISOString();
+        order = {
+          ...orderData,
+          status: 'confirmed',
+          createdAt: now,
+          updatedAt: now,
+          statusHistory: [{ status: 'confirmed', timestamp: now, note: 'Order confirmed and payment received' }],
+        };
+      }
+
+      // Send email notifications
+      try {
+        await Promise.all([
+          sendOrderConfirmation(order),
+          sendFarmNotification(order, { notSaved }),
+        ]);
+        console.log('Email notifications sent successfully');
+      } catch (emailError) {
+        console.error('Failed to send email notifications:', emailError);
       }
 
       return NextResponse.json({
