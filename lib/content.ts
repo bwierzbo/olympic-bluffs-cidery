@@ -65,6 +65,12 @@ export interface EventFeature {
   /** The full poster, shown whole (never cropped) */
   flyer?: string;
   flyerAlt?: string;
+  /** Heading over the highlights on the event page */
+  headline?: string;
+  /** "Bring" row on the event page; omit to hide it */
+  bring?: string;
+  /** Shown in the hero once the day is over */
+  wrapUp?: string;
 }
 
 export interface FarmStop {

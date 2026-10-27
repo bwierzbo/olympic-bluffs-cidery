@@ -23,7 +23,7 @@ const MAP_EMBED_SRC =
 const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'Is the cidery currently open?',
-    answer: 'Yes! The cidery is open Friday - Sunday, 12 - 5 pm starting April 24th.',
+    answer: 'Yes! This weekend the cidery is open Saturday, October 31 only, 12 - 5 pm, our last day of the season.',
   },
   {
     question: 'Are dogs allowed on the farm?',
@@ -40,7 +40,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'Is the farm open all year?',
     answer:
-      'For 2026, the farm, gift shop, and cidery open April 24th. Friday - Sunday: 12 - 5 pm. Extended hours during Lavender Festival Weekend (July 17-20): 10 am - 5 pm.',
+      'For 2026, the farm, gift shop, and cidery opened April 24th, Friday - Sunday, 12 - 5 pm. Our last day of the season is Saturday, October 31 (12 - 5 pm); we are closed Friday, October 30 and Sunday, November 1. We reopen in the spring.',
   },
   {
     question: 'Do you ship cider to my state?',

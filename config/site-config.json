@@ -3,13 +3,13 @@
     "theme": "spring",
     "banner": {
       "visible": true,
-      "message": "OPEN FOR THE SEASON! FRIDAY - SUNDAY, 12 - 5 PM",
+      "message": "Saturday, Oct 31 is our last day of the season. Closed Friday and Sunday.",
       "backgroundColor": "sage-500"
     },
-    "homePageMessage": "The farm is open for the season! Join us Friday through Sunday, 12 - 5 pm.",
+    "homePageMessage": "Saturday, October 31 is our last day of the season, 12 - 5 pm. We are closed Friday and Sunday.",
     "farmStatus": {
       "isOpen": true,
-      "customMessage": "The farm, gift shop, and cidery are open Friday - Sunday, 12 - 5 pm."
+      "customMessage": "Last day of the season: Saturday, October 31, 12 - 5 pm. Closed Friday and Sunday."
     }
   },
   "events": {
@@ -56,20 +56,13 @@
   "hours": {
     "seasonStart": "2026-04-24",
     "weekly": {
-      "fri": [
-        "12:00",
-        "17:00"
-      ],
       "sat": [
-        "12:00",
-        "17:00"
-      ],
-      "sun": [
         "12:00",
         "17:00"
       ]
     },
-    "note": "Outside these hours, call (571) 439-1311 or email info@olympicbluffs.com. Groups of ten or more, please give us a day's notice."
+    "note": "Outside these hours, call (571) 439-1311 or email info@olympicbluffs.com. Groups of ten or more, please give us a day's notice.",
+    "seasonEnd": "2026-10-31"
   },
   "contact": {
     "address1": "1025 Finn Hall Road",

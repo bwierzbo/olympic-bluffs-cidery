@@ -61,7 +61,10 @@
             "logo": "/images/events/underdogs-logo.jpg",
             "text": "Underdogs is bringing the hot dogs to the press this year. Grab one between pressings and pair it with a pour from the tasting room."
           }
-        ]
+        ],
+        "headline": "An afternoon of pressing, music and fall on the farm",
+        "bring": "Apples, if you have them: to press for yourself or to donate to next year’s cider.",
+        "wrapUp": "That’s a wrap for this year. Thank you to everyone who brought apples, and see you next fall."
       }
     },
     {
@@ -93,6 +96,47 @@
       "registration": "external",
       "href": null,
       "ticketUrl": "https://rebelutionyoga.com/event/yoga-cider-at-olympic-bluffs/"
+    },
+    {
+      "slug": "howl-o-ween",
+      "title": "Howl-o-ween at the Bluffs!",
+      "kind": "festival",
+      "startsAt": "2026-10-31T12:00:00-07:00",
+      "endsAt": "2026-10-31T17:00:00-07:00",
+      "timeLabel": "12–5 pm",
+      "location": "The whole farm",
+      "summary": "Our last day of the season, on Halloween. Bring your pets in costume for pet pictures, grab a hot dog and raise a glass of cider with us before we close for the winter. We’re closed Friday and Sunday this weekend.",
+      "image": "/images/events/howl-o-ween-2026.jpg",
+      "price": null,
+      "registration": "none",
+      "href": "/events/howl-o-ween",
+      "ticketUrl": null,
+      "feature": {
+        "tagline": "Our last day of the season. Bring your pets in costume.",
+        "headline": "One more Saturday on the farm before winter",
+        "highlights": [
+          {
+            "title": "Pet pictures",
+            "text": "It’s Halloween, so dress up your dog (leashed, please) and get their picture taken on the farm."
+          },
+          {
+            "title": "Hot dogs",
+            "text": "Hot dogs for the humans while the pups show off their costumes."
+          },
+          {
+            "title": "Cider",
+            "text": "The tasting room is pouring from noon to 5. Stock up on bottles for the winter."
+          },
+          {
+            "title": "Last day of 2026",
+            "text": "We’re closed Friday and Sunday this weekend. Saturday is your last chance until we reopen in the spring."
+          }
+        ],
+        "flyer": "/images/events/howl-o-ween-2026.jpg",
+        "flyerAlt": "Howl-o-ween at the Bluffs! flyer: three dogs in witch, pumpkin and pirate costumes among jack-o’-lanterns. Olympic Bluffs Cidery, Saturday, October 31, 12 PM – 5 PM. Pet pictures, hot dogs, cider. 1025 Finn Hall Rd, Port Angeles, WA.",
+        "bring": "Your pets in their Halloween best, on a leash.",
+        "wrapUp": "That’s a wrap on 2026. Thank you for a wonderful season, and see you in the spring."
+      }
     }
   ]
 }

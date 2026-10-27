@@ -126,7 +126,8 @@ export function FeaturedEventHero({ event, variant = 'home' }: { event: Featured
             className="mt-5 font-serif text-[clamp(60px,10vw,128px)] leading-[0.88] tracking-[-0.02em]"
             style={{ textShadow: '0 4px 40px rgba(0,0,0,.25)' }}
           >
-            {event.title}
+            {/* Word joiners keep hyphenated words ("Howl-o-ween") from splitting across lines */}
+            {event.title.replace(/-/g, '-\u2060')}
           </h1>
           <p className="mt-5 max-w-[26ch] font-serif text-[clamp(22px,2.6vw,30px)] italic leading-snug text-cream/95">
             {feature.tagline}
@@ -149,7 +150,7 @@ export function FeaturedEventHero({ event, variant = 'home' }: { event: Featured
 
           {ended ? (
             <p className="mt-7 max-w-[46ch] text-[16px] leading-relaxed text-cream/90">
-              That’s a wrap for this year. Thank you to everyone who brought apples, and see you next fall.
+              {feature.wrapUp ?? 'That’s a wrap for this year. Thanks for coming out, and see you next year.'}
             </p>
           ) : (
             <div className="mt-8 flex flex-wrap gap-3">
@@ -293,7 +294,7 @@ export function FeaturedEventPage({ event }: { event: Featured }) {
         <div className="container-x">
           <p className="eyebrow text-apple">What’s happening</p>
           <h2 className="mt-1.5 max-w-[22ch] font-serif text-[clamp(28px,4vw,44px)] leading-[1.05] text-apple-deep">
-            An afternoon of pressing, music and fall on the farm
+            {feature.headline ?? 'What’s on for the day'}
           </h2>
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {feature.highlights.map((h, i) => (
@@ -329,10 +330,12 @@ export function FeaturedEventPage({ event }: { event: Featured }) {
                   {address()}
                 </dd>
               </div>
-              <div className="grid grid-cols-[110px_1fr] gap-4 py-4">
-                <dt className="font-semibold">Bring</dt>
-                <dd>Apples, if you have them: to press for yourself or to donate to next year’s cider.</dd>
-              </div>
+              {feature.bring && (
+                <div className="grid grid-cols-[110px_1fr] gap-4 py-4">
+                  <dt className="font-semibold">Bring</dt>
+                  <dd>{feature.bring}</dd>
+                </div>
+              )}
             </dl>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/visit" className="btn btn-primary">
