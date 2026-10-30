@@ -9,6 +9,7 @@ const LINKS = [
   { href: '/admin/orders', label: 'Orders' },
   { href: '/admin/newsletter', label: 'Newsletter' },
   { href: '/admin/events', label: 'Events' },
+  { href: '/admin/social', label: 'Social' },
 ];
 
 /** Tab bar shown on every admin page (app/admin/layout.tsx). */

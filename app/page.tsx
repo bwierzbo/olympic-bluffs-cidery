@@ -5,6 +5,7 @@ import StatusStrip from '@/components/site/StatusStrip';
 import ExperienceGrid from '@/components/site/ExperienceGrid';
 import FeaturedCider from '@/components/site/FeaturedCider';
 import MakerSpotlight from '@/components/site/MakerSpotlight';
+import InstagramFeed from '@/components/site/InstagramFeed';
 import { Eyebrow, Section, SectionTitle } from '@/components/site/Section';
 import { getFeaturedEvent, getFeaturedMaker } from '@/lib/content';
 import { FeaturedEventHero, isFeatured } from '@/components/events/FeaturedEvent';
@@ -12,8 +13,8 @@ import { getFeaturedCider } from '@/lib/ciders';
 import { getLavenderProducts } from '@/lib/lavender-products';
 import { Product } from '@/lib/types';
 
-// Events and seat counts come from the database; refreshed on every change
-// (lib/events/revalidate.ts) and at least every 5 minutes.
+// Events, seat counts and the Instagram feed come from the database; refreshed
+// on every change (lib/events/revalidate.ts, the social cron) and at least every 5 minutes.
 export const revalidate = 300;
 
 const BEATS = [
@@ -203,6 +204,8 @@ export default async function Home() {
           ))}
         </ul>
       </Section>
+
+      <InstagramFeed />
 
       {featuredMaker && <MakerSpotlight maker={featuredMaker} />}
 

@@ -1,15 +1,17 @@
 import VideoCarousel from '@/components/VideoCarousel';
-import InstagramFeed from '@/components/InstagramFeed';
+import { InstagramGrid } from '@/components/site/InstagramFeed';
 import { Eyebrow, Section, SectionTitle } from '@/components/site/Section';
 import { getPlaylistVideos } from '@/lib/youtube';
+import { getSiteConfig } from '@/lib/site-config';
 
 /**
- * "Follow along" band at the foot of The Farm page: the Instagram feed (via
- * Behold) plus the YouTube video highlights from the homepage playlist.
+ * "Follow along" band at the foot of The Farm page: our latest Instagram
+ * posts (mirrored by the social cron, lib/social/sync.ts) plus the YouTube video highlights from the homepage playlist.
  * Sits on the light alternate ground, so both children render in ink.
  */
 export default async function FarmMedia() {
   const videos = await getPlaylistVideos();
+  const { instagram } = getSiteConfig().contact;
 
   return (
     <Section tone="alt">
@@ -20,7 +22,12 @@ export default async function FarmMedia() {
       </p>
 
       <div className="mt-10">
-        <InstagramFeed />
+        <InstagramGrid limit={8} />
+        <div className="mt-6 text-center">
+          <a href={instagram} target="_blank" rel="noopener noreferrer" className="btn btn-secondary">
+            Follow on Instagram
+          </a>
+        </div>
       </div>
 
       {videos.length > 0 && (
