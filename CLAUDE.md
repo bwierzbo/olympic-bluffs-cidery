@@ -52,6 +52,13 @@ Two-part architecture:
 - **Ciders and packs** come live from VinoShipper's public feed (`lib/ciders.ts`). Descriptions, tasting notes (the "winemaker note", comma-separated), prices, ABV, stock and packs are edited in VinoShipper. `data/ciders.json` holds only presentation overrides (swatch, local bottle render, featured).
 - Prices are stored in cents in the app.
 
+### Social pipeline (Instagram → website, Facebook, TikTok)
+
+- Instagram is the only place the farm posts. `app/api/cron/social` (every 30 min from `.github/workflows/social-sync.yml`, daily backstop in `vercel.json`) runs `lib/social/sync.ts`: refresh the IG token, mirror new posts into Blob + `social_posts`, then publish `social_deliveries` to Facebook (all posts) and TikTok (videos).
+- Posts from before the watcher's first run (`watchSince`) are imported for the site but never cross-posted. `#igonly` in a caption skips cross-posting.
+- Deliveries are claimed with a conditional update (`pending|failed → publishing`) before sending, so overlapping runs can't double-post. Auto-retry: 3 attempts, posts from the last 7 days. The admin Retry button ignores both limits.
+- Homepage band: `components/site/InstagramFeed.tsx`. Partner JSON feed: `/api/social/feed` (`docs/social-feed-for-partners.md`). Admin: `/admin/social`.
+
 ## Critical Configuration
 
 ### Environment Variables (.env.local)
@@ -78,7 +85,21 @@ NEWSLETTER_AI_MODEL=anthropic/claude-sonnet-5              # optional; via Verce
 NEWSLETTER_AI_FALLBACK_MODEL=openai/gpt-5.2                # used if the main model is refused
 # AI Gateway auth is automatic on Vercel (OIDC). Locally, .env.development.local
 # holds VERCEL_OIDC_TOKEN from `vercel env pull` (expires ~12h).
+
+# Social pipeline (admin dashboard → Social; lib/social/*)
+CRON_SECRET=...                       # (existing) Bearer secret for /api/cron/*; also a GitHub Actions secret for social-sync.yml
+BLOB_READ_WRITE_TOKEN=...             # (existing) Vercel Blob; social media is mirrored to social/<igId>/
+IG_ACCESS_TOKEN=...                   # long-lived Instagram Login token (instagram_business_basic); seeds the DB, refreshed weekly there
+FB_PAGE_ID=...                        # Facebook Page to cross-post every Instagram post to
+FB_PAGE_TOKEN=...                     # non-expiring Page token (pages_manage_posts, pages_read_engagement)
+META_GRAPH_VERSION=v26.0              # optional; Graph API version for Facebook calls
+TIKTOK_CLIENT_KEY=...                 # TikTok developer app (Content Posting API); connect at /admin/social
+TIKTOK_CLIENT_SECRET=...              # TikTok app secret, used for the OAuth code exchange and token refresh
+TIKTOK_MODE=inbox                     # optional; inbox (default: video lands in the TikTok inbox, tap Post) | direct (after TikTok's audit)
+TIKTOK_PRIVACY=SELF_ONLY              # optional; direct mode only. PUBLIC_TO_EVERYONE once audited
 ```
+
+Rotating tokens (Instagram, TikTok) and watcher state live in the `social_settings` table, never in env vars or the browser. The TikTok OAuth redirect URI is `${NEXT_PUBLIC_SITE_URL or https://www.olympicbluffs.com}/api/social/tiktok/callback`.
 
 **Current setup**: `SQUARE_ENVIRONMENT=production` on Vercel. Get local values with `vercel env pull .env.local`.
 

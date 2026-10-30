@@ -1,0 +1,34 @@
+# Runs the Instagram watcher (app/api/cron/social) every 30 minutes. Vercel's
+# Hobby plan only allows daily crons, so vercel.json has a daily backstop and
+# this does the frequent runs. CRON_SECRET comes from the repo's Actions
+# secrets (Settings → Secrets and variables → Actions); never put it here.
+name: Social sync
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: social-sync
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Call the social cron route
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          SITE_URL: ${{ vars.SITE_URL || 'https://www.olympicbluffs.com' }}
+        run: |
+          if [ -z "$CRON_SECRET" ]; then
+            echo "::error::CRON_SECRET is not set in this repo's Actions secrets."
+            exit 1
+          fi
+          curl --fail-with-body --silent --show-error --max-time 320 \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$SITE_URL/api/cron/social"

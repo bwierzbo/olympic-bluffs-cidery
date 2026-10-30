@@ -174,3 +174,52 @@ model NewsletterDelivery {
   @@index([campaignId, status])
   @@map("newsletter_deliveries")
 }
+
+// ---------------------------------------------------------------------------
+// Social pipeline: Instagram is the only place the farm posts. A cron job
+// (app/api/cron/social) mirrors new posts into Vercel Blob for the website
+// feed and cross-posts them to Facebook and (videos) TikTok.
+// ---------------------------------------------------------------------------
+
+model SocialPost {
+  id         String           @id // Instagram media id
+  caption    String           @default("")
+  mediaType  String // IMAGE | VIDEO | CAROUSEL_ALBUM
+  imageUrl   String // Blob copy of the photo, or the video cover
+  videoUrl   String? // Blob copy of the MP4 (VIDEO only)
+  media      Json // ordered [{ type, url, cover? }], one entry per carousel child
+  permalink  String
+  postedAt   DateTime
+  hidden     Boolean          @default(false) // hidden from the website and partner feed
+  createdAt  DateTime         @default(now())
+  deliveries SocialDelivery[]
+
+  @@index([postedAt])
+  @@map("social_posts")
+}
+
+model SocialDelivery {
+  id        String     @id @default(uuid())
+  postId    String
+  post      SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platform  String // facebook | tiktok
+  status    String     @default("pending") // pending | publishing | done | failed | skipped
+  remoteId  String? // Facebook post/video id, TikTok publish_id
+  error     String?
+  attempts  Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([postId, platform])
+  @@index([status])
+  @@map("social_deliveries")
+}
+
+// Rotating tokens and watcher state (lib/social/settings.ts). Server only.
+model SocialSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@map("social_settings")
+}
