@@ -6,6 +6,10 @@ import { Eyebrow } from '@/components/site/Section';
 import FarmMedia from '@/components/FarmMedia';
 import { getFarmStops } from '@/lib/content';
 
+// The Instagram grid comes from the database; refreshed by the social cron
+// (lib/social/revalidate.ts) and at least every 5 minutes.
+export const revalidate = 300;
+
 export const metadata: Metadata = {
   title: 'The farm · Olympic Bluffs Cidery & Lavender Farm',
   description:

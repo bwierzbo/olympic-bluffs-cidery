@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { refreshSocialPages } from '@/lib/social/revalidate';
 import { requireAdmin } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 
@@ -14,6 +14,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (typeof body?.hidden !== 'boolean') return NextResponse.json({ error: 'Send { hidden: true | false }.' }, { status: 400 });
   const updated = await prisma.socialPost.updateMany({ where: { id }, data: { hidden: body.hidden } });
   if (updated.count === 0) return NextResponse.json({ error: 'Post not found.' }, { status: 404 });
-  revalidatePath('/');
+  refreshSocialPages();
   return NextResponse.json({ id, hidden: body.hidden });
 }

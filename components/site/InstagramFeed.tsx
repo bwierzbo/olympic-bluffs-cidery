@@ -28,16 +28,62 @@ function CarouselIcon() {
   );
 }
 
+async function loadPosts(limit: number): Promise<PublicSocialPost[]> {
+  return getVisiblePosts({ limit }).catch((error) => {
+    console.error('Instagram feed unavailable', error);
+    return [] as PublicSocialPost[];
+  });
+}
+
+function Grid({ posts }: { posts: PublicSocialPost[] }) {
+  return (
+    <ul className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
+      {posts.map((post) => (
+        <li key={post.id}>
+          <a
+            href={post.permalink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative block aspect-square overflow-hidden bg-paper"
+          >
+            <Image
+              src={post.imageUrl}
+              alt={altText(post)}
+              fill
+              sizes="(max-width: 768px) 50vw, 25vw"
+              quality={65}
+              className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.04]"
+            />
+            {post.mediaType !== 'IMAGE' && (
+              <span className="absolute right-2 top-2 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                {post.mediaType === 'VIDEO' ? <PlayIcon /> : <CarouselIcon />}
+                <span className="sr-only">{post.mediaType === 'VIDEO' ? 'Video' : 'Album'}</span>
+              </span>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Just the square grid of our latest Instagram posts, for pages that supply
+ * their own heading (The Farm's "Follow along" band). Renders nothing when
+ * there are no posts or the database is unreachable.
+ */
+export async function InstagramGrid({ limit = 8 }: { limit?: number }) {
+  const posts = await loadPosts(limit);
+  return posts.length > 0 ? <Grid posts={posts} /> : null;
+}
+
 /**
  * Homepage band of our latest Instagram posts, mirrored by the social cron
  * (lib/social/sync.ts). Renders nothing until there are posts, or if the
  * database is unreachable.
  */
 export default async function InstagramFeed() {
-  const posts = await getVisiblePosts({ limit: 8 }).catch((error) => {
-    console.error('Homepage: Instagram feed unavailable', error);
-    return [] as PublicSocialPost[];
-  });
+  const posts = await loadPosts(8);
   if (posts.length === 0) return null;
   const { instagram } = getSiteConfig().contact;
 
@@ -52,33 +98,7 @@ export default async function InstagramFeed() {
           Follow on Instagram
         </a>
       </div>
-      <ul className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
-        {posts.map((post) => (
-          <li key={post.id}>
-            <a
-              href={post.permalink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative block aspect-square overflow-hidden bg-paper"
-            >
-              <Image
-                src={post.imageUrl}
-                alt={altText(post)}
-                fill
-                sizes="(max-width: 768px) 50vw, 25vw"
-                quality={65}
-                className="object-cover transition-transform duration-700 ease-out motion-safe:group-hover:scale-[1.04]"
-              />
-              {post.mediaType !== 'IMAGE' && (
-                <span className="absolute right-2 top-2 text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-                  {post.mediaType === 'VIDEO' ? <PlayIcon /> : <CarouselIcon />}
-                  <span className="sr-only">{post.mediaType === 'VIDEO' ? 'Video' : 'Album'}</span>
-                </span>
-              )}
-            </a>
-          </li>
-        ))}
-      </ul>
+      <Grid posts={posts} />
     </Section>
   );
 }

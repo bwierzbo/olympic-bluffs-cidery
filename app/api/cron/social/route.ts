@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { refreshSocialPages } from '@/lib/social/revalidate';
 import { runSocialSync } from '@/lib/social/sync';
 
 export const dynamic = 'force-dynamic';
@@ -16,6 +16,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
   const result = await runSocialSync();
-  if (result.imported > 0 || result.updated > 0) revalidatePath('/');
+  if (result.imported > 0 || result.updated > 0) refreshSocialPages();
   return NextResponse.json(result);
 }

@@ -57,7 +57,7 @@ Two-part architecture:
 - Instagram is the only place the farm posts. `app/api/cron/social` (every 30 min from `.github/workflows/social-sync.yml`, daily backstop in `vercel.json`) runs `lib/social/sync.ts`: refresh the IG token, mirror new posts into Blob + `social_posts`, then publish `social_deliveries` to Facebook (all posts) and TikTok (videos).
 - Posts from before the watcher's first run (`watchSince`) are imported for the site but never cross-posted. `#igonly` in a caption skips cross-posting.
 - Deliveries are claimed with a conditional update (`pending|failed → publishing`) before sending, so overlapping runs can't double-post. Auto-retry: 3 attempts, posts from the last 7 days. The admin Retry button ignores both limits.
-- Homepage band: `components/site/InstagramFeed.tsx`. Partner JSON feed: `/api/social/feed` (`docs/social-feed-for-partners.md`). Admin: `/admin/social`.
+- Instagram grid: `components/site/InstagramFeed.tsx` (homepage band, and `InstagramGrid` on /farm). Partner JSON feed: `/api/social/feed` (`docs/social-feed-for-partners.md`). Admin: `/admin/social`.
 
 ## Critical Configuration
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { refreshSocialPages } from '@/lib/social/revalidate';
 import { requireAdmin } from '@/lib/admin-auth';
 import { runSocialSync } from '@/lib/social/sync';
 
@@ -11,6 +11,6 @@ export async function POST(request: NextRequest) {
   const denied = requireAdmin(request);
   if (denied) return denied;
   const result = await runSocialSync();
-  if (result.imported > 0 || result.updated > 0) revalidatePath('/');
+  if (result.imported > 0 || result.updated > 0) refreshSocialPages();
   return NextResponse.json(result);
 }
