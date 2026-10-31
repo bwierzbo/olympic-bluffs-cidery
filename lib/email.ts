@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { Order } from './types';
+import { SITE_URL } from './site-url';
 
 /**
  * Email notification helper using Gmail SMTP
@@ -102,7 +103,7 @@ export function generateOrderConfirmationEmail(order: Order): EmailTemplate {
     )
     .join('\n');
 
-  const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
+  const trackingUrl = `${SITE_URL}/orders/${order.id}`;
   const customerTz = getCustomerTimeZone(order);
 
   const text = `
@@ -304,7 +305,7 @@ export function generateFarmNotificationEmail(order: Order, options: { notSaved?
     )
     .join('\n');
 
-  const adminUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/admin/orders`;
+  const adminUrl = `${SITE_URL}/admin/orders`;
 
   const text = `
 ${notSavedText}NEW ORDER RECEIVED
@@ -462,7 +463,7 @@ export async function sendFarmNotification(order: Order, options: { notSaved?: b
  * Generate "Processing" status update email
  */
 function generateProcessingEmail(order: Order): EmailTemplate {
-  const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
+  const trackingUrl = `${SITE_URL}/orders/${order.id}`;
 
   const text = `
 Hi ${order.customerInfo.firstName},
@@ -545,7 +546,7 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
  * Generate "Ready for Pickup" email
  */
 function generateReadyForPickupEmail(order: Order): EmailTemplate {
-  const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
+  const trackingUrl = `${SITE_URL}/orders/${order.id}`;
 
   const text = `
 Hi ${order.customerInfo.firstName},
@@ -653,7 +654,7 @@ Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
  * Generate "Shipped" email
  */
 function generateShippedEmail(order: Order, trackingNumber?: string): EmailTemplate {
-  const trackingUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/orders/${order.id}`;
+  const trackingUrl = `${SITE_URL}/orders/${order.id}`;
 
   const text = `
 Hi ${order.customerInfo.firstName},
@@ -772,7 +773,7 @@ We'd love to hear about your experience! If you have a moment, please consider:
 • Leaving a review on our website
 • Telling your friends about us
 
-Shop again: ${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/lavender
+Shop again: ${SITE_URL}/lavender
 
 Thank you for supporting Olympic Bluffs Cidery & Lavender Farm!
 We hope to see you again soon.
@@ -818,7 +819,7 @@ We hope to see you again soon.
         </ul>
 
         <p>
-          <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/lavender" class="button">
+          <a href="${SITE_URL}/lavender" class="button">
             Shop Again
           </a>
         </p>
