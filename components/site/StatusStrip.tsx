@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { getTodayHours } from '@/lib/hours';
+import { getBannerMessage, getTodayHours } from '@/lib/hours';
 import { getNextEventAll } from '@/lib/events/listing';
-import { getSiteConfig } from '@/lib/site-config';
 
 /**
  * Dark strip under the homepage hero: today's open/closed status (same
@@ -12,8 +11,7 @@ import { getSiteConfig } from '@/lib/site-config';
 export default async function StatusStrip() {
   const today = getTodayHours();
   const next = await getNextEventAll();
-  const config = getSiteConfig();
-  const custom = config.seasonal.banner.visible ? config.seasonal.banner.message : null;
+  const custom = getBannerMessage(today);
 
   return (
     <div className="bg-ink text-white">

@@ -7,7 +7,7 @@ import { getCiderCatalog, formatPrice, type Cider } from '@/lib/ciders';
 import { getLavenderProducts } from '@/lib/lavender-products';
 import { eventLink, formatEventDateRange } from '@/lib/content';
 import { getAllUpcomingEvents } from '@/lib/events/listing';
-import { getHoursConfig, getWeekSummary, getTodayHours } from '@/lib/hours';
+import { getBannerMessage, getHoursConfig, getWeekSummary, getTodayHours } from '@/lib/hours';
 import { NEWSLETTER_AI_FALLBACK_MODEL, NEWSLETTER_AI_MODEL } from './config';
 import type { DraftRequest, DraftResult } from './types';
 
@@ -118,7 +118,7 @@ const tools = {
     description: 'Farm and tasting room hours, season dates, whether the farm is open today, and address/phone/email.',
     inputSchema: z.object({}),
     execute: async () => {
-      const { contact, seasonal } = getSiteConfig();
+      const { contact } = getSiteConfig();
       const hours = getHoursConfig();
       const today = getTodayHours();
       return {
@@ -127,7 +127,7 @@ const tools = {
         seasonEnd: hours.seasonEnd ?? null,
         inSeasonNow: today.inSeason,
         note: hours.note ?? null,
-        currentBanner: seasonal.banner.visible ? seasonal.banner.message : null,
+        currentBanner: getBannerMessage(today),
         address: `${contact.address1}, ${contact.city}, ${contact.state} ${contact.zip}`,
         phone: contact.phone,
         email: contact.email,
