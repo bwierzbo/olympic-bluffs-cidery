@@ -89,9 +89,10 @@ NEWSLETTER_AI_FALLBACK_MODEL=openai/gpt-5.2                # used if the main mo
 # Social pipeline (admin dashboard → Social; lib/social/*)
 CRON_SECRET=...                       # (existing) Bearer secret for /api/cron/*; also a GitHub Actions secret for social-sync.yml
 BLOB_READ_WRITE_TOKEN=...             # (existing) Vercel Blob; social media is mirrored to social/<igId>/
-IG_ACCESS_TOKEN=...                   # long-lived Instagram Login token (instagram_business_basic); seeds the DB, refreshed weekly there
+IG_USER_ID=...                        # Instagram account ID; set it to read Instagram through the linked Page with FB_PAGE_TOKEN (current setup)
+IG_ACCESS_TOKEN=...                   # alternative to IG_USER_ID: long-lived Instagram Login token (instagram_business_basic); seeds the DB, refreshed weekly there
 FB_PAGE_ID=...                        # Facebook Page to cross-post every Instagram post to
-FB_PAGE_TOKEN=...                     # non-expiring Page token (pages_manage_posts, pages_read_engagement)
+FB_PAGE_TOKEN=...                     # non-expiring Page token (pages_manage_posts, pages_read_engagement, instagram_basic)
 META_GRAPH_VERSION=v26.0              # optional; Graph API version for Facebook calls
 TIKTOK_CLIENT_KEY=...                 # TikTok developer app (Content Posting API); connect at /admin/social
 TIKTOK_CLIENT_SECRET=...              # TikTok app secret, used for the OAuth code exchange and token refresh

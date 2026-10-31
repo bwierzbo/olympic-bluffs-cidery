@@ -40,7 +40,7 @@ async function platformReady(platform: SocialPlatform): Promise<boolean> {
 /** Mirrors new Instagram posts and picks up caption edits on known ones. */
 async function syncInstagram(result: SyncResult, startedAt: number): Promise<void> {
   const token = await getInstagramToken();
-  if (!token) throw new Error('Instagram is not configured (IG_ACCESS_TOKEN).');
+  if (!token) throw new Error('Instagram is not configured (IG_ACCESS_TOKEN, or IG_USER_ID with FB_PAGE_TOKEN).');
 
   // The first run fixes the cut-off: anything already on Instagram is history.
   let watchSince = await getSetting(KEYS.watchSince);

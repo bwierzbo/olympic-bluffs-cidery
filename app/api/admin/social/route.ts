@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { prisma } from '@/lib/prisma';
 import { toPublicPost } from '@/lib/social/feed';
 import { facebookConfigured } from '@/lib/social/facebook';
+import { instagramPageUserId } from '@/lib/social/instagram';
 import { getSettings, KEYS } from '@/lib/social/settings';
 import { tiktokAppConfigured, tiktokMode } from '@/lib/social/tiktok';
 import type { AdminSocialDTO, DeliveryStatus, SocialPlatform } from '@/lib/social/types';
@@ -31,7 +32,10 @@ export async function GET(request: NextRequest) {
     include: { deliveries: { orderBy: { platform: 'asc' } } },
   });
 
-  const igConfigured = Boolean(s[KEYS.igToken] || process.env.IG_ACCESS_TOKEN);
+  const igViaPage = Boolean(instagramPageUserId());
+  const igConfigured = igViaPage
+    ? Boolean(process.env.FB_PAGE_TOKEN)
+    : Boolean(s[KEYS.igToken] || process.env.IG_ACCESS_TOKEN);
   const tiktokApp = tiktokAppConfigured();
   const tiktokLinked = Boolean(s[KEYS.tiktokRefreshToken]);
 
@@ -39,13 +43,17 @@ export async function GET(request: NextRequest) {
     instagram: {
       configured: igConfigured,
       detail: !igConfigured
-        ? 'Set IG_ACCESS_TOKEN in Vercel.'
-        : s[KEYS.igRefreshError]
-          ? `Last token refresh failed: ${s[KEYS.igRefreshError]}`
-          : s[KEYS.igTokenRefreshedAt]
-            ? `Token refreshed ${new Date(s[KEYS.igTokenRefreshedAt]!).toLocaleDateString('en-US')}; refreshes weekly.`
-            : 'Using IG_ACCESS_TOKEN; the first refresh sets the expiry date.',
-      expiresAt: s[KEYS.igTokenExpiresAt],
+        ? igViaPage
+          ? 'Set FB_PAGE_TOKEN in Vercel.'
+          : 'Set IG_ACCESS_TOKEN in Vercel.'
+        : igViaPage
+          ? `Account ${instagramPageUserId()}, read through the Facebook Page token. It doesn't expire.`
+          : s[KEYS.igRefreshError]
+            ? `Last token refresh failed: ${s[KEYS.igRefreshError]}`
+            : s[KEYS.igTokenRefreshedAt]
+              ? `Token refreshed ${new Date(s[KEYS.igTokenRefreshedAt]!).toLocaleDateString('en-US')}; refreshes weekly.`
+              : 'Using IG_ACCESS_TOKEN; the first refresh sets the expiry date.',
+      expiresAt: igViaPage ? null : s[KEYS.igTokenExpiresAt],
       lastSyncAt: s[KEYS.lastSyncAt],
       lastSyncError: s[KEYS.lastSyncError],
       watchSince: s[KEYS.watchSince],

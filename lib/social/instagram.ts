@@ -2,12 +2,17 @@ import { createHash } from 'crypto';
 import { getSettings, KEYS, setSettings } from './settings';
 
 /**
- * Instagram API with Instagram Login (graph.instagram.com, scope
- * instagram_business_basic). The long-lived token is seeded from
- * IG_ACCESS_TOKEN; refreshed tokens are kept in social_settings because a
- * refresh returns a new token and env vars can't be rewritten at runtime.
+ * Two ways to read the account:
+ * - Through the linked Facebook Page (IG_USER_ID set): graph.facebook.com
+ *   with FB_PAGE_TOKEN (instagram_basic). Page tokens don't expire, so there's
+ *   nothing to refresh.
+ * - Instagram API with Instagram Login (graph.instagram.com, scope
+ *   instagram_business_basic). The long-lived token is seeded from
+ *   IG_ACCESS_TOKEN; refreshed tokens are kept in social_settings because a
+ *   refresh returns a new token and env vars can't be rewritten at runtime.
  */
 const GRAPH = 'https://graph.instagram.com';
+const FB_GRAPH = () => `https://graph.facebook.com/${process.env.META_GRAPH_VERSION?.trim() || 'v26.0'}`;
 const REFRESH_EVERY_MS = 7 * 24 * 60 * 60 * 1000;
 const RETRY_FAILED_REFRESH_MS = 24 * 60 * 60 * 1000;
 
@@ -32,6 +37,11 @@ export interface IgMedia {
   children?: { data: IgChild[] };
 }
 
+/** The Instagram user ID when the account is read through its Facebook Page. */
+export function instagramPageUserId(): string | null {
+  return process.env.IG_USER_ID?.trim() || null;
+}
+
 function fingerprint(token: string): string {
   return createHash('sha256').update(token).digest('hex').slice(0, 16);
 }
@@ -50,6 +60,7 @@ async function igFetch<T>(url: string): Promise<T> {
  * been replaced since, in which case the new env token wins.
  */
 export async function getInstagramToken(): Promise<string | null> {
+  if (instagramPageUserId()) return process.env.FB_PAGE_TOKEN?.trim() || null;
   const seed = process.env.IG_ACCESS_TOKEN?.trim();
   const s = await getSettings([KEYS.igToken, KEYS.igTokenSeed]);
   if (seed && s[KEYS.igTokenSeed] !== fingerprint(seed)) {
@@ -72,6 +83,7 @@ export async function getInstagramToken(): Promise<string | null> {
  * day and tries again; the current token keeps working meanwhile.
  */
 export async function refreshInstagramTokenIfDue(): Promise<void> {
+  if (instagramPageUserId()) return;
   const token = await getInstagramToken();
   if (!token) return;
   const s = await getSettings([KEYS.igTokenRefreshedAt, KEYS.igRefreshAttemptAt]);
@@ -102,6 +114,8 @@ export async function refreshInstagramTokenIfDue(): Promise<void> {
 /** The account's most recent posts, newest first. */
 export async function fetchRecentMedia(token: string, limit = 50): Promise<IgMedia[]> {
   const params = new URLSearchParams({ fields: MEDIA_FIELDS, limit: String(limit), access_token: token });
-  const data = await igFetch<{ data: IgMedia[] }>(`${GRAPH}/me/media?${params}`);
+  const pageUserId = instagramPageUserId();
+  const url = pageUserId ? `${FB_GRAPH()}/${pageUserId}/media` : `${GRAPH}/me/media`;
+  const data = await igFetch<{ data: IgMedia[] }>(`${url}?${params}`);
   return data.data ?? [];
 }
