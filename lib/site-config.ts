@@ -8,6 +8,8 @@ export interface SiteConfig {
     banner: {
       visible: boolean;
       message: string;
+      /** Replaces `message` once the season is over (lib/hours.ts getBannerMessage). */
+      offSeasonMessage?: string;
       backgroundColor: string;
     };
     homePageMessage: string;

@@ -164,3 +164,15 @@ export function getTodayHours(now: Date = new Date()): TodayHours {
     isOpenNow,
   };
 }
+
+/**
+ * The owners' banner line: `message` during the season, `offSeasonMessage`
+ * (if set) once the season is over, so the end-of-season text swaps itself
+ * the day after seasonEnd. Null when the banner is hidden.
+ */
+export function getBannerMessage(today: TodayHours = getTodayHours()): string | null {
+  const { banner } = getSiteConfig().seasonal;
+  if (!banner.visible) return null;
+  if (!today.inSeason) return banner.offSeasonMessage ?? null;
+  return banner.message;
+}

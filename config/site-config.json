@@ -4,6 +4,7 @@
     "banner": {
       "visible": true,
       "message": "Saturday, Oct 31 is our last day of the season. Closed Friday and Sunday.",
+      "offSeasonMessage": "Thanks for a wonderful season! The farm is closed for the winter. Our lavender and cider shops are open online all year.",
       "backgroundColor": "sage-500"
     },
     "homePageMessage": "Saturday, October 31 is our last day of the season, 12 - 5 pm. We are closed Friday and Sunday.",
