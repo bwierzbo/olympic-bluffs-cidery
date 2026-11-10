@@ -19,12 +19,8 @@ export const metadata: Metadata = {
 const MAP_EMBED_SRC =
   'https://maps.google.com/maps?q=1025+Finn+Hall+Road,+Port+Angeles,+WA+98362&t=&z=13&ie=UTF8&iwloc=&output=embed';
 
-/** Questions a first-time visitor asks. Answers are kept word for word from the old Farm page FAQ. */
+/** Questions a first-time visitor asks, after "Is the cidery currently open?" (built in the page from the hours). */
 const FAQS: Array<{ question: string; answer: string }> = [
-  {
-    question: 'Is the cidery currently open?',
-    answer: 'Yes! This weekend the cidery is open Saturday, October 31 only, 12 - 5 pm, our last day of the season.',
-  },
   {
     question: 'Are dogs allowed on the farm?',
     answer: "Leashed dogs are welcome! We just ask that you clean up after them and respect other guest's space.",
@@ -40,7 +36,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'Is the farm open all year?',
     answer:
-      'For 2026, the farm, gift shop, and cidery opened April 24th, Friday - Sunday, 12 - 5 pm. Our last day of the season is Saturday, October 31 (12 - 5 pm); we are closed Friday, October 30 and Sunday, November 1. We reopen in the spring.',
+      'The farm, gift shop, and cidery are open from late April through October. Over the winter we host private tastings by appointment, and we reopen in the spring.',
   },
   {
     question: 'Do you ship cider to my state?',
@@ -78,6 +74,15 @@ export default async function VisitPage() {
   const upcoming = allUpcoming.slice(0, 3);
   const festival = allUpcoming.find((e) => e.kind === 'festival');
   const telHref = `tel:${contact.phone.replace(/\D/g, '')}`;
+  const faqs = [
+    {
+      question: 'Is the cidery currently open?',
+      answer: today.inSeason
+        ? `Yes! The tasting room is open ${weekSummary}.`
+        : `The tasting room is between seasons, but you can call ${contact.phone} to book a private tasting.`,
+    },
+    ...FAQS,
+  ];
 
   const seasonTiles = [
     {
@@ -101,14 +106,34 @@ export default async function VisitPage() {
       <Section>
         <Eyebrow>Plan your visit</Eyebrow>
         <SectionTitle as="h1" size="lg" className="max-w-[24ch]">
-          Free to enter, dogs on leash, tasting room open {openDaysPhrase(weekSummary)}
+          {today.inSeason
+            ? `Free to enter, dogs on leash, tasting room open ${openDaysPhrase(weekSummary)}`
+            : 'Visit us this winter for a private tasting'}
         </SectionTitle>
+
+        {!today.inSeason && (
+          <div className="mt-8 max-w-2xl border border-line bg-paper p-6">
+            <p className="font-serif text-2xl leading-snug">{today.headerLabel}</p>
+            <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
+              The tasting room is between seasons, but we&rsquo;re still pouring for small groups. Give us a call
+              to set up a private cider tasting.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a href={telHref} className="btn btn-primary">
+                Call {contact.phone}
+              </a>
+              <a href={`mailto:${contact.email}`} className="btn btn-secondary">
+                Email us
+              </a>
+            </div>
+          </div>
+        )}
 
         <div className="mt-10 grid gap-12 lg:grid-cols-2 lg:gap-16">
           {/* Hours and FAQ */}
           <div>
             <Eyebrow className="mb-3">
-              Hours
+              {today.inSeason ? 'Hours' : 'Season hours'}
               {seasonOpens && seasonCloses
                 ? ` · ${seasonOpens} to ${seasonCloses}`
                 : seasonOpens
@@ -151,7 +176,7 @@ export default async function VisitPage() {
 
             <Eyebrow className="mb-2 mt-10">Good to know</Eyebrow>
             <div className="border-t border-line">
-              {FAQS.map((faq) => (
+              {faqs.map((faq) => (
                 <details key={faq.question} className="group border-b border-line">
                   <summary className="flex cursor-pointer list-none items-center justify-between gap-4 py-3.5 font-serif text-[19px] leading-snug marker:content-none [&::-webkit-details-marker]:hidden">
                     <span>{faq.question}</span>

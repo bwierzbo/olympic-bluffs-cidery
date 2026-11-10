@@ -43,6 +43,7 @@ export interface SiteConfig {
     seasonEnd?: string;
     weekly: Partial<Record<'sun' | 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat', [string, string]>>;
     note?: string;
+    offSeasonLabel?: string;
   };
   contact: {
     address1: string;

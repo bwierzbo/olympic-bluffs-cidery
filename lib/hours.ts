@@ -30,6 +30,8 @@ export interface HoursConfig {
   weekly: Partial<Record<DayKey, [string, string]>>;
   /** One-line note shown under the hours table. */
   note?: string;
+  /** Header and status-strip label outside the season, e.g. "Private tastings by appointment". */
+  offSeasonLabel?: string;
 }
 
 export interface TodayHours {
@@ -150,7 +152,7 @@ export function getTodayHours(now: Date = new Date()): TodayHours {
   }
 
   let headerLabel: string;
-  if (!inSeason) headerLabel = 'Closed for the season';
+  if (!inSeason) headerLabel = hours.offSeasonLabel || 'Closed for the season';
   else if (todayLabel) headerLabel = `Open today ${todayLabel}`;
   else headerLabel = `Closed today · ${weekSummary}`;
 
