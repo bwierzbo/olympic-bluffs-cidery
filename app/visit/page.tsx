@@ -36,7 +36,7 @@ const FAQS: Array<{ question: string; answer: string }> = [
   {
     question: 'Is the farm open all year?',
     answer:
-      'The farm, gift shop, and cidery are open from late April through October. Over the winter we host private tastings by appointment, and we reopen in the spring.',
+      'The farm, gift shop, and cidery are open from late April through October. Over the winter we host private tastings and sell cider and lavender by appointment, and we reopen in the spring.',
   },
   {
     question: 'Do you ship cider to my state?',
@@ -79,7 +79,7 @@ export default async function VisitPage() {
       question: 'Is the cidery currently open?',
       answer: today.inSeason
         ? `Yes! The tasting room is open ${weekSummary}.`
-        : `The tasting room is between seasons, but you can call ${contact.phone} to book a private tasting.`,
+        : `The tasting room is between seasons, but you can call ${contact.phone} to book a private tasting or pick up cider and lavender. If someone is around, we'll meet you at the farm.`,
     },
     ...FAQS,
   ];
@@ -108,15 +108,16 @@ export default async function VisitPage() {
         <SectionTitle as="h1" size="lg" className="max-w-[24ch]">
           {today.inSeason
             ? `Free to enter, dogs on leash, tasting room open ${openDaysPhrase(weekSummary)}`
-            : 'Visit us this winter for a private tasting'}
+            : 'Visit us this winter for a tasting, cider, or lavender'}
         </SectionTitle>
 
         {!today.inSeason && (
           <div className="mt-8 max-w-2xl border border-line bg-paper p-6">
             <p className="font-serif text-2xl leading-snug">{today.headerLabel}</p>
             <p className="mt-2 text-[15px] leading-relaxed text-ink-2">
-              The tasting room is between seasons, but we&rsquo;re still pouring for small groups. Give us a call
-              to set up a private cider tasting.
+              The tasting room is between seasons, but we&rsquo;re still pouring for small groups, and you can
+              still buy bottles of cider and lavender at the farm. Give us a call to set up a private tasting
+              or a time to stop by. If someone is around, we&rsquo;ll meet you there.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <a href={telHref} className="btn btn-primary">
