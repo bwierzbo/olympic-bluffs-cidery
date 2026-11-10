@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getBannerMessage, getTodayHours } from '@/lib/hours';
 import { getNextEventAll } from '@/lib/events/listing';
+import { getSiteConfig } from '@/lib/site-config';
 
 /**
  * Dark strip under the homepage hero: today's open/closed status (same
@@ -12,6 +13,7 @@ export default async function StatusStrip() {
   const today = getTodayHours();
   const next = await getNextEventAll();
   const custom = getBannerMessage(today);
+  const { phone } = getSiteConfig().contact;
 
   return (
     <div className="bg-ink text-white">
@@ -22,7 +24,12 @@ export default async function StatusStrip() {
             aria-hidden="true"
           />
           {!today.inSeason ? (
-            <b className="font-semibold">Closed for the season</b>
+            <>
+              <b className="font-semibold">{today.headerLabel}</b>
+              <a href={`tel:${phone.replace(/\D/g, '')}`} className="opacity-90 underline-offset-4 hover:underline">
+                · Call {phone}
+              </a>
+            </>
           ) : today.todayLabel ? (
             <>
               <b className="font-semibold">Open today</b>
