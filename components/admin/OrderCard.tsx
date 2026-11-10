@@ -33,10 +33,11 @@ function getPrimaryAction(status: OrderStatus, fulfillment: FulfillmentMethod): 
         return { label: 'Mark Ready', toStatus: 'ready', needsModal: false };
       }
       return { label: 'Mark Shipped', toStatus: 'shipped', needsModal: true };
+    // Completing is final and emails the customer, so it always asks first.
     case 'ready':
-      return { label: 'Complete', toStatus: 'completed', needsModal: false };
+      return { label: 'Complete', toStatus: 'completed', needsModal: true };
     case 'shipped':
-      return { label: 'Complete', toStatus: 'completed', needsModal: false };
+      return { label: 'Complete', toStatus: 'completed', needsModal: true };
     default:
       return null;
   }
