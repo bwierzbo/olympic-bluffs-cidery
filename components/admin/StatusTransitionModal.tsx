@@ -43,6 +43,7 @@ export default function StatusTransitionModal({
   const noteRequired = toStatus === 'on_hold' || toStatus === 'cancelled';
   const showTracking = toStatus === 'shipped' && fulfillmentMethod === 'shipping';
   const isDangerous = toStatus === 'cancelled';
+  const isFinal = toStatus === 'completed' || toStatus === 'cancelled';
 
   const canSubmit = !updating && (!noteRequired || note.trim().length > 0);
 
@@ -74,7 +75,7 @@ export default function StatusTransitionModal({
 
       <div className="relative bg-white rounded-lg shadow-xl max-w-md w-full p-6">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          {isDangerous ? 'Cancel Order' : 'Update Status'}
+          {isDangerous ? 'Cancel Order' : toStatus === 'completed' ? 'Complete this order?' : 'Update Status'}
         </h3>
 
         <div className="flex items-center gap-2 mb-4 text-sm text-gray-600">
@@ -88,6 +89,12 @@ export default function StatusTransitionModal({
           </svg>
           <StatusBadge status={toStatus} />
         </div>
+
+        {toStatus === 'completed' && (
+          <p className="mb-4 text-sm text-gray-700">
+            This emails the customer a thank-you, and a completed order can&apos;t be moved back.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit}>
           {showTracking && (
@@ -147,7 +154,11 @@ export default function StatusTransitionModal({
                   : 'bg-sage-600 hover:bg-sage-700'
               }`}
             >
-              {updating ? 'Updating...' : `${STATUS_LABELS[toStatus] || toStatus}`}
+              {updating
+                ? 'Updating...'
+                : isFinal
+                  ? `Yes, mark ${(STATUS_LABELS[toStatus] || toStatus).toLowerCase()}`
+                  : `${STATUS_LABELS[toStatus] || toStatus}`}
             </button>
           </div>
         </form>

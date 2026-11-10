@@ -132,7 +132,7 @@ export default function AdminOrdersPage() {
     await updateStatus(orderId, toStatus);
   };
 
-  // Transition that needs a modal (hold, cancel, shipped with tracking)
+  // Transition that needs a modal (hold, cancel, complete, shipped with tracking)
   const handleTransitionWithModal = (
     orderId: string,
     fromStatus: OrderStatus,
